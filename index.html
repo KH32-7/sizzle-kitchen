@@ -1673,7 +1673,7 @@ function serve(){const o=selOrder();if(!o){floatText('먼저 주문표를 선택
   applyExtras(o,v,res);{const pe=platingEval(R,v);res.plating=pe.score;res.total=clamp(Math.round(res.total*.85+pe.score*.15),0,100);res.cats.push(['플레이팅',pe.score]);const bad=pe.checks.filter(c=>!c.ok);if(!bad.length)res.notes.unshift({t:'good',s:'플레이팅이 사진처럼 예뻐요!'});else res.notes.push({t:'meh',s:'플레이팅: '+bad[0].hint});}const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(orderPrice(o)*q/100)*100,tip=0;
   if(G.mode==='career'){const speed=o.pat===Infinity?0:clamp(o.left/o.pat,0,1);if(sc>=70)tip=Math.round(R.price*(.06+.14*speed)*(sc/100)/100)*100;G.combo=sc>=80?G.combo+1:0;if(G.combo>1)tip+=Math.round(R.price*Math.min(.25,G.combo*.05)/100)*100;
     SAVE.money+=pay+tip;G.day.rev+=pay;G.day.tips+=tip;G.day.served++;G.day.scores.push(sc);SAVE.rep=clamp(SAVE.rep+(sc-65)/350,0,5);SAVE.served++;}
-  SAVE.best[R.id]=Math.max(SAVE.best[R.id]||0,sc);writeSave();if(G.mode==='career')midSave();checkAch(sc,{plating:res.plating,steak:R.id==='steak'&&res.notes.some(n=>n.t==='good'&&n.s.includes('정확히'))});
+  SAVE.best[R.id]=Math.max(SAVE.best[R.id]||0,sc);writeSave();if(G.mode==='career')midSave();checkAch(sc,{dlc:R.dlc,plating:res.plating,steak:R.id==='steak'&&res.notes.some(n=>n.t==='good'&&n.s.includes('정확히'))});
   clearCont(v);AU.cash();G.orders=G.orders.filter(q=>q!==o);G.sel=G.orders[0]?G.orders[0].id:null;renderTickets();renderSteps();
   const pack={R,res,img,pay,tip,o,hero:!!hero};G.lastServe=pack;if(G.mode==='practice')showResult(pack);else showToast(pack);hudTick();}
 function stars(s){const st=Math.round(s/20*2)/2;let h='';for(let i=1;i<=5;i++)h+=`<span class="${st>=i?'f':st>=i-.5?'h':'e'}">★</span>`;return h;}
@@ -1826,15 +1826,15 @@ function renderUpgrades(list){const h=document.createElement('div');h.className=
   list.appendChild(h);}
 
 /* achievements & toasts */
-const ACH=[['first','첫 손님','첫 요리를 서빙했어요'],['s90','셰프의 한 접시','90점 이상 받기'],['combo5','단골 제조기','5연속 호평'],['srv50','바쁜 주방','누적 50그릇 서빙'],['req5','세심한 사장님','손님 요청 5번 들어주기'],['all','메뉴 마스터','모든 메뉴 70점 이상'],['rich','부자 사장님','잔고 200,000원 달성'],['day7','일주일 개근','DAY 7 도달'],['plate100','사진 찍고 싶은 한 그릇','플레이팅 100점 받기'],['steakmr','완벽한 굽기','주문한 굽기에 딱 맞춘 스테이크'],['day1','첫 영업 마감','첫 영업일을 마감하기']];
+const ACH=[['first','첫 손님','첫 요리를 서빙했어요'],['s90','셰프의 한 접시','90점 이상 받기'],['combo5','단골 제조기','5연속 호평'],['srv50','바쁜 주방','누적 50그릇 서빙'],['req5','세심한 사장님','손님 요청 5번 들어주기'],['all','메뉴 마스터','모든 메뉴(DLC 포함) 70점 이상'],['rich','부자 사장님','잔고 200,000원 달성'],['day7','일주일 개근','DAY 7 도달'],['plate100','사진 찍고 싶은 한 그릇','플레이팅 100점 받기'],['steakmr','완벽한 굽기','주문한 굽기에 딱 맞춘 스테이크'],['day1','첫 영업 마감','첫 영업일을 마감하기'],['fry90','튀김 장인','튀김 팩 요리로 90점 이상'],['steam90','찜의 달인','찜 팩 요리로 90점 이상']];
 // SKEAM platform achievement ids (see skeam/games/sizzle-kitchen/game.yml)
-const SKEAM_ID={first:'first_serve',s90:'chef_90',combo5:'combo_5',srv50:'serve_50',req5:'request_5',all:'menu_master',rich:'rich_200k',day7:'day_7',plate100:'perfect_plating',steakmr:'perfect_doneness',day1:'first_day_closed'};
+const SKEAM_ID={first:'first_serve',s90:'chef_90',combo5:'combo_5',srv50:'serve_50',req5:'request_5',all:'menu_master',rich:'rich_200k',day7:'day_7',plate100:'perfect_plating',steakmr:'perfect_doneness',day1:'first_day_closed',fry90:'fry_master',steam90:'steam_master'};
 function skeamUnlock(k){try{if(window.SKEAM&&SKEAM.unlock&&SKEAM_ID[k])SKEAM.unlock(SKEAM_ID[k]);}catch(e){}}
 let skeamSynced=false;function skeamSync(){if(skeamSynced||!SAVE||!SAVE.ach)return;skeamSynced=true;for(const k in SAVE.ach)skeamUnlock(k);}
 function toast(ic,t,s,cls){let box=$('#toasts');if(!box){box=document.createElement('div');box.id='toasts';$('#served').parentNode.appendChild(box);}
   const d=document.createElement('div');d.className='toast '+(cls||'');d.innerHTML=`<i>${ic}</i><div><b>${t}</b>${s?`<span>${s}</span>`:''}</div>`;box.appendChild(d);setTimeout(()=>d.classList.add('out'),cls==='long'?6500:4200);setTimeout(()=>d.remove(),cls==='long'?7000:4700);}
 function checkAch(lastScore,x){x=x||{};SAVE.ach=SAVE.ach||{};const A=SAVE.ach,got=[];const on=(k,c)=>{if(!A[k]&&c){A[k]=SAVE.day;got.push(k);}};
-  on('plate100',x.plating>=100);on('steakmr',!!x.steak);on('day1',SAVE.day>=2);
+  on('plate100',x.plating>=100);on('fry90',x.dlc==='fry'&&lastScore>=90);on('steam90',x.dlc==='steam'&&lastScore>=90);on('steakmr',!!x.steak);on('day1',SAVE.day>=2);
   on('first',SAVE.served>=1);on('s90',lastScore>=90);on('combo5',G&&G.combo>=5);on('srv50',SAVE.served>=50);on('req5',(SAVE.reqOk||0)>=5);on('all',REC.every(r=>(SAVE.best[r.id]||0)>=70));on('rich',SAVE.money>=200000);on('day7',SAVE.day>=7);
   if(got.length){writeSave();for(const k of got){const a=ACH.find(x=>x[0]===k);skeamUnlock(k);toast('🏆','업적 달성 · '+a[1],a[2],'ach');}if(AU.ding)AU.ding();}}
 function dayBanner(resumed){const n=SAVE.day,news=REC.filter(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===n&&n>1);
