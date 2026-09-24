@@ -1499,7 +1499,7 @@ function buildBoardImg(){const B=L.board;BOARDIMG=mk((B.w+50)*PX,(B.h+50)*PX);co
 function drawBoard(ox,oy,lift){const g=ctx,B=L.board;g.save();g.translate(ox,oy);
   if(lift){g.fillStyle='rgba(0,0,0,.25)';rr(g,B.x+22,B.y+28,B.w,B.h,18);g.fill();}
   g.drawImage(BOARDIMG,B.x-25,B.y-25,B.w+50,B.h+50);g.drawImage(MARKS,B.x,B.y,B.w,B.h);
-  const Bd=G.board;g.save();if(Bd.spin>0){const e=ease(Bd.spin);g.translate(Bd.scx,Bd.scy);g.rotate(-e*PI/2);g.translate(-Bd.scx,-Bd.scy);}
+  const Bd=G.board;g.save();if(Bd.spin>0){const e=ease(Bd.spin);g.translate(Bd.scx,Bd.scy);g.rotate(-e*PI/2*(Bd.sdir||1));g.translate(-Bd.scx,-Bd.scy);}
   for(const p of Bd.pieces)pieceShadow(g,p,p.x,p.y,2,.16);for(const p of Bd.pieces)drawPiece(g,p,p.x,p.y);g.restore();g.restore();}
 function drawDragged(c){const g=ctx;if(c.cook)drawCW(c);else if(c.kind==='strainer')drawStrainer(g,c,c.x,c.y,true);else if(c.kind==='mix'){g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(c.x+18,c.y+22,L.mix.r,0,TAU);g.fill();steelDisc(g,c.x,c.y,L.mix.r);drawMix(g,c,c.x,c.y);}else drawVessel(c);}
 function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
@@ -1846,7 +1846,7 @@ function hintText(){const h=G.held;if(G.alarmOn)return['warn','삐— 삐— 연
   if(G.tool==='probe')return['','온도계: 재료나 냄비 위에 대면 온도가 보여요. 스테이크는 심부 온도를 재요.'];
   if(G.tool==='ladle')return['',G.ladle?'국자에 담았어요. 그릇·팬을 클릭해 부어요.':'국자: 냄비·편수냄비 국물, 반죽 볼 반죽, 팬의 버터·기름, 냄비 속 계란을 떠요.'];
   if(G.tool==='chop')return['','긴 젓가락: 냄비·그릇·반죽 볼 안을 누른 채 저어요. 면이 풀리고 양념이 비벼져요.'];
-  if(G.tool==='knife')return['','클릭하면 한 번 썰려요. 마우스 휠로 칼 각도를 바꾸면 어슷썰기. R로 도마 돌리기. 우클릭하면 칼을 내려놓아요.'];
+  if(G.tool==='knife')return['','클릭하면 한 번 썰려요. 마우스 휠로 칼 각도를 바꾸면 어슷썰기. 도마 모서리 ↺↻ 버튼(또는 E·R)으로 돌리기. 우클릭하면 칼을 내려놓아요.'];
   const o=selOrder();if(o){const R=RID[o.rid],i=R.steps.findIndex((s,k)=>!o.steps[k]);if(i>=0)return['',`${R.n} · ${R.steps[i][0]}`];return['',`${R.n} 완성! 오른쪽 아래 “서빙”을 눌러요.`];}
   if(G.mode==='career'&&G.day.t>=DAYLEN)return['','영업이 끝났어요. 마감 정산을 준비하고 있어요.'];return['','주문이 들어오면 오른쪽 위에 주문표가 걸려요.'];}
 let lastHint='';
@@ -2571,7 +2571,7 @@ function openSettings(){let d=$('#setPanel');if(!d){d=document.createElement('di
   const sl=(k,n)=>`<label class="set-sl"><span>${n}</span><input type="range" min="0" max="100" value="${Math.round(SET[k]*100)}" data-k="${k}"><b>${Math.round(SET[k]*100)}</b></label>`,ck=(k,n,s)=>`<label class="set-ck"><input type="checkbox" data-k="${k}" ${SET[k]?'checked':''}><span><b>${n}</b>${s}</span></label>`;
   d.innerHTML=`<div class="set paper"><div class="sp-h"><h2>설정</h2><button type="button" class="btn2" id="setClose">닫기 <kbd>Esc</kbd></button></div><div class="set-body"><section><h4>소리</h4>${sl('master','전체 볼륨')}${sl('sfx','효과음')}${sl('bgm','배경 음악')}
     <label class="set-ck"><input type="checkbox" id="setMute" ${AU.muted?'checked':''}><span><b>소리 끄기</b>언제든 <kbd>M</kbd>으로 켜고 꺼요.</span></label><p class="set-note">배경 음악은 게임 폴더의 <code>audio/title.mp3</code> · <code>audio/day.mp3</code>를 재생해요. 파일이 없으면 조용히 넘어가요.</p><p class="set-note">아바타: Avataaars by Pablo Stanley (DiceBear)</p></section>
-    <section><h4>화면</h4>${ck('ai','AI 일러스트 초상화','끄면 Avataaars 아바타로 바뀌고, 기다리는 동안 표정이 변해요.')}${ck('bubble','손님 말풍선','주문이 들어올 때 손님이 말을 걸어요.')}${ck('calm','애니메이션 줄이기','흔들림·반짝임 효과를 꺼요.')}<h4>조작키</h4><ul class="set-keys"><li><kbd>Esc</kbd> 일시정지 메뉴</li><li><kbd>Tab</kbd> 레시피 북</li><li><kbd>P</kbd> 잠깐 멈춤</li><li><kbd>F</kbd> 냉장고</li><li><kbd>M</kbd> 소리</li><li><kbd>R</kbd> 도마 돌리기</li><li><kbd>휠</kbd> 칼 각도</li><li><kbd>1</kbd>~<kbd>6</kbd> 도구 · 우클릭 내려놓기</li><li><kbd>T</kbd> 행주</li></ul></section></div></div>`;
+    <section><h4>화면</h4>${ck('ai','AI 일러스트 초상화','끄면 Avataaars 아바타로 바뀌고, 기다리는 동안 표정이 변해요.')}${ck('bubble','손님 말풍선','주문이 들어올 때 손님이 말을 걸어요.')}${ck('calm','애니메이션 줄이기','흔들림·반짝임 효과를 꺼요.')}<h4>조작키</h4><ul class="set-keys"><li><kbd>Esc</kbd> 일시정지 메뉴</li><li><kbd>Tab</kbd> 레시피 북</li><li><kbd>P</kbd> 잠깐 멈춤</li><li><kbd>F</kbd> 냉장고</li><li><kbd>M</kbd> 소리</li><li><kbd>R</kbd>/<kbd>E</kbd> 도마 돌리기 ↻↺</li><li><kbd>휠</kbd> 칼 각도</li><li><kbd>1</kbd>~<kbd>6</kbd> 도구 · 우클릭 내려놓기</li><li><kbd>T</kbd> 행주</li></ul></section></div></div>`;
   d.querySelectorAll('input[type=range]').forEach(r=>r.oninput=()=>{SET[r.dataset.k]=r.value/100;r.nextElementSibling.textContent=r.value;saveOpt();audioApply();});
   d.querySelectorAll('.set-ck input[data-k]').forEach(c=>c.onchange=()=>{SET[c.dataset.k]=c.checked;saveOpt();audioApply();if(c.dataset.k==='ai')portraitsChanged();});
   $('#setMute').onchange=e=>{AU.setMute(e.target.checked);if(typeof muteLbl==='function')muteLbl();};$('#setClose').onclick=closeSettings;d.hidden=false;}
@@ -2863,6 +2863,34 @@ updateCursor=(orig=>function(){orig();if(!G)return;if(G.tool==='towel'&&!G.held&
 clearCont=(orig=>function(c){orig(c);c.drips=[];c.wiped=false;})(clearCont);
 hintText=(orig=>function(){const r=orig();if(r[0]==='warn'||G.held)return r;if(G.tool==='towel')return['','행주: 누른 채 그릇·접시 테두리를 문질러 국물 자국을 닦아요. 조리대도 닦여요. 우클릭하면 내려놓아요.'];
   const o=selOrder();if(o){const v=vesselOf(RID[o.rid]);if(hasDrips(v)&&!contEmpty(v))return['','그릇 테두리에 국물이 묻었어요 — 행주(T)로 닦고 내면 깔끔해요.'];}return r;})(hintText);
+
+/* ---------- cutting board: keep pieces on the board · rotate both ways with on-board buttons ---------- */
+function pieceBox(p){const c=Math.cos(p.rot||0),s=Math.sin(p.rot||0);let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  if(p.poly&&p.poly.length){const k=(typeof volOf==='function'?volOf(p).sc:1)||1;for(const q of p.poly){const X=(q[0]*c-q[1]*s)*k,Y=(q[0]*s+q[1]*c)*k;if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y;}}
+  else{const r=Math.min(p.rb||p.r||20,60)*.7;x0=y0=-r;x1=y1=r;}return[x0,x1,y0,y1];}
+function boardContain(dt){const Bd=L.board,m=14,f=Math.min(1,dt*14);
+  for(const p of G.board.pieces){const [x0,x1,y0,y1]=pieceBox(p),lo=Bd.x+m,hi=Bd.x+Bd.w-m,to=Bd.y+m,bo=Bd.y+Bd.h-m;let sx=0,sy=0;
+    if(x1-x0>hi-lo)sx=(lo+hi)/2-(p.x+(x0+x1)/2);else if(p.x+x0<lo)sx=lo-(p.x+x0);else if(p.x+x1>hi)sx=hi-(p.x+x1);
+    if(y1-y0>bo-to)sy=(to+bo)/2-(p.y+(y0+y1)/2);else if(p.y+y0<to)sy=to-(p.y+y0);else if(p.y+y1>bo)sy=bo-(p.y+y1);
+    if(sx||sy){const big=Math.abs(sx)>60||Math.abs(sy)>60;p.x+=big?sx:sx*f;p.y+=big?sy:sy*f;}}}
+update=(orig=>function(dt){orig(dt);if(G&&G.started&&!(G.drag&&G.drag.kind==='board'))boardContain(dt);})(update);
+/* rotate: dir 1 = clockwise, -1 = counter-clockwise; the whole group turns about its centre */
+rotateBoard=function(dir){dir=dir===-1?-1:1;const B=G.board.pieces;if(!B.length)return;let cx=0,cy=0,m=0;for(const p of B){cx+=p.x*p.area;cy+=p.y*p.area;m+=p.area;}cx/=m;cy/=m;
+  for(const p of B){const dx=p.x-cx,dy=p.y-cy;if(dir>0){p.x=cx-dy;p.y=cy+dx;}else{p.x=cx+dy;p.y=cy-dx;}p.rot+=dir*PI/2;}
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const p of B){const b=pieceBox(p);x0=Math.min(x0,p.x+b[0]);x1=Math.max(x1,p.x+b[1]);y0=Math.min(y0,p.y+b[2]);y1=Math.max(y1,p.y+b[3]);}
+  const Bd=L.board,M2=16;let sx=0,sy=0;if(x1-x0>Bd.w-2*M2)sx=Bd.x+Bd.w/2-(x0+x1)/2;else if(x0<Bd.x+M2)sx=Bd.x+M2-x0;else if(x1>Bd.x+Bd.w-M2)sx=Bd.x+Bd.w-M2-x1;
+  if(y1-y0>Bd.h-2*M2)sy=Bd.y+Bd.h/2-(y0+y1)/2;else if(y0<Bd.y+M2)sy=Bd.y+M2-y0;else if(y1>Bd.y+Bd.h-M2)sy=Bd.y+Bd.h-M2-y1;
+  for(const p of B){p.x+=sx;p.y+=sy;}G.board.spin=1;G.board.sdir=dir;G.board.scx=cx+sx;G.board.scy=cy+sy;AU.slide();};
+const RBTN=()=>{const B=L.board;return[{dir:-1,x:B.x+B.w-72,y:B.y+B.h-28},{dir:1,x:B.x+B.w-30,y:B.y+B.h-28}];};
+const rbtnAt=(x,y)=>RBTN().find(b=>Math.hypot(x-b.x,y-b.y)<18)||null;
+drawBoard=(orig=>function(ox,oy,lift){orig(ox,oy,lift);if(!G||!G.started||!G.board.pieces.length)return;const g=ctx,hv=!G.held&&!G.drag?rbtnAt(M.x,M.y):null;g.save();g.translate(ox,oy);
+  for(const b of RBTN()){const on=hv===b;g.fillStyle=on?'rgba(40,24,12,.85)':'rgba(40,24,12,.5)';g.beginPath();g.arc(b.x,b.y,on?17:15,0,TAU);g.fill();
+    g.strokeStyle='#fff3dc';g.lineWidth=2.4;g.lineCap='round';g.beginPath();const a0=b.dir>0?-PI*.85:-PI*.15,a1=b.dir>0?PI*.35:PI*1.15-TAU;g.arc(b.x,b.y,7,a0,a1,b.dir<0);g.stroke();
+    const ex=b.x+Math.cos(a1)*7,ey=b.y+Math.sin(a1)*7,ta=a1+b.dir*PI/2;g.fillStyle='#fff3dc';g.beginPath();g.moveTo(ex+Math.cos(ta)*5,ey+Math.sin(ta)*5);g.lineTo(ex+Math.cos(ta+2.3)*5,ey+Math.sin(ta+2.3)*5);g.lineTo(ex+Math.cos(ta-2.3)*5,ey+Math.sin(ta-2.3)*5);g.closePath();g.fill();}
+  g.restore();})(drawBoard);
+cv.addEventListener('pointerdown',e=>{if(!G||!G.started||G.paused||e.button!==0||G.held||!G.board.pieces.length)return;const q=toLocal(e),b=rbtnAt(q.x,q.y);if(!b)return;e.stopImmediatePropagation();AU.init();rotateBoard(b.dir);},true);
+addEventListener('keydown',e=>{if(!G||!G.started||G.paused||e.code!=='KeyE'||e.repeat)return;rotateBoard(-1);});
+updateCursor=(orig=>function(){orig();if(G&&!G.held&&G.board.pieces.length&&rbtnAt(M.x,M.y))cv.style.cursor='pointer';})(updateCursor);
 
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
