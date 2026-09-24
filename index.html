@@ -240,7 +240,7 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 .st-goals{display:grid;gap:3px;margin-top:12px;padding:10px 12px;background:rgba(0,0,0,.05);border-radius:8px;font-size:14px}.st-goals b{font-family:'Black Han Sans',sans-serif;font-weight:400;color:var(--chili-d)}.st-goals span{color:#8a755a}.st-goals span.ok{color:var(--good)}
 .st-shop{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;margin-top:10px;font-size:14px}.st-shop small{grid-column:1/3;color:#8a755a}.st-shop .xp{background:#e2d4b8}
 /* panels */
-.sp,.ach,.set{width:980px;max-height:880px;display:flex;flex-direction:column;padding:26px 30px}.ach{width:760px}.set{width:860px}
+.sp,.achp,.set{width:980px;max-height:880px;display:flex;flex-direction:column;padding:26px 30px}.achp{width:760px}.set{width:860px}
 .sp-h{display:flex;align-items:center;gap:20px;margin-bottom:12px}.sp-h h2{margin:0;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:36px;color:var(--chili-d)}.sp-h .sub{margin:0;color:#6b5a47}
 .sp-xp{flex:1;display:grid;gap:4px}.sp-xp .xp,.sp-reg .xp{background:#e2d4b8}.sp-xp small{color:#8a755a;font-size:12.5px}
 .sp .sub,.set .sub{color:#6b5a47;margin:0 0 10px;font-size:14px}
@@ -1083,7 +1083,7 @@ function deliverAt(key,x,y,m,vx,vy,T){let c=contAt(x,y);if(c&&c.kind==='steamer'
   addFluid(c,key,m,x,y,vx*.4,vy*.4,T);if(c.T>140&&LQ[key].wat>.3&&Math.random()<.3)splatter(x,y,1);}
 function updateHeld(dt){const h=G.held;if(!h)return;
   if(h.kind==='bottle'||h.kind==='powder'){const tg=h.active?1:0;h.tilt+=(tg-h.tilt)*Math.min(1,dt*(h.active?7:9));
-    if(h.tilt>.6){const rate=(h.kind==='powder'?35:BOT[h.id].rate)*(h.tilt-.6)/.4;let amt=rate*dt;
+    if(h.tilt>.6){const base=h.kind==='powder'?35:BOT[h.id].rate;h.pourT=h.active?(h.pourT||0)+dt:0;const boost=base>=30?1+clamp((h.pourT-.5)/1,0,1)*2.3:1;const rate=base*boost*(h.tilt-.6)/.4;let amt=rate*dt;
       if(h.stock){const left=G.stock[h.id]||0;if(G.mode!=='practice'){amt=Math.min(amt,left);G.stock[h.id]=left-amt;if(G.stock[h.id]<=0.5){floatText('다 썼어요',M.x,M.y-60,'#ffd0b0',20);}}}
       h.poured+=amt;h.flow=rate;if(amt>0){if(h.kind==='powder')pourPowder(M.x,M.y,amt);else{const k=liqKey(h.id),n=Math.max(1,Math.round(amt/1.2));for(let i=0;i<n;i++)spawn({k:'pd',x0:M.x+8,y0:M.y-38,x1:M.x+rand(-2.5,2.5),y1:M.y+rand(-2.5,2.5),key:k,m:amt/n,max:.12+rand(0,.03),vx:M.vx*.3,vy:M.vy*.3});}}}else h.flow=0;}
   else if(h.kind==='shaker'){if(h.active){const sp=Math.min(1600,Math.hypot(M.vx,M.vy));h.shake=lerp(h.shake,sp/1600,.3);const amt=sp/1600*SHK[h.id].rate*dt;
@@ -2550,7 +2550,7 @@ function renderShop(){const d=$('#shopPanel'),X=xpBar(),eq=decoEq(),own=SAVE.sho
 /* ---------- achievements panel ---------- */
 function openAch(){if(!SAVE)loadSave();let d=$('#achPanel');if(!d){d=document.createElement('div');d.id='achPanel';d.className='overlay';$('#stage').appendChild(d);d.addEventListener('click',e=>{if(e.target===d)d.hidden=true;});}
   const got=ACH.filter(a=>SAVE.ach[a[0]]).length;
-  d.innerHTML=`<div class="ach paper"><div class="sp-h"><div><h2>업적</h2><p class="sub">${got} / ${ACH.length} 달성</p></div><div class="sp-xp"><div class="xp"><i style="width:${got/ACH.length*100}%"></i></div></div><button type="button" class="btn2" id="achClose">닫기 <kbd>Esc</kbd></button></div>
+  d.innerHTML=`<div class="achp paper"><div class="sp-h"><div><h2>업적</h2><p class="sub">${got} / ${ACH.length} 달성</p></div><div class="sp-xp"><div class="xp"><i style="width:${got/ACH.length*100}%"></i></div></div><button type="button" class="btn2" id="achClose">닫기 <kbd>Esc</kbd></button></div>
     <div class="ach-list">${ACH.map(a=>{const d2=SAVE.ach[a[0]];return`<div class="ach-it${d2?' on':''}"><i>${d2?'🏆':'🔒'}</i><div><b>${a[1]}</b><span>${a[2]}</span></div><em>${d2?`DAY ${d2}`:''}</em></div>`;}).join('')}</div></div>`;
   $('#achClose').onclick=()=>d.hidden=true;d.hidden=false;}
 
