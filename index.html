@@ -267,6 +267,7 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .tl2-save .ts-p{display:flex;align-items:center;gap:10px;font-size:13px;color:#b9a383}
 .seg{display:flex;background:rgba(0,0,0,.35);border:1px solid rgba(240,174,58,.3);border-radius:7px;padding:2px}.seg button{background:none;border:none;color:#b9a383;font-size:12.5px;padding:3px 10px;border-radius:5px}.seg button.on{background:#f0ae3a;color:#2a1a0c;font-weight:700}
 .tl2-save .faces{display:flex;margin-left:auto}.tl2-save .faces img{width:30px;height:30px;border-radius:50%;background:#f1dcb4;object-fit:cover;object-position:50% 20%;border:2px solid #2a1d14;margin-left:-8px}
+#rpArt{width:calc(100% + 32px);margin:-14px -16px 10px;height:132px;background:#2a1d14 center/cover no-repeat;border-radius:4px 4px 0 0}#rpArt[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -2507,7 +2508,7 @@ renderTickets=(orig=>function(){orig();for(const el of $$('#rail .tk')){const o=
   if(o.pref){const e=document.createElement('em');e.className='tk-pf';e.textContent='♥ '+PREF[o.pref].t;const p=el.querySelector('.tk-p');el.insertBefore(e,p);}}
   updateTicketBars();const hs=$$('#rail .tk').map(e=>e.offsetHeight);$('#stage').style.setProperty('--railB',(66+Math.max(96,...hs)+14)+'px');})(renderTickets);
 updateTicketBars=(orig=>function(){orig();for(const el of $$('#rail .tk')){const o=G.orders.find(q=>q.id==el.dataset.id),i=el.querySelector('.tk-av i');if(!o||!i)continue;const f=o.pat===Infinity?1:clamp(o.left/o.pat,0,1),m=MOOD(f);if(i.textContent!==m){i.textContent=m;const im=el.querySelector('.tk-av img');if(im)im.src=gImg(o.cust,moodK(f));}}})(updateTicketBars);
-renderSteps=(orig=>function(){orig();const o=selOrder();if(o&&o.pref){$('#rpSub').textContent=`${GUEST[o.cust].n}: ${PREF[o.pref].t} · `+$('#rpSub').textContent;}})(renderSteps);
+renderSteps=(orig=>function(){orig();{const im=$('#rpImg');let d=$('#rpArt');if(!d){d=document.createElement('div');d.id='rpArt';im.after(d);}d.hidden=im.hidden;if(!im.hidden)d.style.backgroundImage=`url(${im.src})`;im.style.display='none';}const o=selOrder();if(o&&o.pref){$('#rpSub').textContent=`${GUEST[o.cust].n}: ${PREF[o.pref].t} · `+$('#rpSub').textContent;}})(renderSteps);
 showToast=(orig=>function(P){orig(P);const g=GUEST[P.o.cust],t=$('#served');if(!g)return;const h=t.querySelector('.sv-h');
   const im=document.createElement('img');im.className='sv-av';im.alt='';im.src=gImg(P.o.cust,scoreK(P.res.total));h.prepend(im);
   const q=document.createElement('p');q.className='sv-q';q.textContent=guestQuote(P);t.querySelector('.sv-s').after(q);
