@@ -1503,7 +1503,7 @@ function drawBoard(ox,oy,lift){const g=ctx,B=L.board;g.save();g.translate(ox,oy)
   for(const p of Bd.pieces)pieceShadow(g,p,p.x,p.y,2,.16);for(const p of Bd.pieces)drawPiece(g,p,p.x,p.y);g.restore();g.restore();}
 function drawDragged(c){const g=ctx;if(c.cook)drawCW(c);else if(c.kind==='strainer')drawStrainer(g,c,c.x,c.y,true);else if(c.kind==='mix'){g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(c.x+18,c.y+22,L.mix.r,0,TAU);g.fill();steelDisc(g,c.x,c.y,L.mix.r);drawMix(g,c,c.x,c.y);}else drawVessel(c);}
 function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
-  g.drawImage(BG,0,0,W,H);g.drawImage(STAIN,0,0,W,H);drawFluid(g,G.counter,0,0);
+  g.drawImage(BG,0,0,W,H);g.drawImage(STAIN,0,0,W,H);drawFluid(g,G.counter,0,0);drawTowelSpot(g);
   const canHover=G.started&&!G.held&&!G.drag,sh=canHover?shelfAt(M.x,M.y):null;
   for(const p of PANTRY){const lk=!ingOpen(p.id);g.save();if(sh===p&&!lk)g.translate(0,-4);if(lk)g.globalAlpha=.28;drawPantryItem(g,p,p.row===1?140:214);g.restore();
     if(lk){g.font='13px sans-serif';g.textAlign='center';g.fillStyle='rgba(255,240,220,.85)';g.fillText('🔒',p.x,p.row===1?112:192);continue;}
@@ -1768,7 +1768,7 @@ function captureVessel(v){const c=$('#dish'),g=c.getContext('2d'),R=(v.kind==='b
 function serve(){const o=selOrder();if(!o){floatText('먼저 주문표를 선택하세요',1420,860,'#ffd0b0',22);return;}const R=RID[o.rid];let v=vesselOf(R),other=v===G.plate?G.bowl:G.plate,wrong=false;
   if(contEmpty(v)&&!contEmpty(other)){v=other;wrong=true;}if(contEmpty(v)){floatText('그릇이 비어 있어요',v.x,v.y,'#ffd0b0',24);return;}
   G.hideCursor=true;render();G.hideCursor=false;const hero=heroShot(v,R),img=hero||captureVessel(v);const res=evaluate(R,v,o);if(wrong){res.total=Math.max(0,res.total-5);res.notes.push({t:'meh',s:R.vessel==='bowl'?'그릇이 아니라 접시에 나왔네요.':'접시가 아니라 그릇에 나왔네요.'});}
-  applyExtras(o,v,res);{const pe=platingEval(R,v);res.plating=pe.score;res.total=clamp(Math.round(res.total*.85+pe.score*.15),0,100);res.cats.push(['플레이팅',pe.score]);const bad=pe.checks.filter(c=>!c.ok);if(!bad.length)res.notes.unshift({t:'good',s:'플레이팅이 사진처럼 예뻐요!'});else res.notes.push({t:'meh',s:'플레이팅: '+bad[0].hint});}guestApply(o,v,res);const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(orderPrice(o)*q*(G.mode==='career'?(o.payMul||1)*(1+decoBonus('pmul')):1)/100)*100,tip=0;
+  applyExtras(o,v,res);{const n=(v.drips||[]).length;res.plating=n?Math.max(0,100-n*18):100;res.clean=!n;if(n){res.total=Math.max(0,Math.round(res.total-Math.min(10,n*2.5)));res.cats.push(['깔끔함',res.plating]);res.notes.push({t:'meh',s:'그릇 테두리에 국물이 묻어 있어요. 행주로 닦고 내주세요.'});}else if(v.wiped)res.notes.push({t:'good',s:'테두리까지 깨끗하게 닦아 냈어요.'});}guestApply(o,v,res);const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(orderPrice(o)*q*(G.mode==='career'?(o.payMul||1)*(1+decoBonus('pmul')):1)/100)*100,tip=0;
   if(G.mode==='career'){const speed=o.pat===Infinity?0:clamp(o.left/o.pat,0,1);if(sc>=70)tip=Math.round(R.price*(.06+.14*speed)*(sc/100)/100)*100;G.combo=sc>=80?G.combo+1:0;if(G.combo>1)tip+=Math.round(R.price*Math.min(.25,G.combo*.05)/100)*100;
     tip=guestTip(o,tip);SAVE.money+=pay+tip;G.day.rev+=pay;G.day.tips+=tip;G.day.served++;G.day.scores.push(sc);SAVE.rep=clamp(SAVE.rep+(sc-65)/350,0,5);SAVE.served++;guestAfter(o,sc);}
   SAVE.best[R.id]=Math.max(SAVE.best[R.id]||0,sc);writeSave();if(G.mode==='career')midSave();checkAch(sc,{dlc:R.dlc,plating:res.plating,steak:R.id==='steak'&&res.notes.some(n=>n.t==='good'&&n.s.includes('정확히'))});
@@ -1846,7 +1846,7 @@ function hintText(){const h=G.held;if(G.alarmOn)return['warn','삐— 삐— 연
   if(G.tool==='probe')return['','온도계: 재료나 냄비 위에 대면 온도가 보여요. 스테이크는 심부 온도를 재요.'];
   if(G.tool==='ladle')return['',G.ladle?'국자에 담았어요. 그릇·팬을 클릭해 부어요.':'국자: 냄비·편수냄비 국물, 반죽 볼 반죽, 팬의 버터·기름, 냄비 속 계란을 떠요.'];
   if(G.tool==='chop')return['','긴 젓가락: 냄비·그릇·반죽 볼 안을 누른 채 저어요. 면이 풀리고 양념이 비벼져요.'];
-  if(G.tool==='knife')return['','클릭하면 한 번 썰려요. 마우스 휠로 칼 각도를 바꾸면 어슷썰기. 우클릭(R)으로 도마 돌리기.'];
+  if(G.tool==='knife')return['','클릭하면 한 번 썰려요. 마우스 휠로 칼 각도를 바꾸면 어슷썰기. R로 도마 돌리기. 우클릭하면 칼을 내려놓아요.'];
   const o=selOrder();if(o){const R=RID[o.rid],i=R.steps.findIndex((s,k)=>!o.steps[k]);if(i>=0)return['',`${R.n} · ${R.steps[i][0]}`];return['',`${R.n} 완성! 오른쪽 아래 “서빙”을 눌러요.`];}
   if(G.mode==='career'&&G.day.t>=DAYLEN)return['','영업이 끝났어요. 마감 정산을 준비하고 있어요.'];return['','주문이 들어오면 오른쪽 위에 주문표가 걸려요.'];}
 let lastHint='';
@@ -1875,7 +1875,7 @@ addEventListener('keydown',e=>{if(e.code==='KeyP'&&G&&G.started&&!e.repeat){if(!
 $('#btnMenu').addEventListener('click',()=>{G.paused=true;$('#menuEnd').textContent=G.mode==='career'?'오늘 영업 마감하기':'연습 끝내기';$('#menu').hidden=false;});
 $('#menuResume').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;});
 $('#menuEnd').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;if(G.mode==='career'){G.orders=[];G.day.t=DAYLEN;G.dayEnded=true;endDay();}else toTitle();});
-$('#serve').addEventListener('click',()=>{AU.init();if(platingWanted())plOpen();else serve();});
+$('#serve').addEventListener('click',()=>{AU.init();serve();});
 $('#rpClose').addEventListener('click',()=>{$('#recipePop').hidden=true;});
 
 /* ---------- meta: unlocks · specials · requests · freshness · upgrades · achievements · mid-day save ---------- */
@@ -1928,7 +1928,7 @@ function renderUpgrades(list){const h=document.createElement('div');h.className=
   list.appendChild(h);}
 
 /* achievements & toasts */
-const ACH=[['first','첫 손님','첫 요리를 서빙했어요'],['s90','셰프의 한 접시','90점 이상 받기'],['combo5','단골 제조기','5연속 호평'],['srv50','바쁜 주방','누적 50그릇 서빙'],['req5','세심한 사장님','손님 요청 5번 들어주기'],['all','메뉴 마스터','모든 메뉴(DLC 포함) 70점 이상'],['rich','부자 사장님','잔고 200,000원 달성'],['day7','일주일 개근','DAY 7 도달'],['plate100','사진 찍고 싶은 한 그릇','플레이팅 100점 받기'],['steakmr','완벽한 굽기','주문한 굽기에 딱 맞춘 스테이크'],['day1','첫 영업 마감','첫 영업일을 마감하기'],['fry90','튀김 장인','튀김 팩 요리로 90점 이상'],['steam90','찜의 달인','찜 팩 요리로 90점 이상']];
+const ACH=[['first','첫 손님','첫 요리를 서빙했어요'],['s90','셰프의 한 접시','90점 이상 받기'],['combo5','단골 제조기','5연속 호평'],['srv50','바쁜 주방','누적 50그릇 서빙'],['req5','세심한 사장님','손님 요청 5번 들어주기'],['all','메뉴 마스터','모든 메뉴(DLC 포함) 70점 이상'],['rich','부자 사장님','잔고 200,000원 달성'],['day7','일주일 개근','DAY 7 도달'],['plate100','사진 찍고 싶은 한 그릇','테두리까지 깨끗한 그릇으로 90점 이상'],['steakmr','완벽한 굽기','주문한 굽기에 딱 맞춘 스테이크'],['day1','첫 영업 마감','첫 영업일을 마감하기'],['fry90','튀김 장인','튀김 팩 요리로 90점 이상'],['steam90','찜의 달인','찜 팩 요리로 90점 이상']];
 // SKEAM platform achievement ids (see skeam/games/sizzle-kitchen/game.yml)
 const SKEAM_ID={first:'first_serve',s90:'chef_90',combo5:'combo_5',srv50:'serve_50',req5:'request_5',all:'menu_master',rich:'rich_200k',day7:'day_7',plate100:'perfect_plating',steakmr:'perfect_doneness',day1:'first_day_closed',fry90:'fry_master',steam90:'steam_master'};
 function skeamUnlock(k){try{if(window.SKEAM&&SKEAM.unlock&&SKEAM_ID[k])SKEAM.unlock(SKEAM_ID[k]);}catch(e){}}
@@ -1936,7 +1936,7 @@ let skeamSynced=false;function skeamSync(){if(skeamSynced||!SAVE||!SAVE.ach)retu
 function toast(ic,t,s,cls){let box=$('#toasts');if(!box){box=document.createElement('div');box.id='toasts';$('#served').parentNode.appendChild(box);}
   const d=document.createElement('div');d.className='toast '+(cls||'');d.innerHTML=`<i>${ic}</i><div><b>${t}</b>${s?`<span>${s}</span>`:''}</div>`;box.appendChild(d);const lg=/long/.test(cls||'');setTimeout(()=>d.classList.add('out'),lg?6500:4200);setTimeout(()=>d.remove(),lg?7000:4700);}
 function checkAch(lastScore,x){x=x||{};SAVE.ach=SAVE.ach||{};const A=SAVE.ach,got=[];const on=(k,c)=>{if(!A[k]&&c){A[k]=SAVE.day;got.push(k);}};
-  on('plate100',x.plating>=100);on('fry90',x.dlc==='fry'&&lastScore>=90);on('steam90',x.dlc==='steam'&&lastScore>=90);on('steakmr',!!x.steak);on('day1',SAVE.day>=2);
+  on('plate100',x.plating>=100&&lastScore>=90);on('fry90',x.dlc==='fry'&&lastScore>=90);on('steam90',x.dlc==='steam'&&lastScore>=90);on('steakmr',!!x.steak);on('day1',SAVE.day>=2);
   on('first',SAVE.served>=1);on('s90',lastScore>=90);on('combo5',G&&G.combo>=5);on('srv50',SAVE.served>=50);on('req5',(SAVE.reqOk||0)>=5);on('all',REC.every(r=>(SAVE.best[r.id]||0)>=70));on('rich',SAVE.money>=200000);on('day7',SAVE.day>=7);
   if(got.length){writeSave();for(const k of got){const a=ACH.find(x=>x[0]===k);skeamUnlock(k);toast('🏆','업적 달성 · '+a[1],a[2],'ach');}if(AU.ding)AU.ding();}}
 function dayBanner(resumed){const n=SAVE.day,news=REC.filter(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===n&&n>1);
@@ -2379,7 +2379,7 @@ const GUEST={
     lines:['“사장님 곱빼기 최고예요!”','“친구들 데려왔어요!”','“모의고사 끝나고 제일 먼저 왔어요.”','“여기 SNS에 올렸는데 좋아요 300개!”','“수능 끝나면 여기서 알바하고 싶어요.”'],
     gift:[{rep:.1,t:'친구들한테 가게를 자랑했어요'},{money:8000,t:'용돈을 모아 친구들 밥을 샀어요'},{rep:.25,t:'SNS에 가게 사진을 올렸어요'},{money:12000,t:'반 친구들이 단체로 왔어요'},{rep:.35,t:'학교 맛집 지도 1위가 됐어요'}]},
   yoon:{n:'윤 작가',img:'c3',reg:1,from:4,fav:['shoyu','aglio','pomo','steak','udon','yachae','katsu','buchu','jjim'],pref:'pretty',
-    intro:'푸드 에세이를 쓰는 작가. 눈으로 먼저 먹어요.',hi:'“이 한 그릇, 다음 에세이에 꼭 쓸게요.”',lo:'“맛은 있는데… 사진이 안 나오네요.”',
+    intro:'푸드 에세이를 쓰는 작가. 지저분한 그릇은 못 참아요.',hi:'“이 한 그릇, 다음 에세이에 꼭 쓸게요.”',lo:'“맛은 있는데… 사진이 안 나오네요.”',
     lines:['“오늘 빛이 좋아서 사진이 잘 나와요.”','“연재 칼럼에 가게를 살짝 넣었어요.”','“출판사 편집자님도 모시고 왔어요.”','“책 표지에 이 가게 요리를 쓰고 싶어요.”','“신간이 나왔어요. 이 가게 이야기가 한 챕터예요.”'],
     gift:[{rep:.15,t:'블로그에 사진을 올렸어요'},{money:10000,t:'원고료 기념으로 한턱 냈어요'},{rep:.3,t:'칼럼에 가게가 실렸어요'},{money:20000,t:'출판사 회식을 예약했어요'},{rep:.4,t:'신간에 가게 이야기가 실렸어요'}]},
   seo:{n:'서 학생',img:'c4'},kang:{n:'강 기사님',img:'c5'},jo:{n:'조 반장님',img:'c6'},han:{n:'한 선생님',img:'c7'},
@@ -2394,7 +2394,7 @@ const PREF={
   spicy:{t:'고춧가루 팍팍',need:['chili'],ok:v=>gv(v,'chili')>=.5,good:'고춧가루를 팍팍! 김 대리 입맛에 딱이에요.',bad:'“오늘은 좀 안 맵네요…” 고춧가루를 더 뿌려 주세요.'},
   mild:{t:'싱겁게',ok:(v,res)=>!res.notes.some(n=>/짜/.test(n.s)),good:'할머니 입맛대로 싱겁게 맞췄어요.',bad:'“아이고 짜다…” 할머니는 싱거운 걸 좋아해요.'},
   big:{t:'곱빼기 (+30%)',ok:v=>v.items.filter(o=>o.kind==='grain').length>=720||v.noodles.reduce((s,n)=>s+(n.g||0),0)>=1.6*((NT[(v.noodles[0]||{}).type]||{}).g||1e9),good:'곱빼기로 푸짐하게! 값도 30% 더 받았어요.',bad:'“곱빼기 시켰는데 양이 그대로예요…” 밥이나 면을 두 번 넣어 주세요.'},
-  pretty:{t:'예쁘게 담아 주세요',ok:(v,res)=>(res.plating||0)>=80,good:'사진이 잘 나오는 플레이팅이에요!',bad:'“사진이 좀 안 나오네요…” 플레이팅 80점 이상을 원해요.'},
+  pretty:{t:'테두리 깨끗하게',ok:(v,res)=>!!res.clean,good:'테두리까지 깔끔해서 사진이 잘 나와요!',bad:'“테두리에 국물이… 사진이 안 나오네요.” 행주로 닦아 주세요.'},
 };
 function regOf(id){SAVE.reg=SAVE.reg||{};return SAVE.reg[id]=SAVE.reg[id]||{aff:0,visits:0};}
 const hearts=id=>Math.floor(regOf(id).aff/20);
@@ -2571,7 +2571,7 @@ function openSettings(){let d=$('#setPanel');if(!d){d=document.createElement('di
   const sl=(k,n)=>`<label class="set-sl"><span>${n}</span><input type="range" min="0" max="100" value="${Math.round(SET[k]*100)}" data-k="${k}"><b>${Math.round(SET[k]*100)}</b></label>`,ck=(k,n,s)=>`<label class="set-ck"><input type="checkbox" data-k="${k}" ${SET[k]?'checked':''}><span><b>${n}</b>${s}</span></label>`;
   d.innerHTML=`<div class="set paper"><div class="sp-h"><h2>설정</h2><button type="button" class="btn2" id="setClose">닫기 <kbd>Esc</kbd></button></div><div class="set-body"><section><h4>소리</h4>${sl('master','전체 볼륨')}${sl('sfx','효과음')}${sl('bgm','배경 음악')}
     <label class="set-ck"><input type="checkbox" id="setMute" ${AU.muted?'checked':''}><span><b>소리 끄기</b>언제든 <kbd>M</kbd>으로 켜고 꺼요.</span></label><p class="set-note">배경 음악은 게임 폴더의 <code>audio/title.mp3</code> · <code>audio/day.mp3</code>를 재생해요. 파일이 없으면 조용히 넘어가요.</p><p class="set-note">아바타: Avataaars by Pablo Stanley (DiceBear)</p></section>
-    <section><h4>화면</h4>${ck('ai','AI 일러스트 초상화','끄면 Avataaars 아바타로 바뀌고, 기다리는 동안 표정이 변해요.')}${ck('bubble','손님 말풍선','주문이 들어올 때 손님이 말을 걸어요.')}${ck('calm','애니메이션 줄이기','흔들림·반짝임 효과를 꺼요.')}<h4>조작키</h4><ul class="set-keys"><li><kbd>Esc</kbd> 일시정지 메뉴</li><li><kbd>Tab</kbd> 레시피 북</li><li><kbd>P</kbd> 잠깐 멈춤</li><li><kbd>F</kbd> 냉장고</li><li><kbd>M</kbd> 소리</li><li><kbd>R</kbd> / 우클릭 도마 돌리기</li><li><kbd>휠</kbd> 칼 각도</li><li><kbd>1</kbd>~<kbd>6</kbd> 도구</li></ul></section></div></div>`;
+    <section><h4>화면</h4>${ck('ai','AI 일러스트 초상화','끄면 Avataaars 아바타로 바뀌고, 기다리는 동안 표정이 변해요.')}${ck('bubble','손님 말풍선','주문이 들어올 때 손님이 말을 걸어요.')}${ck('calm','애니메이션 줄이기','흔들림·반짝임 효과를 꺼요.')}<h4>조작키</h4><ul class="set-keys"><li><kbd>Esc</kbd> 일시정지 메뉴</li><li><kbd>Tab</kbd> 레시피 북</li><li><kbd>P</kbd> 잠깐 멈춤</li><li><kbd>F</kbd> 냉장고</li><li><kbd>M</kbd> 소리</li><li><kbd>R</kbd> 도마 돌리기</li><li><kbd>휠</kbd> 칼 각도</li><li><kbd>1</kbd>~<kbd>6</kbd> 도구 · 우클릭 내려놓기</li><li><kbd>T</kbd> 행주</li></ul></section></div></div>`;
   d.querySelectorAll('input[type=range]').forEach(r=>r.oninput=()=>{SET[r.dataset.k]=r.value/100;r.nextElementSibling.textContent=r.value;saveOpt();audioApply();});
   d.querySelectorAll('.set-ck input[data-k]').forEach(c=>c.onchange=()=>{SET[c.dataset.k]=c.checked;saveOpt();audioApply();if(c.dataset.k==='ai')portraitsChanged();});
   $('#setMute').onchange=e=>{AU.setMute(e.target.checked);if(typeof muteLbl==='function')muteLbl();};$('#setClose').onclick=closeSettings;d.hidden=false;}
@@ -2832,6 +2832,38 @@ Object.assign(TUTS,{
     tShake('sesame',[{k:'bowl'}],'통깨 솔솔 (선택)',OPT(()=>((G.bowl.garn||{}).sesame||0)>.05)),tServe()],
 });
 
+/* ---------- 행주: wipe drips off the plate / bowl rim (replaces plating mode) ---------- */
+const TOWEL={x:455,y:952,w:92,h:58};
+const towelSpotAt=(x,y)=>Math.abs(x-TOWEL.x)<TOWEL.w/2+6&&Math.abs(y-TOWEL.y)<TOWEL.h/2+6;
+function drawTowelCloth(g,x,y,rot,sc,press){g.save();g.translate(x,y);g.rotate(rot);g.scale(sc,sc*(press?.92:1));const w=TOWEL.w,h=TOWEL.h;
+  g.fillStyle='rgba(0,0,0,.22)';rr(g,-w/2+4,-h/2+6,w,h,9);g.fill();
+  g.fillStyle='#f6f1e6';rr(g,-w/2,-h/2,w,h,9);g.fill();g.save();rr(g,-w/2,-h/2,w,h,9);g.clip();
+  g.fillStyle='rgba(194,58,27,.78)';for(const yy of [-h/2+9,h/2-15])g.fillRect(-w/2,yy,w,6);g.fillStyle='rgba(194,58,27,.35)';for(const yy of [-h/2+17,h/2-21])g.fillRect(-w/2,yy,w,2);
+  g.strokeStyle='rgba(120,100,80,.12)';g.lineWidth=1;for(let i=-w/2;i<w/2;i+=5){g.beginPath();g.moveTo(i,-h/2);g.lineTo(i,h/2);g.stroke();}
+  g.fillStyle='rgba(0,0,0,.08)';g.fillRect(-w/2,-2,w,4);g.restore();
+  g.strokeStyle='rgba(120,90,60,.35)';g.lineWidth=1.2;rr(g,-w/2,-h/2,w,h,9);g.stroke();g.restore();}
+function drawTowelSpot(g){if(!G||!G.started)return;
+  if(G.tool!=='towel'){const hv=!G.held&&!G.drag&&towelSpotAt(M.x,M.y);drawTowelCloth(g,TOWEL.x,TOWEL.y-(hv?3:0),-.08,1,false);
+    g.fillStyle='rgba(60,50,40,.7)';g.font='600 11px "Gowun Dodum", sans-serif';g.textAlign='center';g.fillText('행주 (T)',TOWEL.x,TOWEL.y+TOWEL.h/2+15);}
+  else{g.strokeStyle='rgba(90,70,50,.35)';g.setLineDash([5,5]);g.lineWidth=1.5;rr(g,TOWEL.x-TOWEL.w/2,TOWEL.y-TOWEL.h/2,TOWEL.w,TOWEL.h,9);g.stroke();g.setLineDash([]);}}
+function towelWipe(x,y){let n=0;for(const c of [G.plate,G.bowl]){if(!c.drips||!c.drips.length)continue;const [r0,r1]=dripR(c),n0=c.drips.length;
+    c.drips=c.drips.filter(d=>{const r=lerp(r0,r1,d.f);return Math.hypot(c.x+Math.cos(d.a)*r-x,c.y+Math.sin(d.a)*r-y)>24;});if(c.drips.length<n0){n+=n0-c.drips.length;c.wiped=true;}}
+  if(n){AU.pick();if(Math.random()<.5)floatText(pick(['뽀득','싹싹','깨끗!']),x,y-30,'#fff3cf',20);}
+  else if(!contAt(x,y)&&y>230)wipeAt(x,y);}
+const hasDrips=c=>!!(c&&c.drips&&c.drips.length);
+cv.addEventListener('pointerdown',e=>{if(!G||!G.started||G.paused||e.button!==0||G.held)return;const q=toLocal(e);
+  if(towelSpotAt(q.x,q.y)){e.stopImmediatePropagation();AU.init();setTool(G.tool==='towel'?'hand':'towel');return;}
+  if(G.tool==='towel'&&!knobAt(q.x,q.y)&&!rackAt(q.x,q.y)&&!shelfAt(q.x,q.y)&&!inFridge(q.x,q.y)){e.stopImmediatePropagation();M.x=q.x;M.y=q.y;M.down=true;G.drag={kind:'towel'};towelWipe(q.x,q.y);}},true);
+cv.addEventListener('pointermove',e=>{if(G&&G.drag&&G.drag.kind==='towel'){const q=toLocal(e);towelWipe(q.x,q.y);}},true);
+addEventListener('pointerup',()=>{if(G&&G.drag&&G.drag.kind==='towel'){G.drag=null;M.down=false;}});
+addEventListener('keydown',e=>{if(!G||!G.started||G.paused||e.code!=='KeyT'||e.repeat)return;if(G.held)returnHeld();setTool(G.tool==='towel'?'hand':'towel');});
+render=(orig=>function(){orig();if(!G||!G.started||G.hideCursor||G.tool!=='towel'||G.held||!M.inside)return;const g=ctx;g.setTransform(PX,0,0,PX,0,0);
+  const sc=G.drag&&G.drag.kind==='towel';drawTowelCloth(g,M.x+(sc?Math.sin(G.t*40)*3:0),M.y,-.25,.62,sc);})(render);
+updateCursor=(orig=>function(){orig();if(!G)return;if(G.tool==='towel'&&!G.held&&!knobAt(M.x,M.y)&&!rackAt(M.x,M.y)&&!shelfAt(M.x,M.y))cv.style.cursor='none';else if(!G.held&&towelSpotAt(M.x,M.y))cv.style.cursor='pointer';})(updateCursor);
+clearCont=(orig=>function(c){orig(c);c.drips=[];c.wiped=false;})(clearCont);
+hintText=(orig=>function(){const r=orig();if(r[0]==='warn'||G.held)return r;if(G.tool==='towel')return['','행주: 누른 채 그릇·접시 테두리를 문질러 국물 자국을 닦아요. 조리대도 닦여요. 우클릭하면 내려놓아요.'];
+  const o=selOrder();if(o){const v=vesselOf(RID[o.rid]);if(hasDrips(v)&&!contEmpty(v))return['','그릇 테두리에 국물이 묻었어요 — 행주(T)로 닦고 내면 깔끔해요.'];}return r;})(hintText);
+
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
   if(t==='knife')AU.nz({f:5000,f2:9000,type:'highpass',a:.02,d:.22,v:.18});else if(t!=='hand')AU.tone({f:300,f2:220,d:.06,v:.12});else if(prev==='knife'){AU.tone({f:1900,d:.25,v:.05});AU.nz({f:3500,d:.03,v:.12});}else AU.place();updateCursor();}
@@ -2883,7 +2915,7 @@ function ladleClick(c,x,y){const lx=x-c.x,ly=y-c.y,Ld=G.ladle;
 function toLocal(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 cv.addEventListener('pointerdown',e=>{if(!G||!G.started||G.paused)return;AU.init();try{cv.setPointerCapture(e.pointerId);}catch(_){}
   const q=toLocal(e),x=q.x,y=q.y;M.x=M.px=x;M.y=M.py=y;M.down=true;M.inside=true;e.preventDefault();G.spat.x=x;G.spat.y=y;
-  if(e.button===2){if(G.held)returnHeld();else if(G.ladle)G.ladle=null;else rotateBoard();return;}
+  if(e.button===2){if(G.held)returnHeld();else if(G.ladle)G.ladle=null;else if(G.tool!=='hand')setTool('hand');else rotateBoard();return;}
   if(e.button===1){e.preventDefault();if(G.tool==='hand')setTool(G.lastTool||'knife');else setTool('hand');return;}
   const kb=knobAt(x,y);if(kb){G.drag={kind:'knob',b:kb,sy:y,sl:kb.level,moved:false};return;}
   if(!G.held&&inFridge(x,y)){openFridge();return;}
