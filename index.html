@@ -268,6 +268,15 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .seg{display:flex;background:rgba(0,0,0,.35);border:1px solid rgba(240,174,58,.3);border-radius:7px;padding:2px}.seg button{background:none;border:none;color:#b9a383;font-size:12.5px;padding:3px 10px;border-radius:5px}.seg button.on{background:#f0ae3a;color:#2a1a0c;font-weight:700}
 .tl2-save .faces{display:flex;margin-left:auto}.tl2-save .faces img{width:30px;height:30px;border-radius:50%;background:#f1dcb4;object-fit:cover;object-position:50% 20%;border:2px solid #2a1d14;margin-left:-8px}
 #rpArt{width:calc(100% + 32px);margin:-14px -16px 10px;height:132px;background:#2a1d14 center/cover no-repeat;border-radius:4px 4px 0 0}#rpArt[hidden]{display:none}
+.mk-bar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px;position:sticky;top:0;background:var(--paper);padding:6px 0;z-index:2}.mk-bar button{background:#efe3c8;border:1px solid #cdb994;border-radius:16px;padding:5px 12px;font-size:13.5px;color:#5a3a24}.mk-bar button.on{background:var(--chili);border-color:var(--chili);color:#fff}
+.mk-bar .mk-fill{margin-left:auto;background:#3f8a4a;border-color:#3f8a4a;color:#fff;font-weight:700}.mk-row.low{background:#fff1dc}.mk-row.low .mk-s{color:#c9861a;font-weight:700}.mk-row.dim{opacity:.62}.mk-row img{cursor:pointer}
+.mk-empty,.mk-locked{color:#8a755a;font-size:13.5px;text-align:center;padding:10px}
+#critChip{font-family:'Gowun Dodum',sans-serif;font-size:12.5px;background:#2a211b;border:1px solid #f0ae3a;color:#ffd07a;border-radius:7px;padding:3px 9px}
+.rv{width:720px;background:#f4eddc;color:#221a15;border-radius:4px;padding:26px 32px 24px;box-shadow:0 30px 60px rgba(0,0,0,.55);display:grid;gap:14px;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.025) 0 1px,transparent 1px 4px)}
+.rv-mast{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px double #221a15;padding-bottom:6px}.rv-mast b{font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:32px}.rv-mast span{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b5a47}
+.rv-body{display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:start}.rv-body img{width:120px;height:120px;border-radius:6px;background:#3c4f5c;object-fit:cover;filter:grayscale(.35) sepia(.2)}
+.rv h3{margin:0;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:26px;color:#8e2610}.rv-st{font-size:26px;color:#c9861a;letter-spacing:2px}.rv-st small{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#6b5a47;margin-left:8px;letter-spacing:0}
+.rv p{margin:6px 0;font-size:15px;line-height:1.55}.rv-cats{display:grid;grid-template-columns:60px 1fr;gap:6px 12px;align-items:center;font-size:13.5px;margin:8px 0}.rv-cats .xp{background:#e2d4b8}.rv-rw{font-weight:700;color:#3f8a4a}.rv .big-btn{justify-self:end;font-size:20px;padding:10px 24px}
 </style>
 </head>
 <body>
@@ -493,7 +502,7 @@ function contEmpty(c){return!c.custard&&!c.items.length&&!c.noodles.length&&!c.e
 
 /* ---------- pantry & bottles ---------- */
 const BOT={
-  oil:{w:42,body:'rgba(240,196,70,.9)',cap:'#e8a21a',label:'식용유',lab:'#fff4d6',ink:'#8a5a0a',rate:14},
+  oil:{w:42,body:'rgba(240,196,70,.9)',cap:'#e8a21a',label:'식용유',lab:'#fff4d6',ink:'#8a5a0a',rate:45},
   olive:{w:34,body:'rgba(64,86,26,.95)',cap:'#1e2a14',label:'올리브',lab:'#efe8c8',ink:'#3a4a10',rate:12},
   soy:{w:40,body:'#2b1a10',cap:'#c3281a',label:'진간장',lab:'#f0e2c0',ink:'#7a1c10',rate:9},
   ses:{w:34,body:'rgba(140,72,18,.94)',cap:'#caa04a',label:'참기름',lab:'#f5e6c4',ink:'#6a3a10',rate:5},
@@ -742,7 +751,8 @@ const inBoard=(x,y)=>x>L.board.x+8&&x<L.board.x+L.board.w-8&&y>L.board.y+8&&y<L.
 const inTrash=(x,y)=>dist(x,y,L.trash.x,L.trash.y)<L.trash.r+8;
 const inSink=(x,y)=>x>L.sink.x&&x<L.sink.x+L.sink.w&&y>L.sink.y&&y<L.sink.y+L.sink.h;
 const inFridge=(x,y)=>x>L.fridge.x&&x<L.fridge.x+L.fridge.w&&y>L.fridge.y&&y<L.fridge.y+L.fridge.h;
-function contAt(x,y,exclude){let best=null,bd=1e9;for(const c of CONTS()){if(c===exclude||c.drag)continue;const R=c.kind==='plate'?L.plate.r:c.kind==='bowl'?L.bowl.r:c.kind==='mix'?L.mix.r:c.kind==='prep'?c.r/.78:c.r+8;const d=dist(x,y,c.x,c.y);if(d<R&&d/R<bd){bd=d/R;best=c;}}return best;}
+function contAt(x,y,exclude){const c0=contAt0(x,y,exclude);return c0&&G.steamer&&G.steamer.on===c0&&exclude!==G.steamer&&!G.steamer.drag?G.steamer:c0;}
+function contAt0(x,y,exclude){let best=null,bd=1e9;for(const c of CONTS()){if(c===exclude||c.drag)continue;const R=c.kind==='plate'?L.plate.r:c.kind==='bowl'?L.bowl.r:c.kind==='mix'?L.mix.r:c.kind==='prep'?c.r/.78:c.r+8;const d=dist(x,y,c.x,c.y);if(d<R&&d/R<bd){bd=d/R;best=c;}}return best;}
 function shelfAt(x,y){if(y<46||y>226||x<150)return null;const row=y<152?1:2;for(const p of PANTRY){if(p.row!==row)continue;if(Math.abs(x-p.x)<(p.kind==='shaker'?26:p.kind==='bottle'?24:34))return p;}return null;}
 function knobAt(x,y){for(let i=0;i<4;i++)if(dist(x,y,KNOBX[i],KNOBY)<32)return G.burners[i];return null;}
 function segDist(px,py,ax,ay,bx,by){const ex=bx-ax,ey=by-ay;let t=((px-ax)*ex+(py-ay)*ey)/(ex*ex+ey*ey||1);t=clamp(t,0,1);return Math.hypot(px-(ax+ex*t),py-(ay+ey*t));}
@@ -798,11 +808,11 @@ function boardGrabbable(x,y){if(!inBoard(x,y)&&!(x>L.board.x&&x<L.board.x+L.boar
   const edge=Math.min(x-L.board.x,L.board.x+L.board.w-x,y-L.board.y,L.board.y+L.board.h-y)<22;if(edge)return true;return!G.board.pieces.some(p=>dist(p.x,p.y,x,y)<Math.max(42,p.r));}
 
 /* ---------- transfers ---------- */
-function addItem(c,o,wx,wy,fall){let lx=wx-c.x,ly=wy-c.y;const lim=Math.max(4,c.r-Math.min(o.r||4,20)*.6-4),d=Math.hypot(lx,ly);if(d>lim){lx*=lim/d;ly*=lim/d;}
+function addItem(c,o,wx,wy,fall){if(o.cooked&&(c.kind==='plate'||c.kind==='bowl'))c.tHot=G.t;let lx=wx-c.x,ly=wy-c.y;const lim=Math.max(4,c.r-Math.min(o.r||4,20)*.6-4),d=Math.hypot(lx,ly);if(d>lim){lx*=lim/d;ly*=lim/d;}
   o.x=lx;o.y=ly;o.vx=rand(-20,20);o.vy=rand(-20,20);o.z=fall&&isCook(c)?rand(14,34):0;o.vz=0;o.anim=null;o.flipT=0;if(isCook(c))o.cooked=true;c.items.push(o);if(c.t0<0)c.t0=G.t;}
 function animTo(o,fromX,fromY,c){o.anim={fx:fromX-c.x,fy:fromY-c.y,t:0,dur:rand(.28,.5),delay:rand(0,.15)};}
 function moveNoodle(n,src,dst,k,ox,oy){for(const s of n.strands)for(const p of s.pts){p.x=p.x*k+ox;p.y=p.y*k+oy;const d=Math.hypot(p.x,p.y),lim=dst.r-4;if(d>lim){p.x*=lim/d;p.y*=lim/d;}p.ox=p.x;p.oy=p.y;}}
-function pourAll(src,dst){if(dst.kind==='bowl'&&src.liq&&src.liq.vol>60){const n=1+(Math.random()*3|0);for(let i=0;i<n;i++)addDrip(dst,undefined,liqCol(src.liq));} // move everything from src to dst
+function pourAll(src,dst){if(src.cook&&(dst.kind==='plate'||dst.kind==='bowl'))dst.tHot=G.t;if(dst.kind==='bowl'&&src.liq&&src.liq.vol>60){const n=1+(Math.random()*3|0);for(let i=0;i<n;i++)addDrip(dst,undefined,liqCol(src.liq));} // move everything from src to dst
   if(!dst)return;const vessel=dst.kind==='plate'||dst.kind==='bowl';const k=vessel?Math.min(.62,dst.r*.8/src.r):Math.min(1,(dst.r*.85)/src.r);let n=0;
   if(src.kind==='mix'){pourBatter(src,dst);return;}
   for(const o of src.items){const wx=src.x+o.x,wy=src.y+o.y;o.x=o.x*k+rand(-4,4);o.y=o.y*k+rand(-4,4);const d=Math.hypot(o.x,o.y),lim=dst.r*.9;if(d>lim){o.x*=lim/d;o.y*=lim/d;}o.z=isCook(dst)?rand(5,20):0;o.vz=0;o.vx=o.vy=0;o.flipT=0;if(vessel||dst.kind==='strainer'||dst.kind==='prep')animTo(o,wx,wy,dst);if(isCook(dst))o.cooked=true;dst.items.push(o);n++;}
@@ -1004,15 +1014,15 @@ function stepLiquid(c,dt){const q=c.liq,b=G.burners[c.burner];if(q.fat>q.vol*.6)
   else{q.T+=dT;c.boil=lerp(c.boil,q.T>88?(q.T-88)/12*.35:0,dt*2);if(q.T>70)c.evapNow+=(q.T-70)/30*.3*dt*60*.02;}
   c.T=q.T;const conc=q.vol>1?q.salt/q.vol:0;
   // foam & boil-over
-  if(q.T>=99&&c.boil>.3)c.foam+=dt*((q.starch/Math.max(.2,q.vol/1000))*1.0*c.boil-.4);else c.foam-=dt*.5;c.foam=clamp(c.foam,0,1.3);
-  if(c.foam>1&&c.onBurner){q.vol=Math.max(0,q.vol-90);c.foam=.35;b.lit=false;b.level=0;G.stats.boilOver=(G.stats.boilOver||0)+1;AU.splash(.6,c.x);AU.hot();
-    floatText('넘쳤어요! 불이 꺼졌어요',c.x,c.y-c.r-10,'#ffb38a',26);for(let i=0;i<30;i++){const a=rand(0,TAU);STX.fillStyle='rgba(240,236,220,.12)';STX.beginPath();STX.arc(c.x+Math.cos(a)*(c.r+rand(0,30)),c.y+Math.sin(a)*(c.r+rand(0,30)),rand(3,9),0,TAU);STX.fill();}}
+  if(q.T>=99&&c.boil>.3)c.foam+=dt*((q.starch/Math.max(.25,q.vol/1000))*.28*c.boil-.4);else c.foam-=dt*.6;c.foam=clamp(c.foam,0,1.3);
+  if(c.foam>1&&c.onBurner){q.vol=Math.max(0,q.vol-35);c.foam=.3;b.level=Math.min(b.level,.4);G.stats.boilOver=(G.stats.boilOver||0)+1;AU.splash(.6,c.x);AU.hot();
+    floatText('보글보글 넘칠 뻔! 불을 살짝 줄였어요',c.x,c.y-c.r-10,'#ffb38a',26);for(let i=0;i<30;i++){const a=rand(0,TAU);STX.fillStyle='rgba(240,236,220,.12)';STX.beginPath();STX.arc(c.x+Math.cos(a)*(c.r+rand(0,30)),c.y+Math.sin(a)*(c.r+rand(0,30)),rand(3,9),0,TAU);STX.fill();}}
   physics(c,dt,true);
   for(const o of c.items){const k=o.kind==='grain'?.5:.6*clamp(22/Math.sqrt(o.area||40),.35,1.6);o.T+=(q.T-o.T)*k*dt;if(o.T>o.Tmax)o.Tmax=o.T;
     const d=o.kind==='grain'?{cookRate:.12}:ING[o.type];if(o.T>55)o.cook+=(o.T-55)/45*(d.cookRate||.08)*dt;o.coat.salt+=(conc*.5-o.coat.salt)*dt*.04;o.cooked=true;if(o.L)steakStep(o,q.T,q.T,dt,1.5,1.5);}
   for(const n of c.noodles){const nd=NT[n.type];n.T+=(q.T-n.T)*dt*(n.T<0?.25:1.6);if(n.T>n.Tmax)n.Tmax=n.T;
-    if(n.T>82){const r=(n.T-82)/18/nd.cook;n.done+=r*dt*(n.stick>.6?.75:1);if(n.stick>.5)n.uneven=(n.uneven||0)+dt*n.stick*.02;}
-    if(n.done>1.12)n.mush=Math.min(1.5,n.mush+dt*(n.done-1.12)*.8);
+    if(n.T>82){const r=(n.T-82)/18/nd.cook*(n.done>.84?.36:1);n.done+=r*dt*(n.stick>.6?.75:1);if(n.stick>.5)n.uneven=(n.uneven||0)+dt*n.stick*.02;}
+    if(n.done>1.12)n.mush=Math.min(1.5,n.mush+dt*(n.done-1.12)*.5);
     if(n.T>90){q.starch+=dt*nd.starch*.012;n.starch+=dt*.02;}
     n.stirT=Math.max(0,n.stirT-dt*.5);if(n.T<0)n.stick=Math.max(.3,n.stick-dt*.004);else if(n.done<.4&&n.stirT<=0&&q.T>90&&!nd.pre)n.stick=Math.min(.95,n.stick+dt*.018);else if(n.T>60)n.stick=Math.max(0,n.stick-dt*.004*(1+c.boil*3));
     n.coat.salt+=(conc*n.g*.12-n.coat.salt)*dt*.08;n.saltW=Math.max(n.saltW||0,conc*100);stepStrands(c,n,dt);}
@@ -1710,7 +1720,7 @@ function evaluate(R,v,order){const sp=R.spec,D=snapDish(v),N=[],note=(t,s)=>N.pu
     if(fl.fire&&fire>.8){sc+=18;note('good','불향이 확 올라와요!');}if(fl.scal&&(v.flav.scal||0)>5){sc+=15;note('good','파기름 덕분에 향이 깊어요.');}
     const bitter=(v.flav.bitter||0)+D.pcs.reduce((s,o)=>s+(o.bitter||0)*o.mass,0);if(bitter>.4){pen+=Math.min(20,bitter*8);note('bad','쓴맛이 나요. 양념이 탔어요.');}
     if(R.id==='bibim'||R.id==='kmari'){const sw=v.flav.sweet||0,so=v.flav.sour||0;if(sw>=1&&sw<=9&&so>=3&&so<=26){sc+=12;note('good','설탕·식초로 새콤달콤 밸런스가 딱 좋아요.');}else if(sw>=1||so>=3)sc+=5;if(sw>12){pen+=6;note('meh','너무 달아요.');}if(so>36){pen+=6;note('meh','너무 셔요.');}}
-    const cold=R.id==='kmari'||R.id==='bibim';if(!cold&&D.T<45&&R.vessel==='plate'){pen+=8;note('meh','음식이 식어서 아쉬워요.');}
+    const cold=R.id==='kmari'||R.id==='bibim';if(!cold&&R.vessel==='plate'){const ck=[...D.pcs.filter(o=>o.cooked),...D.grs],cm=ck.reduce((s,o)=>s+(o.mass||1),0),cT=cm?ck.reduce((s,o)=>s+o.T*(o.mass||1),0)/cm:null,age=G.t-(v.tHot!==undefined?v.tHot:v.t0>=0?v.t0:G.t);if(age>90&&(cT===null||cT<42)){pen+=6;note('meh','담아 둔 지 오래돼서 조금 식었어요.');}}
     cats.push(['마무리',clamp(sc,0,100),W.finish||.2]);}
   if(G.stats.alarm)note('meh','연기 경보가 울렸어요… 환기 필수!');
   const wsum=cats.reduce((s,c)=>s+c[2],0)||1;let total=cats.reduce((s,c)=>s+c[1]*c[2],0)/wsum-pen;total=clamp(Math.round(Math.min(total,cap)),0,100);
@@ -1745,13 +1755,13 @@ function toTitle(){midSave();tutStop();if(G)G.started=false;hideAll();$('#top').
 
 /* ---------- orders ---------- */
 const selOrder=()=>G.orders.find(o=>o.id===G.sel)||null;
-function spawnOrder(){const pool=menuPool();if(!pool.length)return;let R=pick(pool);if(G.day&&G.day.special&&RID[G.day.special]&&Math.random()<.22)R=RID[G.day.special];const pat=R.time*1.9+70;
+function spawnOrder(){const pool=menuPool();if(!pool.length)return;let R=pick(pool);if(G.day&&G.day.special&&RID[G.day.special]&&Math.random()<.22)R=RID[G.day.special];const pat=(R.time*1.9+70)*1.35;
   const o={id:G.oid++,rid:R.id,t0:G.t,pat,left:pat,opt:R.opts?pick(R.opts):null,name:pick(NAMES),table:1+((Math.random()*8)|0),steps:{},special:!!(G.day&&G.day.special===R.id),req:pickReq(R)};G.orders.push(o);if(!selOrder())G.sel=o.id;
   AU.bell();floatText('새 주문!',1420,120,'#ffe9a0',30);renderTickets();}
 function gameTick(dt){if(G.mode!=='career')return;const D=G.day;D.t+=dt;G.midT=(G.midT||0)+dt;if(G.midT>10){G.midT=0;midSave();}const open=D.t<DAYLEN;
-  if(open){G.nextOrder-=dt;const maxO=seats();if(G.nextOrder<=0&&G.orders.length<maxO){spawnOrder();G.nextOrder=rand(57,96)/(.75+SAVE.rep*.1);}if(!G.orders.length&&G.nextOrder>12)G.nextOrder=Math.min(G.nextOrder,12);}
+  if(open){G.nextOrder-=dt;const maxO=seats();if(G.nextOrder<=0&&G.orders.length<maxO){spawnOrder();G.nextOrder=rand(57,96)/(.75+SAVE.rep*.1)*(SAVE.day<=3?1.2:1);}if(!G.orders.length&&G.nextOrder>12)G.nextOrder=Math.min(G.nextOrder,12);}
   if(!open&&!G.closeCap){G.closeCap=true;for(const o of G.orders)o.left=Math.min(o.left,150);}
-  for(let i=G.orders.length-1;i>=0;i--){const o=G.orders[i];o.left-=dt;if(o.left<=0){G.orders.splice(i,1);D.fail++;SAVE.rep=clamp(SAVE.rep-.15,0,5);guestLeft(o);floatText(`${o.name} 손님이 기다리다 떠났어요`,1420,150,'#ffb38a',22);AU.door();if(G.sel===o.id)G.sel=G.orders[0]?G.orders[0].id:null;renderTickets();}}
+  for(let i=G.orders.length-1;i>=0;i--){const o=G.orders[i];o.left-=dt;if(o.left<=0){G.orders.splice(i,1);D.fail++;SAVE.rep=clamp(SAVE.rep-.06,0,5);guestLeft(o);floatText(`${o.name} 손님이 기다리다 떠났어요`,1420,150,'#ffb38a',22);AU.door();if(G.sel===o.id)G.sel=G.orders[0]?G.orders[0].id:null;renderTickets();}}
   if(!open&&!G.orders.length&&!G.dayEnded){G.dayEnded=true;setTimeout(endDay,800);}}
 function renderTickets(){const rail=$('#rail');rail.innerHTML='';
   if(!G.orders.length){const d=document.createElement('div');d.className='tk-empty';d.textContent=G.mode==='career'&&G.day.t>=DAYLEN?'영업 종료 — 마지막 손님까지 끝났어요':'주문을 기다리는 중…';rail.appendChild(d);return;}
@@ -1792,9 +1802,9 @@ $('#resAgain').addEventListener('click',()=>{$('#result').hidden=true;G.paused=f
 
 /* ---------- end of day ---------- */
 function endDay(){if(G.mode!=='career')return;const D=G.day,gas=Math.round(G.gas/10)*10,avg=D.scores.length?Math.round(D.scores.reduce((a,b)=>a+b,0)/D.scores.length):0;
-  SAVE.money-=RENT+SEASON+gas;const profit=D.rev+D.tips-D.spend-RENT-SEASON-gas;SAVE.day++;SAVE.mid=null;const spoiled=spoilLots();writeSave();G.started=false;setTimeout(()=>checkAch(0),600);
+  const rentD=D.n<=3?12000:RENT;SAVE.money-=rentD+SEASON+gas;const profit=D.rev+D.tips-D.spend-rentD-SEASON-gas;SAVE.day++;SAVE.mid=null;const spoiled=spoilLots();writeSave();G.started=false;setTimeout(()=>checkAch(0),600);
   $('#settleBody').innerHTML=`<div class="st-row"><span>매출</span><b>${won(D.rev)}</b></div><div class="st-row"><span>팁</span><b>${won(D.tips)}</b></div><div class="st-row neg"><span>재료 구입</span><b>−${won(D.spend)}</b></div>
-    <div class="st-row neg"><span>가스비</span><b>−${won(gas)}</b></div><div class="st-row neg"><span>임대료</span><b>−${won(RENT)}</b></div><div class="st-row neg"><span>양념·소모품</span><b>−${won(SEASON)}</b></div>
+    <div class="st-row neg"><span>가스비</span><b>−${won(gas)}</b></div><div class="st-row neg"><span>임대료${rentD<RENT?' <small>(오픈 할인)</small>':''}</span><b>−${won(rentD)}</b></div><div class="st-row neg"><span>양념·소모품</span><b>−${won(SEASON)}</b></div>
     <div class="st-row tot ${profit<0?'neg':''}"><span>오늘 순이익</span><b>${profit<0?'−':''}${won(Math.abs(profit))}</b></div>
     <div class="st-meta"><span>서빙 ${D.served}건 · 놓친 주문 ${D.fail}건 · 평균 ${avg}점</span><span>평판 <span class="stars">${stars(SAVE.rep*20)}</span></span><span>잔고 ${won(SAVE.money)}</span></div>${spoiled.length?`<div class="st-spoil">버린 재료 (유통기한 지남): ${spoiled.map(([id,n])=>ING[id].n+' '+n).join(', ')}</div>`:''}${REC.some(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===SAVE.day)?`<div class="st-new">내일 새 메뉴: ${REC.filter(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===SAVE.day).map(r=>r.n).join(' · ')}</div>`:''}`;
   $('#settleDay').textContent=`DAY ${D.n} 마감`;$('#settle').hidden=false;$('#top').hidden=true;$('#recipePop').hidden=true;}
@@ -1905,7 +1915,7 @@ const REQS={
 function pickReq(R){const c=Object.keys(REQS).filter(k=>REQS[k].for.includes(R.id));return c.length&&Math.random()<.38?pick(c):null;}
 
 /* freshness (FIFO lots per fridge ingredient) */
-const SHELF={kimchi:30,onion:6,ham:20,scallion:3,jjokpa:3,buchu:2,zucchini:3,carrot:6,cucumber:3,cabbage:4,pork:2,chashu:3,naruto:4,squid:1,garlic:8,beef:3};
+const SHELF={kimchi:30,onion:8,ham:20,scallion:5,jjokpa:5,buchu:4,zucchini:5,carrot:8,cucumber:5,cabbage:6,pork:4,chashu:5,naruto:6,squid:3,garlic:10,beef:5};
 const tracked=id=>SHELF[id]!==undefined;
 function syncLots(){SAVE.lots=SAVE.lots||{};for(const id in SHELF){const L2=SAVE.lots[id]=SAVE.lots[id]||[],st=Math.max(0,Math.round(SAVE.stock[id]||0));let sum=L2.reduce((s,l)=>s+l.n,0);
     if(sum<st)L2.push({d:SAVE.day,n:st-sum});while(sum>st&&L2.length){const x=Math.min(L2[0].n,sum-st);L2[0].n-=x;sum-=x;if(L2[0].n<=0)L2.shift();}}}
@@ -1918,7 +1928,7 @@ function freshTag(id){if(!tracked(id)||G.mode==='practice')return'';const a=olde
 
 /* extras applied to a served dish */
 function applyExtras(o,v,res){const R=RID[o.rid];
-  if(o.req){const q=REQS[o.req];if(q.ok(v)){if(res.total>=35)res.total=Math.min(100,res.total+6);res.notes.unshift({t:'good',s:q.good});if(G.mode==='career'){SAVE.reqOk=(SAVE.reqOk||0)+1;}}else{res.total=Math.max(0,res.total-15);res.notes.unshift({t:'bad',s:q.bad});}}
+  if(o.req){const q=REQS[o.req];if(q.ok(v)){if(res.total>=35)res.total=Math.min(100,res.total+6);res.notes.unshift({t:'good',s:q.good});if(G.mode==='career'){SAVE.reqOk=(SAVE.reqOk||0)+1;}}else{res.total=Math.max(0,res.total-8);res.notes.unshift({t:'meh',s:q.bad});}}
   const ps=vPieces(v),tm=ps.reduce((s,p)=>s+(p.mass||1),0),sm=ps.filter(p=>p.stale).reduce((s,p)=>s+(p.mass||1),0);
   if(sm>0&&tm>0){const pen=Math.round(4+sm/tm*16);res.total=Math.max(0,res.total-pen);res.notes.unshift({t:'bad',s:'신선하지 않은 재료 맛이 나요. 냉장고 재고 날짜를 확인하세요.'});}}
 
@@ -2177,7 +2187,7 @@ Object.assign(TEXF,{
   mandu(g,w,h){vgrad(g,w,h,[[0,'#f3ede0'],[.5,'#fbf8f0'],[1,'#ece4d4']]);g.strokeStyle='rgba(190,175,150,.55)';g.lineWidth=1.2;for(let i=0;i<7;i++){const x=w*.2+i*w*.1;g.beginPath();g.moveTo(x,h*.5);g.quadraticCurveTo(x+3,h*.62,x+1,h*.72);g.stroke();}},
 });
 Object.assign(VOL,{sweetpotato:{th:12,cut:[248,214,118],skin:[150,54,76],cyl:1},loin:{th:14,cut:[232,170,160],skin:[246,236,226]},mandu:{th:9,cut:[250,246,236],skin:[236,228,212],dome:1}});
-SHELF.sweetpotato=7;SHELF.loin=2;
+SHELF.sweetpotato=9;SHELF.loin=4;
 FRIDGE.push(['sweetpotato','고구마',900,'ing'],['loin','돈카츠용 등심',3500,'ing'],['mandu','냉동 만두 6개',2800,'mandu']);
 for(const f of FRIDGE.slice(-3))PRICE[f[0]]=f[2];
 LQ.katsu={n:'돈카츠 소스',salt:.05,col:[74,36,16],a:.92,film:320,vis:3.6,wat:.35,dark:.6,sweet:.3,sauce:1};
@@ -2472,16 +2482,16 @@ function renderGoals(){let box=$('#goals');if(!box){box=document.createElement('
 /* who orders */
 function assignGuest(o){if(G.mode!=='career')return;const pool=menuPool().map(r=>r.id),day=SAVE.day,P=GP();P.seen=P.seen||{};
   const busy=new Set(G.orders.map(q=>q.cust));
-  if(shopLv()>=3&&!P.critic&&Math.random()<.1){o.cust='critic';o.critic=true;P.critic=1;}
+  if(o.critic){o.cust='critic';}
   else{const regs=Object.keys(GUEST).filter(k=>{const g=GUEST[k];return g.reg&&day>=g.from&&!busy.has(k)&&(P.seen[k]||0)<2&&g.fav.some(f=>pool.includes(f));});
     if(regs.length&&Math.random()<.34){const k=pick(regs),g=GUEST[k];o.cust=k;P.seen[k]=(P.seen[k]||0)+1;o.rid=pick(g.fav.filter(f=>pool.includes(f)));o.special=!!(G.day.special===o.rid);o.opt=RID[o.rid].opts?pick(RID[o.rid].opts):null;
       const pf=PREF[g.pref];if(pf&&(!pf.need||pf.need.every(i=>ingOpen(i)))&&Math.random()<.75){o.pref=g.pref;o.req=null;}else o.req=pickReq(RID[o.rid]);}
     else{const free=GEN.filter(k=>!busy.has(k));o.cust=pick(free.length?free:GEN);}}
-  o.name=GUEST[o.cust].n;const R=RID[o.rid];o.pat=o.left=(R.time*1.9+70)*(1+decoBonus('pat'))*(o.critic?.85:1);}
+  o.name=GUEST[o.cust].n;const R=RID[o.rid];o.pat=o.left=(R.time*1.9+70)*1.35*(1+decoBonus('pat'))*(o.critic?.9:1);}
 function guestApply(o,v,res){o._prefOk=undefined;o._reqOk=!!(o.req&&REQS[o.req]&&REQS[o.req].ok(v));if(G.mode!=='career')return;
   if(o.pref){const P=PREF[o.pref];let ok=false;try{ok=P.ok(v,res);}catch(e){}o._prefOk=ok;
     if(ok){res.total=Math.min(100,res.total+6+(o.pref==='mild'&&res.notes.some(n=>/싱거/.test(n.s))?6:0));res.notes.unshift({t:'good',s:P.good});if(o.pref==='big')o.payMul=1.3;}
-    else{res.total=Math.max(0,res.total-8);res.notes.unshift({t:'bad',s:P.bad});}}
+    else{res.total=Math.max(0,res.total-5);res.notes.unshift({t:'meh',s:P.bad});}}
   if(o.critic)o.payMul=res.total>=85?2:1;}
 function guestTip(o,tip){const g=GUEST[o.cust];let m=1+decoBonus('tip');if(g&&g.reg)m+=.1*hearts(o.cust);return Math.round(tip*m/100)*100;}
 function affAdd(id,d){const r=regOf(id),h0=hearts(id);r.aff=clamp(r.aff+d,0,100);const h1=hearts(id),g=GUEST[id];
@@ -2490,10 +2500,9 @@ function affAdd(id,d){const r=regOf(id),h0=hearts(id);r.aff=clamp(r.aff+d,0,100)
 function guestAfter(o,sc){const P=GP(),g=GUEST[o.cust];
   addXP(sc/10+(g&&g.reg?3:0)+(o.critic?10:0));if(o._reqOk)P.req=(P.req||0)+1;if(o.special)P.sp=(P.sp||0)+1;P.combo=Math.max(P.combo||0,G.combo||0);
   if(g&&g.reg){const r=regOf(o.cust);r.visits++;let d=(sc>=85?12:sc>=70?8:sc>=55?3:-6)+(o._prefOk===true?5:o._prefOk===false?-4:0);if(d>0)d=Math.round(d*(1+decoBonus('aff')));o._affD=d;affAdd(o.cust,d);if(sc>=70)P.reg=(P.reg||0)+1;}
-  if(o.critic){if(sc>=85){SAVE.rep=clamp(SAVE.rep+.4,0,5);setTimeout(()=>toast(`<img alt="" src="${gImg('critic')}">`,'평론가 리뷰 ★★★★★','“골목의 숨은 보석.” 평판이 크게 올랐어요! 값도 두 배로 받았어요.','long ach'),700);}
-    else if(sc<65){SAVE.rep=clamp(SAVE.rep-.3,0,5);setTimeout(()=>toast(`<img alt="" src="${gImg('critic','a')}">`,'평론가 리뷰 ★★','“기대 이하.” 평판이 떨어졌어요…','long'),700);}}
+  if(o.critic)criticReview(o,sc);
   goalsCheck();}
-function guestLeft(o){const g=GUEST[o.cust];if(!g)return;if(g.reg){affAdd(o.cust,-10);toast(`<img alt="" src="${gImg(o.cust,'a')}">`,`${g.n}님이 화가 나서 나갔어요`,'호감도 −10','long');}else if(o.critic){SAVE.rep=clamp(SAVE.rep-.3,0,5);toast(`<img alt="" src="${gImg('critic','a')}">`,'평론가가 그냥 나갔어요','“기다리게 하는 가게” 리뷰가 올라왔어요… 평판 하락','long');}}
+function guestLeft(o){const g=GUEST[o.cust];if(!g)return;if(g.reg){affAdd(o.cust,-5);toast(`<img alt="" src="${gImg(o.cust,'a')}">`,`${g.n}님이 바빠서 먼저 갔어요`,'다음엔 조금 더 빨리! 호감도 −5','long');}else if(o.critic)criticReview(o,null);}
 function guestQuote(P){const g=GUEST[P.o.cust],s=P.res.total;if(g&&g.hi)return s>=75?g.hi:s<55?g.lo:quoteFor(s);return quoteFor(s);}
 const MOOD=f=>f>.5?'😊':f>.25?'😐':'😤';
 
@@ -2894,6 +2903,72 @@ drawBoard=(orig=>function(ox,oy,lift){orig(ox,oy,lift);if(!G||!G.started||!G.boa
 cv.addEventListener('pointerdown',e=>{if(!G||!G.started||G.paused||e.button!==0||G.held||!G.board.pieces.length)return;const q=toLocal(e),b=rbtnAt(q.x,q.y);if(!b)return;e.stopImmediatePropagation();AU.init();rotateBoard(b.dir);},true);
 addEventListener('keydown',e=>{if(!G||!G.started||G.paused||e.code!=='KeyE'||e.repeat)return;rotateBoard(-1);});
 updateCursor=(orig=>function(){orig();if(G&&!G.held&&G.board.pieces.length&&rbtnAt(M.x,M.y))cv.style.cursor='pointer';})(updateCursor);
+
+/* ---------- 1.3.1: noodle gauge · easier market · announced critic visit ---------- */
+/* noodle doneness gauge above every pot of boiling noodles (like the jeon underside ring) */
+const NZ=[[0,.72,'덜 익음',[150,140,130]],[.72,.9,'꼬들',[240,200,90]],[.9,1.08,'보통',[120,200,90]],[1.08,1.4,'퍼짐',[220,90,60]]];
+const nzName=d=>(NZ.find(z=>d>=z[0]&&d<z[1])||NZ[3])[2];
+function noodleTarget(n){const o=selOrder&&G.orders&&selOrder();if(!o)return null;const R=RID[o.rid],ns=R&&R.spec&&R.spec.noodle;if(!ns||ns.type!==n.type)return null;return ns.done==='opt'?(o.opt?o.opt[1]:[.88,1.08]):ns.done;}
+function drawNoodleGauge(g,c){const n=c.noodles.reduce((a,b)=>!a||b.g>a.g?b:a,null);if(!n||!c.liq||c.liq.vol<30)return;
+  const W2=176,x0=c.x-W2/2,y0=c.y-c.r-34,lo=.5,hi=1.3,X=d=>x0+clamp((d-lo)/(hi-lo),0,1)*W2,tg=noodleTarget(n),d=n.done,inT=tg&&d>=tg[0]&&d<=tg[1];
+  g.save();g.fillStyle='rgba(15,10,8,.86)';rr(g,x0-8,y0-22,W2+16,40,9);g.fill();
+  for(const z of NZ){const a=X(Math.max(z[0],lo)),b=X(z[1]);g.fillStyle=rgba(z[3],.8);g.fillRect(a,y0,b-a,7);}
+  if(tg){g.strokeStyle=inT?'#9df09a':'rgba(255,255,255,.85)';g.lineWidth=2;g.setLineDash(inT?[]:[3,3]);g.strokeRect(X(tg[0])-1,y0-3,X(tg[1])-X(tg[0])+2,13);g.setLineDash([]);}
+  const mx=X(d);g.fillStyle='#fff';g.beginPath();g.moveTo(mx,y0-2);g.lineTo(mx-6,y0-10);g.lineTo(mx+6,y0-10);g.closePath();g.fill();
+  g.font='600 12px "Gowun Dodum", sans-serif';g.textAlign='left';g.fillStyle='#f3ead8';g.fillText(`${NT[n.type].n} · ${n.T<80?'물이 끓으면 익어요':nzName(d)}`,x0,y0-8);
+  g.textAlign='right';g.fillStyle=inT?'#9df09a':d>1.08?'#ff9a7a':'#cdb994';g.fillText(inT?'지금 건지세요!':tg&&d<tg[0]?'조금 더':tg&&d>tg[1]?'넘었어요':'',x0+W2,y0-8);g.restore();
+  if(inT&&!n._gOk){n._gOk=1;AU.ding&&AU.ding();floatText('딱 좋아요!',c.x,y0-26,'#b8f0a0',22);for(let i=0;i<10;i++){const a=rand(0,TAU);spawn({k:'spark',x:mx,y:y0,vx:Math.cos(a)*60,vy:Math.sin(a)*60-20,max:rand(.4,.7),r:rand(2,4)});}}}
+render=(orig=>function(){orig();if(!G||!G.started||G.hideCursor)return;const g=ctx;g.setTransform(PX,0,0,PX,0,0);for(const c of G.cw)if(c.noodles&&c.noodles.length&&!c.drag)drawNoodleGauge(g,c);})(render);
+
+/* market: categories, low-stock highlight, one-click restock for today's menu */
+const MKCAT=[['all','전체'],['veg','채소'],['meat','고기·해산물'],['base','밥·면·계란'],['broth','육수'],['low','부족한 것']];
+const catOf=id=>BOT[id]?'broth':['rice','egg','butter','ice','udon','ramen','yakisoba','somyeon','ramyeon','spaghetti','mandu'].includes(id)?'base':['ham','pork','chashu','naruto','squid','beef','loin'].includes(id)?'meat':'veg';
+let MKF='all';
+function menuIngs(){const u=recipeUses(),s=new Set();for(const r of menuPool())for(const id of (u[r.id]||[]))s.add(id);return s;}
+function wantOf(id){return BOT[id]?1500:id==='egg'?10:id==='rice'?6:4;}
+const lowOf=(id,need)=>need.has(id)&&(SAVE.stock[id]||0)<wantOf(id)*(BOT[id]?1:.5);
+function fillCart(){const need=menuIngs();CART={};let left=SAVE.money-15000;
+  for(const [id,,price] of [...FRIDGE,...PANTRY_STOCK]){if(!need.has(id)||!ingOpen(id))continue;const unit=UNIT(id),have=SAVE.stock[id]||0,n=Math.max(0,Math.ceil((wantOf(id)-have)/unit));const k=Math.min(n,Math.floor(left/price));if(k>0){CART[id]=k;left-=k*price;}}
+  renderMarketRows();mkTotal();toast('🧺','오늘 메뉴에 필요한 재료를 담았어요',Object.keys(CART).length?`${Object.keys(CART).length}가지 · 확인하고 주문하기를 눌러요`:'이미 넉넉해요!');}
+function renderMarketRows(){const list=$('#mkList');list.innerHTML='';const need=menuIngs();
+  const bar=document.createElement('div');bar.className='mk-bar';bar.innerHTML=MKCAT.map(([k,n])=>`<button type="button" data-k="${k}" class="${MKF===k?'on':''}">${n}</button>`).join('')+`<button type="button" class="mk-fill">🧺 오늘 메뉴 재료 채우기</button>`;
+  bar.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{MKF=b.dataset.k;renderMarketRows();});bar.querySelector('.mk-fill').onclick=fillCart;list.appendChild(bar);
+  const items=[...FRIDGE,...PANTRY_STOCK].filter(([id])=>ingOpen(id)&&(MKF==='all'||(MKF==='low'?lowOf(id,need):catOf(id)===MKF)));
+  items.sort((a,b)=>(need.has(b[0])-need.has(a[0]))||(lowOf(b[0],need)-lowOf(a[0],need)));
+  if(!items.length){const e=document.createElement('p');e.className='mk-empty';e.textContent=MKF==='low'?'부족한 재료가 없어요. 오늘 장사 준비 끝!':'이 분류의 재료가 아직 없어요.';list.appendChild(e);}
+  for(const [id,n,price] of items){const unit=UNIT(id),row=document.createElement('div'),low=lowOf(id,need);row.className='mk-row'+(low?' low':'')+(need.has(id)?'':' dim');
+    row.innerHTML=`<img alt="" src="${itemIcon(id)}"><span class="mk-n">${n}${SHELF[id]!==undefined?` <small>유통 ${SHELF[id]}일</small>`:''}${unit>1?' <small>500ml</small>':''}${need.has(id)?'':' <small>지금 메뉴엔 안 써요</small>'}</span><span class="mk-s">${low?'⚠ ':''}재고 ${unit>1?(SAVE.stock[id]||0)+'ml':(SAVE.stock[id]||0)}</span><span class="mk-p">${won(price)}</span><span class="mk-q"><button type="button" data-d="-1">−</button><b>${CART[id]||0}</b><button type="button" data-d="1">+</button><button type="button" data-d="5">+5</button></span>`;
+    row.querySelectorAll('button').forEach(b=>b.onclick=()=>{CART[id]=Math.max(0,(CART[id]||0)+Number(b.dataset.d));row.querySelector('b').textContent=CART[id];mkTotal();});
+    row.querySelector('img').onclick=()=>{CART[id]=(CART[id]||0)+1;row.querySelector('b').textContent=CART[id];mkTotal();};list.appendChild(row);}
+  const lk=[...FRIDGE,...PANTRY_STOCK].filter(([id])=>!ingOpen(id));if(lk.length&&MKF==='all'){const d=document.createElement('p');d.className='mk-locked';d.textContent=`🔒 아직 안 파는 재료 ${lk.length}가지 — 새 메뉴가 열리면 함께 들어와요.`;list.appendChild(d);}if(MKF==='all')renderUpgrades(list);}
+openMarket=function(){CART={};MKF='all';renderMarketRows();mkTotal();$('#market').hidden=false;};
+
+/* ---------- critic: announced visit, reviewed like a newspaper column ---------- */
+function criticPlan(){if(G.mode!=='career'||shopLv()<3)return;if(SAVE.critDay&&SAVE.critDay.day===SAVE.day){G.day.criticAt=SAVE.critDay.at;G.day.criticDone=SAVE.critDay.done;return;}const last=SAVE.criticLast||0;if(SAVE.day-last<3)return;const R=mulberry(SAVE.day*131+7);if(R()>.6)return;
+  G.day.criticAt=DAYLEN*(.3+R()*.3);SAVE.critDay={day:SAVE.day,at:G.day.criticAt,done:false};const hh=11+Math.floor(G.day.criticAt/DAYLEN*10);
+  setTimeout(()=>{if(G&&G.started)toast('📰','오늘 미식 평론가 방문 예정!',`${hh}시쯤 들러요. 맛·속도·청결·분위기를 보고 칼럼을 써요.`,'long ach');},2600);}
+const critHH=()=>G.day&&G.day.criticAt?11+Math.floor(G.day.criticAt/DAYLEN*10):null;
+assignGuest=(orig=>function(o){if(G.forceCritic){o.critic=true;G.forceCritic=false;}orig(o);})(assignGuest);
+gameTick=(orig=>function(dt){orig(dt);if(G.mode!=='career'||!G.day||!G.day.criticAt||G.day.criticDone)return;
+  if(G.day.t>=G.day.criticAt&&G.day.t<DAYLEN&&G.orders.length<seats()+1){G.day.criticDone=true;if(SAVE.critDay)SAVE.critDay.done=true;G.forceCritic=true;spawnOrder();}})(gameTick);
+function criticReview(o,sc){SAVE.criticLast=SAVE.day;const P=o;let taste=0,speed=0,clean=0,mood=0;
+  if(sc!==null){taste=sc;speed=clamp(P.left/P.pat,0,1)*100;const drips=(G.plate.drips||[]).length+(G.bowl.drips||[]).length;clean=clamp(100-G.counter.fluid.length*1.5-(G.stats.alarm?25:0)-drips*10,20,100);
+    mood=clamp(45+Object.values(decoEq()).filter(Boolean).length*11+shopLv()*2,0,100);}
+  const sum=sc===null?25:taste*.5+speed*.2+clean*.15+mood*.15,stars=clamp(Math.round(sum/20*2)/2,1,5);
+  const rw=stars>=5?{rep:.5,money:30000}:stars>=4?{rep:.3,money:15000}:stars>=3?{rep:.1,money:5000}:{rep:-.15,money:0};
+  SAVE.rep=clamp(SAVE.rep+rw.rep,0,5);SAVE.money+=rw.money;(SAVE.critic=SAVE.critic||[]).push({day:SAVE.day,stars});writeSave();
+  const title=stars>=4.5?'골목에서 찾은 보석 같은 한 그릇':stars>=3.5?'정성이 느껴지는 동네 식당':stars>=2.5?'가능성이 보이는 작은 주방':'다음을 기대해 보겠다';
+  const line=sc===null?'“한참을 기다렸지만 음식은 끝내 나오지 않았다. 다음 방문을 기약한다.”':stars>=4.5?'“한 입 먹자마자 수첩을 덮었다. 설명이 필요 없는 맛이다.”':stars>=3.5?'“기본에 충실한 맛. 다시 찾고 싶은 집이다.”':'“재료는 좋았다. 조금만 더 다듬으면 좋겠다.”';
+  setTimeout(()=>showReview({stars,title,line,rw,cats:sc===null?null:[['맛',taste],['속도',speed],['청결',clean],['분위기',mood]],R:RID[o.rid]}),sc===null?300:1200);}
+function showReview(V){let d=$('#review');if(!d){d=document.createElement('div');d.id='review';d.className='overlay';$('#stage').appendChild(d);}
+  const st='★'.repeat(Math.floor(V.stars))+(V.stars%1?'½':'')+'☆'.repeat(5-Math.ceil(V.stars));
+  d.innerHTML=`<div class="rv"><div class="rv-mast"><b>지글지글 일보</b><span>DAY ${SAVE.day} · 미식 칼럼</span></div><div class="rv-body"><img alt="" src="${gImg('critic',V.stars>=3.5?'h':V.stars>=2.5?'n':'a')}"><div><h3>${V.title}</h3><div class="rv-st">${st}<small>${V.stars.toFixed(1)}</small></div><p>${V.line}</p>
+    ${V.cats?`<div class="rv-cats">${V.cats.map(([k,v])=>`<span>${k}</span><div class="xp"><i style="width:${Math.round(v)}%"></i></div>`).join('')}</div>`:''}<p class="rv-rw">${V.rw.rep>=0?`평판 +${V.rw.rep}`:`평판 ${V.rw.rep}`}${V.rw.money?` · 칼럼 소개 효과 +${won(V.rw.money)}`:''}</p></div></div><button type="button" class="big-btn" id="rvOk">계속 영업</button></div>`;
+  G.paused=true;d.hidden=false;AU.ding&&AU.ding();$('#rvOk').onclick=()=>{d.hidden=true;G.paused=false;hudTick();};}
+startCareer=(orig=>function(){orig();if(G&&G.day)criticPlan();})(startCareer);
+/* critic chip in the HUD while a visit is expected */
+hudTick=(orig=>function(){orig();if(!G||G.mode!=='career'||!G.day)return;let c=$('#critChip');const on=G.day.criticAt&&!G.day.criticDone;
+  if(on&&!c){c=document.createElement('span');c.id='critChip';$('#top .st').appendChild(c);}if(c){c.hidden=!on;if(on)c.textContent=`📰 평론가 ${critHH()}시쯤`;}})(hudTick);
 
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
