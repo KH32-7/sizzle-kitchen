@@ -255,7 +255,7 @@ const LQ={
   vinegar:{n:'식초',salt:0,col:[236,228,196],a:.16,film:520,vis:2,wat:1,sour:4},
   water:{n:'물',salt:0,col:[190,210,225],a:.28,film:520,vis:2.2,wat:1},
   pastaw:{n:'면수',salt:.006,col:[222,222,205],a:.4,film:480,vis:2.6,wat:1,starch:1},
-  anchovy:{n:'멸치육수',salt:.004,col:[214,188,128],a:.4,film:500,vis:2.4,wat:1,umami:.8},
+  anchovy:{n:'멸치육수',salt:.004,col:[228,190,104],a:.4,film:500,vis:2.4,wat:1,umami:.8},
   kbroth:{n:'김치말이 육수',salt:.011,col:[228,136,106],a:.5,film:500,vis:2.4,wat:1,umami:.4,sour:.8,spicy:.2},
   rstock:{n:'라멘 육수',salt:.004,col:[226,194,146],a:.62,film:470,vis:2.6,wat:1,umami:1,fat:.6},
   dashi:{n:'가쓰오 다시',salt:.003,col:[222,190,118],a:.38,film:500,vis:2.4,wat:1,umami:.9},
@@ -284,12 +284,12 @@ const saltPct=q=>q&&q.vol>1?q.salt/q.vol*100:0;
 
 /* ---------- noodles ---------- */
 const NT={
-  somyeon:{n:'소면',cook:38,col:[247,242,228],w:2.1,len:190,cnt:72,starch:1.3,g:100,wave:0},
-  ramyeon:{n:'라면 사리',cook:44,col:[238,202,122],w:2.8,len:150,cnt:54,starch:1.2,g:120,wave:1},
+  somyeon:{n:'소면',cook:38,col:[247,242,228],w:2.4,len:190,cnt:72,starch:1.3,g:100,wave:0},
+  ramyeon:{n:'라면 사리',cook:44,col:[238,202,122],w:3.3,len:150,cnt:54,starch:1.2,g:120,wave:1},
   udon:{n:'우동면',cook:28,col:[246,240,224],w:8.5,len:170,cnt:28,seg:20,starch:.5,g:230,wave:0,frozen:1},
-  ramen:{n:'생라멘',cook:20,col:[242,216,140],w:2.8,len:160,cnt:50,starch:.7,g:130,wave:.5},
+  ramen:{n:'생라멘',cook:20,col:[242,216,140],w:3.2,len:160,cnt:50,starch:.7,g:130,wave:.5},
   yakisoba:{n:'야키소바면',cook:40,col:[214,172,96],w:3.2,len:120,cnt:44,starch:.2,g:150,wave:.8,pre:1},
-  spaghetti:{n:'스파게티',cook:52,col:[236,206,128],w:2.5,len:200,cnt:60,starch:.45,g:100,wave:0},
+  spaghetti:{n:'스파게티',cook:52,col:[240,208,120],w:3.2,len:200,cnt:60,starch:.45,g:100,wave:0},
 };
 
 /* ---------- ingredients ---------- */
@@ -305,10 +305,10 @@ const ING={
   cucumber:{n:'오이',tw:270,th:60,sh:()=>rrPoly(250,44,20,5),moist:.95,T0:8,cookRate:.07,brownRate:.03,hk:1,tint:[150,190,110,.3],brown:[120,110,50],edge:'rgba(40,80,30,.55)',cyl:'cuc'},
   cabbage:{n:'양배추',tw:230,th:180,sh:()=>blob(98,74,26,.08,.05),moist:.9,T0:8,cookRate:.06,brownRate:.04,hk:1.1,tint:[200,210,140,.35],brown:[160,120,50],edge:'rgba(150,180,110,.55)'},
   pork:{n:'삼겹살',tw:240,th:84,sh:()=>rrPoly(220,64,6,3),moist:.4,T0:4,cookRate:.08,brownRate:.055,hk:.9,tint:[235,215,200,.55],brown:[160,90,40],edge:'rgba(170,90,80,.5)'},
-  chashu:{n:'차슈',tw:200,th:104,sh:()=>rrPoly(172,86,32,6),moist:.3,T0:6,cookRate:.1,brownRate:.06,hk:.8,tint:[180,110,80,.15],brown:[120,60,25],edge:'rgba(110,60,30,.5)',cyl:'chashu',salt:.02},
+  chashu:{n:'차슈',tw:200,th:104,sh:()=>rrPoly(150,66,26,6),moist:.3,T0:6,cookRate:.1,brownRate:.06,hk:.8,tint:[180,110,80,.15],brown:[120,60,25],edge:'rgba(110,60,30,.5)',cyl:'chashu',salt:.02},
   naruto:{n:'어묵',tw:220,th:52,sh:()=>rrPoly(200,40,16,5),moist:.5,T0:6,cookRate:.12,brownRate:.05,hk:1,tint:[250,240,230,.2],brown:[180,130,70],edge:'rgba(200,170,170,.6)',cyl:'naruto',salt:.02},
   squid:{n:'오징어',tw:230,th:110,sh:()=>rrPoly(200,70,30,5),moist:.7,T0:4,cookRate:.12,brownRate:.04,hk:1,tint:[255,250,240,.45],brown:[170,110,60],edge:'rgba(150,100,110,.5)',cyl:'sring'},
-  garlic:{n:'마늘',tw:80,th:56,sh:()=>blob(27,17,18,.05,.03),moist:.6,T0:12,cookRate:.12,brownRate:.11,hk:1.4,tint:[240,225,170,.3],brown:[176,112,38],edge:'rgba(190,170,120,.6)',cyl:'garlic'},
+  garlic:{n:'마늘',tw:80,th:56,sh:()=>blob(20,12,18,.05,.03),moist:.6,T0:12,cookRate:.12,brownRate:.11,hk:1.4,tint:[240,225,170,.3],brown:[176,112,38],edge:'rgba(190,170,120,.6)',cyl:'garlic'},
   beef:{n:'소고기 등심',tw:220,th:170,sh:()=>blob(88,66,28,.05,.03),moist:.35,T0:5,cookRate:0,brownRate:.02,hk:.8,tint:[0,0,0,0],brown:[92,48,24],edge:'rgba(90,20,20,.5)',steak:1},
   begg:{n:'삶은 계란',tw:90,th:72,sh:()=>blob(33,25,26,0,0),moist:.2,T0:20,cookRate:0,brownRate:0,hk:1,tint:[0,0,0,0],brown:[0,0,0],edge:'rgba(200,190,170,.7)',custom:'begg'},
   curd:{n:'스크램블',tw:60,th:60,sh:()=>blob(rand(7,11),rand(6,9),12,.2,.12),moist:.3,T0:60,cookRate:.12,brownRate:.05,hk:1.6,tint:[0,0,0,0],brown:[170,110,40],edge:'rgba(210,170,60,.6)',custom:'curd'},
@@ -368,7 +368,7 @@ function newPiece(type,x,y){const d=ING[type];const p={id:PID++,kind:'piece',typ
   finalize(p);if(!d.shH)d.shH=p.ey;p.orig=p.area;return p;}
 function finalize(p){const P=p.poly;let A=0,cx=0,cy=0;for(let i=0,n=P.length;i<n;i++){const a=P[i],b=P[(i+1)%n];const c=a[0]*b[1]-b[0]*a[1];A+=c;cx+=(a[0]+b[0])*c;cy+=(a[1]+b[1])*c;}A/=2;if(Math.abs(A)<1e-6){cx=P[0][0];cy=P[0][1];}else{cx/=6*A;cy/=6*A;}
   let m=0,x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const q of P){q[0]-=cx;q[1]-=cy;m=Math.max(m,Math.hypot(q[0],q[1]));x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);}
-  p.tx+=cx;p.ty+=cy;const c=Math.cos(p.rot),s=Math.sin(p.rot);p.x+=c*cx-s*cy;p.y+=s*cx+c*cy;p.area=Math.abs(A);p.r=Math.sqrt(p.area/PI);p.mass=p.area/400;p.rb=m;p.ex=x1-x0;p.ey=y1-y0;checkDisc(p);}
+  p.tx+=cx;p.ty+=cy;const c=Math.cos(p.rot),s=Math.sin(p.rot);p.x+=c*cx-s*cy;p.y+=s*cx+c*cy;p.area=Math.abs(A);p.r=Math.sqrt(p.area/PI);p.mass=p.area/400;p.rb=m;p.ex=x1-x0;p.ey=y1-y0;if(p.L){let bw=1e9,ba=0,bl=0;for(let k=0;k<18;k++){const a=k/18*PI,c=Math.cos(a),s=Math.sin(a);let lo=1e9,hi=-1e9,lo2=1e9,hi2=-1e9;for(const q of p.poly){const u=q[0]*c+q[1]*s,w=-q[0]*s+q[1]*c;if(u<lo)lo=u;if(u>hi)hi=u;if(w<lo2)lo2=w;if(w>hi2)hi2=w;}if(hi-lo<bw){bw=hi-lo;ba=a;bl=hi2-lo2;}}p.minW=bw;p.minA=ba;p.minL=bl;}checkDisc(p);}
 function checkDisc(p){const d=ING[p.type];p.disc=false;if(!d.cyl||!d.shH)return;if(p.ey>=d.shH*.72&&p.ex<=Math.max(11,p.ey*.95)){p.disc=true;p.dr=p.ey/2;if(d.cyl==='ring'){const arr=SCAL[p.type];p.ringCol=arr[clamp(Math.round(p.tx+d.tw/2),0,arr.length-1)];}p.r=Math.max(p.r,p.dr*.8);}}
 function commonIds(a,b){if(!a[2]||!b[2])return null;const r=a[2].filter(x=>b[2].includes(x));return r.length?r:null;}
 function clipPoly(P,nx,ny,d,sgn,lid){const out=[],n=P.length;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];const fa=(nx*a[0]+ny*a[1]-d)*sgn,fb=(nx*b[0]+ny*b[1]-d)*sgn;if(fa>=0)out.push(a[2]?[a[0],a[1],a[2].slice()]:[a[0],a[1]]);if((fa>=0)!==(fb>=0)){const t=fa/(fa-fb),ids=(commonIds(a,b)||[]).concat(lid===undefined?[]:[lid]);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,ids]);}}return out;}
@@ -701,7 +701,8 @@ function pourAll(src,dst){if(dst.kind==='bowl'&&src.liq&&src.liq.vol>60){const n
   if(!dst)return;const vessel=dst.kind==='plate'||dst.kind==='bowl';const k=vessel?Math.min(.62,dst.r*.8/src.r):Math.min(1,(dst.r*.85)/src.r);let n=0;
   if(src.kind==='mix'){pourBatter(src,dst);return;}
   for(const o of src.items){const wx=src.x+o.x,wy=src.y+o.y;o.x=o.x*k+rand(-4,4);o.y=o.y*k+rand(-4,4);const d=Math.hypot(o.x,o.y),lim=dst.r*.9;if(d>lim){o.x*=lim/d;o.y*=lim/d;}o.z=isCook(dst)?rand(5,20):0;o.vz=0;o.vx=o.vy=0;o.flipT=0;if(vessel||dst.kind==='strainer'||dst.kind==='prep')animTo(o,wx,wy,dst);if(isCook(dst))o.cooked=true;dst.items.push(o);n++;}
-  for(const nd of src.noodles){if(dst.kind==='bowl'&&nd.type==='udon')udonFill(nd,dst.r*.64,.6);else if(vessel||dst.kind==='strainer')nestNoodle(nd,dst.r*(dst.kind==='plate'?.5:dst.kind==='strainer'?.8:.66),0,0);else moveNoodle(nd,src,dst,k,0,0);dst.noodles.push(nd);n++;}
+  if(vessel){const gs=dst.items.filter(o=>o.kind==='grain');if(gs.length>40){const Rg=Math.min(dst.r*.78,Math.sqrt(gs.length*48/PI));for(const o of gs){const a=rand(0,TAU),r=Rg*Math.sqrt(Math.random());o.x=Math.cos(a)*r;o.y=Math.sin(a)*r;if(o.anim){o.anim.fx=o.anim.fx;}}}}
+  for(const nd of src.noodles){if(dst.kind==='bowl'&&nd.type==='udon')udonFill(nd,dst.r*.64,.6);else if(dst.kind==='bowl'&&(nd.type==='ramyeon'||nd.type==='ramen'))udonFill(nd,dst.r*.8,.35);else if(vessel||dst.kind==='strainer')nestNoodle(nd,dst.r*(dst.kind==='plate'?.62:dst.kind==='strainer'?.8:.76),0,0);else moveNoodle(nd,src,dst,k,0,0);dst.noodles.push(nd);n++;}
   for(const e of src.eggs){const wx=src.x+e.x,wy=src.y+e.y;e.x*=k;e.y*=k;if(vessel)animTo(e,wx,wy,dst);dst.eggs.push(e);n++;}
   for(const j of src.jeons){const wx=src.x+j.x,wy=src.y+j.y;j.x*=k;j.y*=k;if(vessel)animTo(j,wx,wy,dst);const lim=dst.r-avgRad(j)*.7;if(Math.hypot(j.x,j.y)>lim){j.x=j.y=0;}dst.jeons.push(j);n++;}
   for(const b of src.beggs){b.x*=k;b.y*=k;dst.beggs.push(b);n++;}
@@ -782,7 +783,7 @@ function absorbFluid(c,dt){const F=c.fluid;if(!F.length)return;
       a=Math.min(a,q.m);if(a>0){q.m-=a;n.coat.salt+=a*d.salt;if(d.dark)n.coat.dark+=a*d.dark;if(d.oil)n.coat.oil+=a;if(d.sauce){n.coat.sauce+=a;n.sauceCol=d.col;}if(d.spicy)n.coat.chili+=a*d.spicy;if(q.sear>.2)n.fire=(n.fire||0)+a*q.sear*.05;if(d.aroma)n.aroma=(n.aroma||0)+a;if(q.k==='pastaw'||q.k==='water')n.stick=Math.max(0,n.stick-a*.05);}}}}
 
 /* ---------- fried egg & scramble ---------- */
-function newEgg(lx,ly){const N=40,base=rand(58,66),p1=rand(0,TAU),p2=rand(0,TAU);const e={kind:'egg',x:lx,y:ly,rad:new Array(N).fill(6),tr:[],set:0,edge:0,fb:[0,0],down:0,yolk:0,broken:false,yx:rand(-8,4),yy:rand(-8,4),pour:0,flipA:0,pend:false,T:8,moist:1,crack:1,smear:0,mass:10};
+function newEgg(lx,ly){const N=40,base=rand(48,54),p1=rand(0,TAU),p2=rand(0,TAU);const e={kind:'egg',x:lx,y:ly,rad:new Array(N).fill(6),tr:[],set:0,edge:0,fb:[0,0],down:0,yolk:0,broken:false,yx:rand(-8,4),yy:rand(-8,4),pour:0,flipA:0,pend:false,T:8,moist:1,crack:1,smear:0,mass:10};
   for(let i=0;i<N;i++){const a=i/N*TAU;e.tr.push(base*(1+.1*Math.sin(2*a+p1)+.06*Math.sin(5*a+p2)));}return e;}
 function stepEgg(c,e,dt){const T=c.T;let evap=0,smoke=0;e.pour=Math.min(1,e.pour+dt*1.8);e.crack=Math.max(0,e.crack-dt*2);
   const sp=1-Math.min(1,e.set),rate=Math.min(1,dt*2.4*sp*sp),N=e.rad.length;
@@ -883,7 +884,7 @@ function stepStrands(c,n,dt){const d=NT[n.type],liquid=c.liq&&c.liq.vol>20;
     for(let it=0;it<2;it++){for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],dx=b.x-a.x,dy=b.y-a.y,dd=Math.hypot(dx,dy)||1,df=(dd-L0)/dd*.5;a.x+=dx*df;a.y+=dy*df;b.x-=dx*df;b.y-=dy*df;}
       if(stiff>.05)for(let i=1;i<P.length-1;i++){const a=P[i-1],b=P[i+1],m=P[i];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;m.x+=(mx-m.x)*stiff*.5;m.y+=(my-m.y)*stiff*.5;}
       for(const p of P){const r=Math.hypot(p.x,p.y);if(r>R){const f=R/r;p.x*=f;p.y*=f;p.ox=p.ox*f+(p.x-p.ox*f)*.5;p.oy=p.oy*f+(p.y-p.oy*f)*.5;}}}}}
-function nestNoodle(n,R,cx,cy){const cnt=n.strands.length;n.strands.forEach((s,i)=>{const a0=i/cnt*TAU+rand(-.3,.3),r0=R*Math.sqrt(rand(.04,1))*.85,dir=i%2?1:-1;let a=a0;s.pts.forEach((p,k)=>{const r=Math.max(6,r0+Math.sin(k*.9+s.ph)*R*.07);p.x=(cx||0)+Math.cos(a)*r;p.y=(cy||0)+Math.sin(a)*r*.92;p.ox=p.x;p.oy=p.y;a+=dir*n.sl*.92/Math.max(12,r);});s.nt=s.pts.map(p=>[p.x,p.y]);});}
+function nestNoodle(n,R,cx,cy){const cnt=n.strands.length;n.strands.forEach((s,i)=>{const a0=i/cnt*TAU+rand(-.3,.3),r0=R*Math.sqrt(rand(.004,1))*.85,dir=i%2?1:-1;let a=a0;s.pts.forEach((p,k)=>{const r=Math.max(6,r0+Math.sin(k*.9+s.ph)*R*.07);p.x=(cx||0)+Math.cos(a)*r;p.y=(cy||0)+Math.sin(a)*r*.92;p.ox=p.x;p.oy=p.y;a+=dir*n.sl*.92/Math.max(12,r);});s.nt=s.pts.map(p=>[p.x,p.y]);});}
 function strandPush(n,lx,ly,vx,vy,rad,dt,c){let hit=0;for(const s of n.strands)for(const p of s.pts){const d2=(p.x-lx)**2+(p.y-ly)**2;if(d2<rad*rad){const f=1-Math.sqrt(d2)/rad;p.x+=vx*dt*.7*f;p.y+=vy*dt*.7*f;hit++;}}
   if(hit&&Math.hypot(vx,vy)>40){n.stick=Math.max(0,n.stick-dt*1.4*(n.T<0?.3:1));n.stirT=1;n.mixEven=Math.min(1,n.mixEven+dt*Math.min(1,Math.hypot(vx,vy)/600)*.45);}}
 
@@ -950,7 +951,7 @@ function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-
 
 /* ---------- batter & mixing bowl ---------- */
 function batterVol(m){return m.flour*.62+m.water+m.egg*50;}
-function batterColor(m,items){let c=[238,218,168];if(m.egg)c=mix(c,[246,206,110],Math.min(.5,m.egg*50/Math.max(1,batterVol(m))*2));let km=0,tot=0;for(const o of items){tot+=o.mass;if(o.type==='kimchi')km+=o.mass;}if(km)c=mix(c,[214,104,62],Math.min(.75,km/(tot+batterVol(m)*.02)*.9));return c;}
+function batterColor(m,items){let c=[238,218,168];if(m.egg)c=mix(c,[246,206,110],Math.min(.5,m.egg*50/Math.max(1,batterVol(m))*2));let km=0,tot=0;for(const o of items){tot+=o.mass;if(o.type==='kimchi')km+=o.mass;}if(km)c=mix(c,[226,112,52],Math.min(.82,km/(tot+batterVol(m)*.02)*1.5));return c;}
 function makeJeon(c,lx,ly,b){const vol=batterVol(b);if(vol<40){floatText('반죽이 너무 적어요',c.x+lx,c.y+ly-30,'#ffd0b0',22);return null;}
   const ratio=b.flour>0?b.water/b.flour:9,pm=b.items.reduce((s,o)=>s+o.mass,0),thick=(ratio<1?1.45:ratio>1.9?.7:ratio>1.5?.85:1)*(1+pm/vol*.6);
   const Rt=Math.min(c.r-12,Math.sqrt((vol+pm*3)*26/thick)),N=40,p1=rand(0,TAU);
@@ -1091,21 +1092,21 @@ function drawDisc(g,p,d){const r=p.dr,cy=d.cyl,v=VOL[p.type]||{skin:[150,150,140
   if(cy==='zuc'){g.fillStyle='#e6ecc4';g.fill();overlays(g,p,d);g.strokeStyle='#4a7a2c';g.lineWidth=Math.max(1.5,r*.12);g.stroke();g.fillStyle='rgba(200,210,150,.8)';for(let i=0;i<8;i++){const a=i/8*TAU;g.beginPath();g.ellipse(Math.cos(a)*r*.38,Math.sin(a)*r*.38,r*.1,r*.05,a,0,TAU);g.fill();}}
   else if(cy==='carrot'){g.fillStyle='#f08a2a';g.fill();overlays(g,p,d);g.fillStyle='rgba(255,190,110,.6)';g.beginPath();g.arc(0,0,r*.5,0,TAU);g.fill();g.strokeStyle='rgba(180,70,10,.5)';g.lineWidth=1;g.beginPath();g.ellipse(0,0,r,r*.94,0,0,TAU);g.stroke();}
   else if(cy==='cuc'){g.fillStyle='#d6e8b4';g.fill();overlays(g,p,d);g.strokeStyle='#2c5220';g.lineWidth=Math.max(1.5,r*.14);g.stroke();g.fillStyle='rgba(240,248,220,.9)';for(let i=0;i<3;i++){const a=i/3*TAU+.5;g.beginPath();g.ellipse(Math.cos(a)*r*.3,Math.sin(a)*r*.3,r*.22,r*.12,a,0,TAU);g.fill();}}
-  else if(cy==='chashu'){g.fillStyle='#d9a08c';g.fill();overlays(g,p,d);g.strokeStyle='#6a3218';g.lineWidth=r*.18;g.stroke();g.strokeStyle='rgba(250,236,220,.8)';g.lineWidth=2;g.beginPath();for(let t2=0;t2<14;t2++){const a=t2*.9,rr2=r*.7*(1-t2/16);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();}
+  else if(cy==='chashu'){g.fillStyle='#ecc3a6';g.fill();overlays(g,p,d);g.strokeStyle='#8a4a24';g.lineWidth=r*.12;g.stroke();g.strokeStyle='rgba(255,246,236,.9)';g.lineWidth=2.2;g.beginPath();for(let t2=0;t2<14;t2++){const a=t2*.9,rr2=r*.7*(1-t2/16);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();}
   else if(cy==='naruto'){g.fillStyle='#fbf7f0';g.fill();overlays(g,p,d);g.strokeStyle='#e0799a';g.lineWidth=2.4;g.beginPath();for(let t2=0;t2<40;t2++){const a=t2*.35,rr2=r*.7*(t2/40);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();g.strokeStyle='rgba(200,190,180,.7)';g.lineWidth=1;g.beginPath();for(let t2=0;t2<=48;t2++){const a=t2/48*TAU,rr2=r*(1+(t2%2?.06:-.02));g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2*.94);}g.stroke();}
   else if(cy==='garlic'){g.fillStyle='#f6eed6';g.fill();overlays(g,p,d);g.strokeStyle='rgba(200,180,130,.7)';g.lineWidth=1;g.stroke();g.beginPath();g.moveTo(-r*.5,0);g.lineTo(r*.5,0);g.stroke();}
   const hl=g.createRadialGradient(-r*.35,-r*.4,1,0,0,r);hl.addColorStop(0,'rgba(255,255,255,.28)');hl.addColorStop(.6,'rgba(255,255,255,0)');hl.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=hl;g.beginPath();g.ellipse(0,0,r,r*.94,0,0,TAU);g.fill();}
-function drawSlab(g,p){const len=p.ey,w=22,L2=p.Lm,n=L2.length,s=Math.sin(p.rot),co=Math.cos(p.rot),t=4;
-  g.fillStyle='rgba(60,20,15,.9)';g.save();g.translate(s*t,co*t);rr(g,-w/2,-len/2,w,len,4);g.fill();g.restore();
-  const gr=g.createLinearGradient(-w/2,0,w/2,0);for(let i=0;i<n;i++){const c=doneCol(L2[i]);gr.addColorStop(i/(n-1),rgba(c,1));}
-  const f0=p.face[0],f1=p.face[1];rr(g,-w/2,-len/2,w,len,4);g.fillStyle=gr;g.fill();
-  g.fillStyle=rgba(mix([150,70,40],[40,20,10],clamp(f0-1,0,1)),Math.min(1,f0));g.fillRect(-w/2,-len/2,2.6,len);g.fillStyle=rgba(mix([150,70,40],[40,20,10],clamp(f1-1,0,1)),Math.min(1,f1));g.fillRect(w/2-2.6,-len/2,2.6,len);
-  const gl=g.createLinearGradient(0,-len/2,0,len/2);gl.addColorStop(0,'rgba(255,255,255,.2)');gl.addColorStop(.4,'rgba(255,255,255,0)');gl.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=gl;rr(g,-w/2,-len/2,w,len,4);g.fill();
+function drawSlab(g,p){const len=p.minL||Math.max(p.ey,p.ex),w=24,L2=p.Lm,n=L2.length,s=Math.sin(p.rot),co=Math.cos(p.rot),t=2.5;
+  g.fillStyle='rgba(60,20,15,.55)';g.save();g.translate(s*t,co*t);rr(g,-w/2,-len/2,w,len,w*.45);g.fill();g.restore();
+  const gr=g.createLinearGradient(-w/2,0,w/2,0),av=(a,b)=>{let t=0;for(let i=a;i<=b;i++)t+=L2[i];return t/(b-a+1);},h2=n>>1;[[0,av(0,0)],[.14,av(1,2)],[.32,av(3,h2-1)],[.5,av(h2-1,h2)],[.68,av(h2,n-4)],[.86,av(n-3,n-2)],[1,av(n-1,n-1)]].forEach(([t,T2])=>gr.addColorStop(t,rgba(doneCol(T2),1)));
+  const f0=p.face[0],f1=p.face[1];rr(g,-w/2,-len/2,w,len,w*.45);g.fillStyle=gr;g.fill();g.save();rr(g,-w/2,-len/2,w,len,w*.45);g.clip();g.lineWidth=5;g.strokeStyle=rgba(mix([120,58,30],[50,24,12],clamp(Math.max(f0,f1)-.8,0,1)),.95);rr(g,-w/2,-len/2,w,len,w*.45);g.stroke();g.restore();
+  
+  const gl=g.createLinearGradient(0,-len/2,0,len/2);gl.addColorStop(0,'rgba(255,255,255,.2)');gl.addColorStop(.4,'rgba(255,255,255,0)');gl.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=gl;rr(g,-w/2,-len/2,w,len,w*.45);g.fill();
   if(!p.juiceLost){g.fillStyle='rgba(255,255,255,.22)';g.fillRect(-w/2+4,-len/2+3,3,len-6);}}
 function drawPiece(g,p,x,y,sc,flat){const d=ING[p.type];g.save();g.translate(x,y);g.rotate(p.rot);const V=volOf(p),k=(sc||1)*V.sc;if(k!==1)g.scale(k,k);if(p.flipT>0)g.scale(Math.max(.12,Math.abs(2*p.flipT-1)),1);
   if(p.disc){drawDisc(g,p,d);g.restore();return;}
-  if(p.L&&p.area<p.orig*.75&&p.ex<36){drawSlab(g,p);g.restore();return;}
-  if(!flat)drawWalls(g,p,V.th/k,V.v);
+  if(p.L&&p.area<p.orig*.75&&(p.minW||Math.min(p.ex,p.ey))<36){if(p.minW!==undefined)g.rotate(p.minA);else if(p.ex>p.ey)g.rotate(PI/2);drawSlab(g,p);g.restore();return;}
+  if(!flat)drawWalls(g,p,Math.min(V.th,Math.min(p.ex,p.ey)*.75)/k,V.v);
   tracePoly(g,p.poly);
   if(d.custom==='begg'){g.fillStyle='#fbf8f0';g.fill();if(p.area<p.orig*.8){g.save();g.clip();const y2=p.yolk||0,c=y2<.35?[246,150,18]:y2<.8?mix([236,138,30],[240,190,80],(y2-.35)/.45):mix([246,214,120],[200,200,120],clamp(y2-1.1,0,1)*2);
       g.fillStyle=rgba(c,1);g.beginPath();g.arc(-p.tx,-p.ty,13,0,TAU);g.fill();if(y2<.5){g.fillStyle='rgba(255,255,255,.5)';g.beginPath();g.ellipse(-p.tx-4,-p.ty-4,4,2.5,-.5,0,TAU);g.fill();}g.restore();}
@@ -1121,7 +1122,7 @@ function drawPiece(g,p,x,y,sc,flat){const d=ING[p.type];g.save();g.translate(x,y
   if(!flat)drawBevel(g,p);
   if(p.coat.oil>.03||(p.moist>.7&&p.cooked)){const r=Math.min(p.r,20);g.strokeStyle='rgba(255,250,232,.38)';g.lineWidth=1.2;g.beginPath();g.moveTo(-r*.45,-r*.25);g.quadraticCurveTo(-r*.1,-r*.5,r*.25,-r*.4);g.stroke();}
   g.restore();}
-function pieceShadow(g,p,x,y,off,a){const th=(VOL[p.type]||{th:4}).th;g.save();g.translate(x+off*.6+th*.25,y+off+th*.9);g.rotate(p.rot);const k=volOf(p).sc;if(k!==1)g.scale(k,k);if(p.disc){g.beginPath();g.arc(0,0,p.dr,0,TAU);}else tracePoly(g,p.poly);g.fillStyle=`rgba(0,0,0,${a})`;g.fill();g.restore();}
+function pieceShadow(g,p,x,y,off,a){const th=Math.min((VOL[p.type]||{th:4}).th,p.ex?Math.min(p.ex,p.ey)*.75:99);g.save();g.translate(x+off*.6+th*.25,y+off+th*.9);g.rotate(p.rot);const k=volOf(p).sc;if(k!==1)g.scale(k,k);if(p.disc){g.beginPath();g.arc(0,0,p.dr,0,TAU);}else tracePoly(g,p.poly);g.fillStyle=`rgba(0,0,0,${a})`;g.fill();g.restore();}
 const RICE=[247,244,234];
 function grainCol(o){let c=RICE;const ch=Math.min(1,o.coat.chili*3.2);if(ch>.01)c=mix(c,[216,84,40],ch*.85);const so=Math.min(1,o.coat.dark*7);if(so>.01)c=mix(c,[150,92,48],so*.55);
   const b=o.face[1-o.down];if(b>.05)c=mix(c,[178,112,52],Math.min(1,b)*.7);if(b>1)c=mix(c,[40,26,14],Math.min(.9,(b-1)*1.4));if(o.coat.oil>.05)c=mix(c,[255,250,225],.08);return rgba(c.map(v=>Math.round(v/5)*5),1);}
@@ -1156,18 +1157,21 @@ function drawJeon(g,j,x,y){g.save();g.translate(x,y);if(j.flipA>0)g.scale(1,Math
   g.save();g.clip();
   for(const p of j.pieces){drawPiece(g,p,p.x,p.y,.9,true);}
   if(top){g.fillStyle=rgba(base,.52-Math.min(.25,j.set*.2));g.fillRect(-200,-200,400,400);if(j.lumps>.3){g.fillStyle='rgba(255,255,248,.8)';const R=mulberry(j.pieces.length+7);for(let i=0;i<j.lumps*30;i++){g.beginPath();g.arc((R()-.5)*avgRad(j)*1.6,(R()-.5)*avgRad(j)*1.6,R()*2.5+1,0,TAU);g.fill();}}}
-  if(vis>.05){g.globalAlpha=Math.min(.95,vis*.85);g.fillStyle='rgba(186,112,40,.55)';g.fillRect(-200,-200,400,400);g.drawImage(SPOTS,-150,-150,300,300);if(vis>1.05){g.globalAlpha=Math.min(.85,(vis-1.05)*1.4);g.fillStyle='#1a0e06';g.fillRect(-200,-200,400,400);}g.globalAlpha=1;}
+  if(vis>.05){g.globalAlpha=Math.min(.7,vis*.6);g.fillStyle='rgba(196,124,48,.5)';g.fillRect(-200,-200,400,400);g.globalAlpha=Math.min(.45,vis*.4);g.drawImage(SPOTS,-110,-110,220,220);g.globalAlpha=Math.min(.6,vis*.55);for(const p of j.pieces)drawPiece(g,p,p.x,p.y,.9,true);g.globalAlpha=Math.min(.95,vis*.85);if(vis>1.05){g.globalAlpha=Math.min(.85,(vis-1.05)*1.4);g.fillStyle='#1a0e06';g.fillRect(-200,-200,400,400);}g.globalAlpha=1;}
   if(top&&j.set<.9){const gl=g.createRadialGradient(-avgRad(j)*.3,-avgRad(j)*.4,4,0,0,avgRad(j));gl.addColorStop(0,`rgba(255,255,255,${.3*(1-j.set)})`);gl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gl;g.fillRect(-200,-200,400,400);}
+  if(j.cuts&&j.cuts.length){const R=avgRad(j)+4;for(const a of j.cuts){const c=Math.cos(a),s=Math.sin(a);g.strokeStyle='rgba(70,36,12,.55)';g.lineWidth=3.2;g.beginPath();g.moveTo(-c*R,-s*R);g.lineTo(c*R,s*R);g.stroke();g.strokeStyle='rgba(255,236,190,.35)';g.lineWidth=1;g.beginPath();g.moveTo(-c*R+s*2,-s*R-c*2);g.lineTo(c*R+s*2,s*R-c*2);g.stroke();}}
   if(j.broken>0){g.strokeStyle='rgba(90,50,20,.7)';g.lineWidth=2.5;const R=mulberry(j.pieces.length+j.broken);for(let k=0;k<j.broken*2;k++){g.beginPath();let px=(R()-.5)*40,py=(R()-.5)*40;g.moveTo(px,py);for(let s=0;s<4;s++){px+=(R()-.5)*40;py+=(R()-.5)*40;g.lineTo(px,py);}g.stroke();}}
   g.restore();
+  if(j.edge>.25){const R3=mulberry(j.tr.length*7+3),N3=j.rad.length,e2=Math.min(1.2,j.edge);g.fillStyle=`rgba(${196-e2*40|0},${128-e2*40|0},${46-e2*10|0},${Math.min(.9,e2*.8)})`;for(let i=0;i<N3*3;i++){const a=i/(N3*3)*TAU,k2=(a/TAU)*N3,i0=Math.floor(k2)%N3,rad=j.rad[i0]*(1+(R3()-.5)*.05)+R3()*3-1;g.beginPath();g.arc(Math.cos(a)*rad,Math.sin(a)*rad,1.6+R3()*2.6*e2,0,TAU);g.fill();}}
   if(j.edge>.05){g.lineWidth=3+Math.min(1.4,j.edge)*6;g.strokeStyle=`rgba(170,100,34,${Math.min(.95,j.edge*.8)})`;g.stroke();if(j.edge>1.3){g.strokeStyle=`rgba(40,22,8,${Math.min(.8,(j.edge-1.3)*1.2)})`;g.lineWidth=3;g.stroke();}
     const N=j.rad.length;g.fillStyle=`rgba(150,86,28,${Math.min(.85,j.edge*.7)})`;for(let i=0;i<N*2;i++){const a=i/(N*2)*TAU,r=j.rad[i>>1]-2-((i*29)%6);g.beginPath();g.arc(Math.cos(a)*r,Math.sin(a)*r,1.4+((i*11)%3)*.7,0,TAU);g.fill();}}
   if(j.oil>.5||top){g.strokeStyle=`rgba(255,248,220,${top?.3:.22})`;g.lineWidth=2.2;g.beginPath();g.arc(0,0,avgRad(j)*.72,3.5,4.7);g.stroke();}g.restore();}
 function noodleCol(n){const d=NT[n.type];let c=d.col;if(n.done>.4)c=mix(c,[252,248,236],Math.min(.25,(n.done-.4)*.4));
   const dk=Math.min(1,n.coat.dark/(n.g*.12));if(dk>.02)c=mix(c,[140,82,40],dk*.7);const ch=Math.min(1,n.coat.chili/(n.g*.12));if(ch>.02)c=mix(c,[206,58,30],ch*.8);
   if(n.coat.sauce>1&&n.sauceCol)c=mix(c,n.sauceCol,Math.min(.85,n.coat.sauce/(n.g*.35)));if(n.brown>.1)c=mix(c,[170,110,50],Math.min(.6,n.brown*.6));return c;}
-function drawNoodle(g,n,ox,oy){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+Math.min(n.mush,1.2)*.22)*(n.T<0?1.1:1);g.lineCap='round';g.lineJoin='round';
+function drawNoodle(g,n,ox,oy,mass){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+Math.min(n.mush,1.2)*.22)*(n.T<0?1.1:1);g.lineCap='round';g.lineJoin='round';
   const addPath=(s,dx,dy)=>{const P=s.pts;g.moveTo(ox+dx+P[0].x,oy+dy+P[0].y);for(let i=1;i<P.length-1;i++){const mx=(P[i].x+P[i+1].x)/2,my=(P[i].y+P[i+1].y)/2;let px=P[i].x,py=P[i].y;if(d.wave){const nx=-(P[i+1].y-P[i-1].y),ny=P[i+1].x-P[i-1].x,l=Math.hypot(nx,ny)||1,o=Math.sin(i*2.1+s.ph)*d.wave*2.6;px+=nx/l*o;py+=ny/l*o;}g.quadraticCurveTo(ox+dx+px,oy+dy+py,ox+dx+mx,oy+dy+my);}g.lineTo(ox+dx+P[P.length-1].x,oy+dy+P[P.length-1].y);};
+  if(mass&&n.type!=='udon'){g.beginPath();for(const s of n.strands)addPath(s,0,0);g.strokeStyle=rgba(mix(c,[90,60,20],.18),1);g.lineWidth=w*2.7;g.stroke();g.strokeStyle=rgba(mix(c,[255,250,235],.05),1);g.lineWidth=w*1.6;g.stroke();}
   if(n.type==='udon'){const edge=rgba(mix(c,[176,140,84],.5),1),body=rgba(mix(c,[255,250,238],.2),1),mid=rgba(c,1);
     for(const s of n.strands){g.beginPath();addPath(s,1.2,2.2);g.strokeStyle='rgba(60,36,10,.22)';g.lineWidth=w+2.5;g.stroke();
       g.beginPath();addPath(s,0,0);g.strokeStyle=edge;g.lineWidth=w;g.stroke();g.strokeStyle=mid;g.lineWidth=w*.8;g.stroke();
@@ -1176,10 +1180,10 @@ function drawNoodle(g,n,ox,oy){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+Math.m
   g.beginPath();for(const s of n.strands)addPath(s,.8,1.4);g.strokeStyle='rgba(0,0,0,.24)';g.lineWidth=w+1.4;g.stroke();
   g.beginPath();for(const s of n.strands)addPath(s,0,0);g.strokeStyle=rgba(mix(c,[0,0,0],.12),1);g.lineWidth=w;g.stroke();g.strokeStyle=rgba(c,1);g.lineWidth=w*.72;g.stroke();
   g.beginPath();for(let i=0;i<n.strands.length;i+=2)addPath(n.strands[i],-w*.18,-w*.2);g.strokeStyle=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.42:.26})`;g.lineWidth=Math.max(.7,w*.26);g.stroke();}
-function drawLiquid(g,c,q,x,y,R,am){const vol=q.vol,cap=c.kind==='bowl'?520:c.kind==='pan'?160:c.kind==='sauce'?700:1600,d=Math.min(1,vol/cap),a=clamp(.2+d*.42+liqDark(q)*.45,.2,.9)*(am||1),QC=mix(liqCol(q),[70,120,150],clamp(1-(q.umami+q.dark*3+q.spicy+q.fat+q.sour)/Math.max(1,q.vol)*4,0,1)*(1-liqDark(q))*d*.45);const rr2=R*(.5+.5*Math.sqrt(d));
+function drawLiquid(g,c,q,x,y,R,am){const vol=q.vol,cap=c.kind==='bowl'?520:c.kind==='pan'?160:c.kind==='sauce'?700:1600,d=Math.min(1,vol/cap),a=clamp(.2+d*.42+liqDark(q)*.45+Math.min(.45,q.spicy/Math.max(1,q.vol)*30),.2,.92)*(am||1),QC=mix(liqCol(q),[70,120,150],clamp(1-(q.umami+q.dark*3+q.spicy+q.fat+q.sour)/Math.max(1,q.vol)*4,0,1)*(1-liqDark(q))*d*.45);const rr2=R*(.5+.5*Math.sqrt(d));
   if(c.kind!=='pan'&&c.kind!=='bowl'){g.save();g.beginPath();g.arc(x,y,R,0,TAU);g.arc(x,y,rr2,0,TAU,true);g.fillStyle='rgba(20,24,30,.16)';g.fill('evenodd');g.restore();}
   const tt0=(typeof G!=='undefined'&&G)?G.t:0;
-  const gr=g.createRadialGradient(x-rr2*.3,y-rr2*.3,rr2*.1,x,y,rr2);if(c.kind==='bowl'&&q.umami>q.vol*.2){const GC=mix(QC,[232,176,82],.35);gr.addColorStop(0,rgba(mix(GC,[255,236,170],.3),a*.7));gr.addColorStop(1,rgba(mix(GC,[150,90,30],.25),Math.min(.92,a*1.05)));}else{gr.addColorStop(0,rgba(mix(QC,[255,255,255],.15),a*.85));gr.addColorStop(1,rgba(mix(QC,[0,0,0],.2),Math.min(.95,a*1.15)));}g.fillStyle=gr;g.beginPath();g.arc(x,y,rr2,0,TAU);g.fill();
+  const sp=q.spicy/Math.max(1,q.vol);const gr=g.createRadialGradient(x-rr2*.3,y-rr2*.3,rr2*.1,x,y,rr2);if(c.kind==='bowl'&&sp>.004){const RC=mix(QC,[228,98,34],Math.min(.85,sp*60));gr.addColorStop(0,rgba(mix(RC,[255,190,120],.25),.92));gr.addColorStop(1,rgba(mix(RC,[140,40,10],.25),.96));}else if(c.kind==='bowl'&&q.umami>q.vol*.2){const GC=mix(QC,[232,176,82],.35*(1-Math.min(1,liqDark(q)*2.5)));gr.addColorStop(0,rgba(mix(GC,[255,236,170],.3),a*.7));gr.addColorStop(1,rgba(mix(GC,[150,90,30],.25),Math.min(.92,a*1.05)));}else{gr.addColorStop(0,rgba(mix(QC,[255,255,255],.15),a*.85));gr.addColorStop(1,rgba(mix(QC,[0,0,0],.2),Math.min(.95,a*1.15)));}g.fillStyle=gr;g.beginPath();g.arc(x,y,rr2,0,TAU);g.fill();
   if(q.fat>5){const R2=mulberry(c.id||3);g.fillStyle='rgba(255,220,140,.35)';for(let i=0;i<Math.min(40,q.fat/2);i++){const a2=R2()*TAU,r=Math.sqrt(R2())*rr2*.85,s=R2()*4+1.5;g.beginPath();g.arc(x+Math.cos(a2+G.t*.05)*r,y+Math.sin(a2+G.t*.05)*r,s,0,TAU);g.fill();}}
   const b=c.boil||0;if(b>.05){g.strokeStyle=`rgba(255,255,255,${.2+b*.4})`;g.lineWidth=1;const n=(b*30)|0;for(let i=0;i<n;i++){const a2=rand(0,TAU),r=Math.sqrt(Math.random())*rr2*.9;g.beginPath();g.arc(x+Math.cos(a2)*r,y+Math.sin(a2)*r,rand(1.5,4+b*5),0,TAU);g.stroke();}}
   else if(q.T>70){g.fillStyle='rgba(255,255,255,.3)';for(let i=0;i<(q.T-70)/4;i++){g.beginPath();g.arc(x+rand(-.7,.7)*rr2,y+rand(-.7,.7)*rr2,rand(.8,1.8),0,TAU);g.fill();}}
@@ -1336,8 +1340,9 @@ function drawMix(g,c,x,y){g.save();g.translate(x,y);const R=c.r;const vol=batter
 function drawContents(g,c){ // vessel-like drawing at local origin
   const gr=[],pc=[],gn=[];for(const o of c.items){let x=o.x,y=o.y;if(o.anim){const a=o.anim,t=clamp((a.t-a.delay)/a.dur,0,1),e=ease(t);x=lerp(a.fx,o.x,e);y=lerp(a.fy,o.y,e)-Math.sin(t*PI)*40;}o.dx=x;o.dy=y;if(o.kind==='grain')gr.push(o);else if(o.cooked||c.kind==='strainer'||c.kind==='prep')pc.push(o);else gn.push(o);}
   const liq=c.liq&&c.liq.vol>8;drawFluid(g,c,0,0);
-  if(c.kind==='bowl'){if(liq)drawLiquid(g,c,c.liq,0,0,c.r,.7);for(const n of c.noodles)drawNoodle(g,n,0,0);if(liq&&c.noodles.length)drawBrothFilm(g,c,c.liq,c.r);drawGrains(g,gr,0,0);}
-  else{drawGrains(g,gr,0,0);for(const n of c.noodles)drawNoodle(g,n,0,0);if(liq)drawLiquid(g,c,c.liq,0,0,c.r*.8);}
+  const serveV=c.kind==='bowl'||c.kind==='plate';if(serveV&&gr.length>40){let R0=0,G0=0,B0=0;for(const o of gr){const m=/(\d+),(\d+),(\d+)/.exec(o.col||'');if(m){R0+=+m[1];G0+=+m[2];B0+=+m[3];}else{R0+=247;G0+=244;B0+=234;}}const k3=gr.length,bc=[R0/k3,G0/k3,B0/k3];g.fillStyle=rgba(mix(bc,[120,80,40],.1),1);g.beginPath();for(const o of gr){g.moveTo(o.dx+6,o.dy);g.arc(o.dx,o.dy,6,0,TAU);}g.fill();}
+  if(c.kind==='bowl'){if(liq)drawLiquid(g,c,c.liq,0,0,c.r,.7);for(const n of c.noodles)drawNoodle(g,n,0,0,true);if(liq&&c.noodles.length)drawBrothFilm(g,c,c.liq,c.r);drawGrains(g,gr,0,0);}
+  else{drawGrains(g,gr,0,0);for(const n of c.noodles)drawNoodle(g,n,0,0,c.kind==='plate');if(liq)drawLiquid(g,c,c.liq,0,0,c.r*.8);}
   for(const b of c.beggs)drawBegg(g,b,b.x,b.y);for(const o of pc)drawPiece(g,o,o.dx,o.dy);
   const at=(e)=>{if(!e.anim)return[e.x,e.y];const a=e.anim,t=clamp((a.t-a.delay)/a.dur,0,1),k=ease(t);return[lerp(a.fx,e.x,k),lerp(a.fy,e.y,k)-Math.sin(t*PI)*40];};
   for(const j of c.jeons){const [x,y]=at(j);drawJeon(g,j,x,y);}for(const e of c.eggs){const [x,y]=at(e);drawEgg(g,e,x,y);}
@@ -1652,7 +1657,7 @@ function captureVessel(v){const c=$('#dish'),g=c.getContext('2d'),R=(v.kind==='b
 function serve(){const o=selOrder();if(!o){floatText('먼저 주문표를 선택하세요',1420,860,'#ffd0b0',22);return;}const R=RID[o.rid];let v=vesselOf(R),other=v===G.plate?G.bowl:G.plate,wrong=false;
   if(contEmpty(v)&&!contEmpty(other)){v=other;wrong=true;}if(contEmpty(v)){floatText('그릇이 비어 있어요',v.x,v.y,'#ffd0b0',24);return;}
   G.hideCursor=true;render();G.hideCursor=false;const hero=heroShot(v,R),img=hero||captureVessel(v);const res=evaluate(R,v,o);if(wrong){res.total=Math.max(0,res.total-5);res.notes.push({t:'meh',s:R.vessel==='bowl'?'그릇이 아니라 접시에 나왔네요.':'접시가 아니라 그릇에 나왔네요.'});}
-  applyExtras(o,v,res);if(R.plating){const pe=platingEval(R,v);res.total=clamp(Math.round(res.total*.85+pe.score*.15),0,100);res.cats.push(['플레이팅',pe.score]);const bad=pe.checks.filter(c=>!c.ok);if(!bad.length)res.notes.unshift({t:'good',s:'플레이팅이 사진처럼 예뻐요!'});else res.notes.push({t:'meh',s:'플레이팅: '+bad[0].hint});}const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(orderPrice(o)*q/100)*100,tip=0;
+  applyExtras(o,v,res);{const pe=platingEval(R,v);res.total=clamp(Math.round(res.total*.85+pe.score*.15),0,100);res.cats.push(['플레이팅',pe.score]);const bad=pe.checks.filter(c=>!c.ok);if(!bad.length)res.notes.unshift({t:'good',s:'플레이팅이 사진처럼 예뻐요!'});else res.notes.push({t:'meh',s:'플레이팅: '+bad[0].hint});}const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(orderPrice(o)*q/100)*100,tip=0;
   if(G.mode==='career'){const speed=o.pat===Infinity?0:clamp(o.left/o.pat,0,1);if(sc>=70)tip=Math.round(R.price*(.06+.14*speed)*(sc/100)/100)*100;G.combo=sc>=80?G.combo+1:0;if(G.combo>1)tip+=Math.round(R.price*Math.min(.25,G.combo*.05)/100)*100;
     SAVE.money+=pay+tip;G.day.rev+=pay;G.day.tips+=tip;G.day.served++;G.day.scores.push(sc);SAVE.rep=clamp(SAVE.rep+(sc-65)/350,0,5);SAVE.served++;}
   SAVE.best[R.id]=Math.max(SAVE.best[R.id]||0,sc);writeSave();if(G.mode==='career')midSave();checkAch(sc);
@@ -1874,17 +1879,40 @@ function makeSlices(type,n,th,skip){const p=newPiece(type,0,0);p.rot=0;const xs=
 function vPiecesOf(v,t){return v.items.filter(o=>o.kind==='piece'&&(!t||o.type===t));}
 function circSpread(list){if(!list.length)return{R:0,ang:0,r:0};let C=0,S2=0,r=0;for(const o of list){const a=Math.atan2(o.y,o.x);C+=Math.cos(a);S2+=Math.sin(a);r+=Math.hypot(o.x,o.y);}return{R:Math.hypot(C,S2)/list.length,ang:Math.atan2(S2,C),r:r/list.length};}
 function centroid(list){let x=0,y=0;for(const o of list){x+=o.x;y+=o.y;}return[x/list.length,y/list.length];}
+function mainNoodle(v){return v.noodles.reduce((a,b)=>!a||b.g>a.g?b:a,null);}
+function grainInfo(v){const gs=v.items.filter(o=>o.kind==='grain');if(!gs.length)return null;const [cx,cy]=centroid(gs);return{n:gs.length,cx,cy,inside:gs.filter(o=>Math.hypot(o.x,o.y)<v.r*.82).length/gs.length};}
+function groupOf(v,types){return v.items.filter(o=>o.kind==='piece'&&types.includes(o.type));}
+function compactAt(list,x,y,maxD,maxSpread){if(!list.length)return false;const [cx,cy]=centroid(list),sp=list.reduce((s,o)=>s+Math.hypot(o.x-cx,o.y-cy),0)/list.length;return Math.hypot(cx-x,cy-y)<maxD&&sp<maxSpread;}
 function platingEval(R,v){const checks=[],add=(ok,t,hint)=>checks.push({ok:!!ok,t,hint});
-  const pcs=vPiecesOf(v),lim=v.r;
-  if(R.plating==='udon'){
-    const n=v.noodles[0];const nc=n?noodleCoil(n):null;add(nc&&Math.hypot(nc.cx,nc.cy)<v.r*.18&&nc.spread<v.r*.4,'면이 가운데 소복이 모였어요','젓가락으로 면을 가운데로 모아요');
-    let tot=0,cov=0;for(const nd of v.noodles)for(const s of nd.strands)for(let j=0;j<s.pts.length;j+=2){const p=s.pts[j];tot++;if(pcs.some(o=>Math.hypot(o.x-p.x,o.y-p.y)<o.r*.9))cov++;}
+  const pcs=vPiecesOf(v),lim=v.r,r=v.r,gv2=k=>(v.garn&&v.garn[k])||0,id=R.id;
+  const n=mainNoodle(v),nc=n?noodleCoil(n):null,ncx=nc?nc.cx:0,ncy=nc?nc.cy:0;
+  const noodleCentered=(sp,label)=>add(nc&&Math.hypot(nc.cx,nc.cy)<r*.2&&nc.spread<r*sp,label||'면이 가운데 소복이 모였어요','젓가락으로 면을 가운데로 모아요');
+  const topCenter=(types,label,hint)=>add(compactAt(groupOf(v,types),ncx,ncy,r*.35,r*.34),label,hint);
+  const side=(types,label,hint)=>{const L3=groupOf(v,types),cs=circSpread(L3);add(L3.length>=2&&cs.R>.78&&cs.r>r*.32,label,hint);};
+  if(id==='udon'){
+    noodleCentered(.4);
+    let tot=0,cov=0;for(const nd of v.noodles)for(const s2 of nd.strands)for(let j=0;j<s2.pts.length;j+=2){const p=s2.pts[j];tot++;if(pcs.some(o=>Math.hypot(o.x-p.x,o.y-p.y)<o.r*.9))cov++;}
     add(n&&tot&&cov/tot<=.3,'면이 잘 보여요','토핑이 면을 너무 많이 덮었어요 — 한쪽으로 모아요');
     const nar=vPiecesOf(v,'naruto'),sc=vPiecesOf(v,'scallion').concat(vPiecesOf(v,'jjokpa'));const ns=circSpread(nar);
-    add(nar.length>=2&&ns.R>.8&&ns.r>v.r*.38,'어묵이 한쪽에 부채꼴로 모였어요','어묵을 그릇 한쪽 가장자리에 겹쳐 놓아요');
-    let scOk=false;if(sc.length>=3){const [sx,sy]=centroid(sc),comp=sc.reduce((s,o)=>s+Math.hypot(o.x-sx,o.y-sy),0)/sc.length;let sep=true;if(nar.length){const [nx,ny]=centroid(nar);sep=Math.hypot(nx-sx,ny-sy)>v.r*.45;}scOk=comp<v.r*.28&&sep;}
+    add(nar.length>=2&&ns.R>.8&&ns.r>r*.38,'어묵이 한쪽에 부채꼴로 모였어요','어묵을 그릇 한쪽 가장자리에 겹쳐 놓아요');
+    let scOk=false;if(sc.length>=3){const [sx,sy]=centroid(sc),comp=sc.reduce((s2,o)=>s2+Math.hypot(o.x-sx,o.y-sy),0)/sc.length;let sep=true;if(nar.length){const [nx,ny]=centroid(nar);sep=Math.hypot(nx-sx,ny-sy)>r*.45;}scOk=comp<r*.28&&sep;}
     add(scOk,'파는 반대편에 소복이','송송 썬 파를 어묵 반대쪽에 한데 모아요');}
-  else{const nd=v.noodles.filter(n=>n.strands[0].nt);if(nd.length)add(nd.some(n=>noodleCoil(n).coil>=.68),'면이 동그랗게 담겼어요','젓가락으로 면을 동그랗게 모아요');}
+  else if(id==='kfr'||id==='efr'){const gi=grainInfo(v);
+    add(gi&&Math.hypot(gi.cx,gi.cy)<r*.15&&gi.inside>.93,'밥을 가운데 둥글게 담았어요','주걱(젓가락·주걱 도구)으로 밥을 가운데로 모아요');
+    if(id==='kfr'){const e=v.eggs[0];add(e&&gi&&Math.hypot(e.x-gi.cx,e.y-gi.cy)<r*.28,'계란후라이를 밥 가운데 위에','핀셋으로 계란후라이를 밥 한가운데로 옮겨요');}
+    add(gv2('sesame')>.05||groupOf(v,['scallion','jjokpa']).length>2,'깨·파로 마무리했어요','통깨를 뿌리거나 송송 썬 파를 올려요');}
+  else if(id==='janchi'){noodleCentered(.45);topCenter(['zucchini'],'애호박 고명을 면 위 가운데','채 썬 애호박을 면 한가운데에 모아 올려요');add(gv2('gim')>.05,'김가루를 솔솔','김가루를 뿌려요');}
+  else if(id==='kmari'){noodleCentered(.45);topCenter(['kimchi','cucumber'],'김치·오이를 면 위 가운데','김치와 오이를 면 한가운데에 모아 올려요');add(v.ice.length>0,'얼음이 동동','얼음을 넣어요');}
+  else if(id==='bibim'){noodleCentered(.45);topCenter(['cucumber'],'오이채를 면 위 가운데','오이채를 면 한가운데에 모아 올려요');add(pcs.some(o=>o.type==='begg'&&Math.hypot(o.x-ncx,o.y-ncy)<r*.4),'삶은 계란 반쪽을 위에','계란 반쪽을 면 위에 올려요');}
+  else if(id==='ramyeon'){noodleCentered(.62,'면이 그릇에 고루 담겼어요');const e=v.eggs[0];add(e&&!pcs.some(o=>Math.hypot(o.x-e.x,o.y-e.y)<14),'계란이 잘 보여요','계란 위를 덮은 재료를 옆으로 옮겨요');add(groupOf(v,['scallion']).length>2,'파를 올렸어요','송송 썬 파를 올려요');}
+  else if(id==='shoyu'){noodleCentered(.62,'면이 그릇에 고루 담겼어요');side(['chashu'],'차슈를 한쪽에 가지런히','차슈를 그릇 한쪽에 겹쳐 놓아요');add(pcs.some(o=>o.type==='begg'),'반숙 계란 반쪽','계란 반쪽을 올려요');add(v.seeds.some(q=>q.type==='nori'&&Math.hypot(q.x,q.y)>r*.45),'김을 가장자리에 세웠어요','김을 그릇 가장자리에 꽂아요');}
+  else if(id==='kjeon'||id==='pajeon'||id==='buchu'){const j=v.jeons[0];add(j&&Math.hypot(j.x,j.y)<r*.15,'전이 접시 가운데','핀셋으로 전을 접시 가운데로 옮겨요');add(j&&j.cuts&&j.cuts.length>=3,'먹기 좋게 6조각으로 썰었어요','칼 도구로 전을 가로질러 세 번 그어요');}
+  else if(id==='steak'){const b=groupOf(v,['beef']);let ok=false,fan=false;
+    if(b.length>=3){const ang=o=>o.rot+(o.minA||0),a0=ang(b[0]);ok=b.every(o=>{const d=Math.abs((((ang(o)-a0)%PI)+PI*1.5)%PI-PI/2);return d<.35;});const c=Math.cos(a0),s2=Math.sin(a0),along=b.map(o=>-o.x*s2+o.y*c),across=b.map(o=>o.x*c+o.y*s2).sort((x,y)=>x-y);let gap=0;for(let i=1;i<across.length;i++)gap+=across[i]-across[i-1];gap/=across.length-1;fan=gap<19||Math.max(...along)-Math.min(...along)>26;}
+    add(b.length>=3&&ok,'고기 조각을 가지런히','핀셋으로 조각 방향을 나란히 맞춰요');add(fan,'살짝 겹쳐 펼쳤어요','조각을 조금씩 겹치게 비스듬히 펼쳐요');add(gv2('pepper')>.02||gv2('parsley')>.02||gv2('butter'),'후추·파슬리로 마무리','후추나 파슬리를 뿌려요');}
+  else if(id==='aglio'||id==='pomo'){add(nc&&Math.hypot(nc.cx,nc.cy)<r*.2&&nc.coil>=.7&&nc.spread<r*.5,'면을 둥지처럼 돌돌 말았어요','젓가락으로 면을 가운데로 돌돌 모아요');add(gv2('parsley')>.02||gv2('parm')>.05,'파슬리·치즈로 마무리','파슬리나 파마산을 뿌려요');}
+  else if(id==='yaki'){noodleCentered(.5);add(gv2('aonori')>.02,'아오노리를 솔솔','아오노리를 뿌려요');}
+  else if(n)noodleCentered(.5);
   const out=pcs.filter(o=>Math.hypot(o.x,o.y)+itemExt(o)*.4>lim);add(!out.length,'재료가 그릇 안에 있어요','테두리에 걸친 재료를 안으로 옮겨요');
   add(!(v.drips&&v.drips.length),'그릇 테두리가 깨끗해요','행주로 테두리에 튄 국물을 닦아요');
   const score=Math.round(checks.filter(c=>c.ok).length/checks.length*100);return{score,checks};}
@@ -1894,7 +1922,7 @@ const PL={on:false,v:null,R:null,tool:'tweez',drag:null,hover:null,last:null,raf
 function plBuildDom(){if($('#plating'))return;const d=document.createElement('div');d.id='plating';d.className='overlay';d.hidden=true;
   d.innerHTML=`<div class="pl-wrap"><div class="pl-left"><h2>플레이팅</h2><p class="pl-sub" id="plSub"></p><div class="pl-ref"><canvas id="plRef" width="440" height="440"></canvas><span>모범 플레이팅</span></div><ul id="plChecks"></ul></div>
     <div class="pl-mid"><canvas id="plCv" width="1080" height="1080"></canvas></div>
-    <div class="pl-right"><div class="pl-tools"><button type="button" data-t="tweez" class="pl-t">핀셋<small>토핑·면 집어 옮기기<br>휠·우클릭으로 돌리기</small></button><button type="button" data-t="comb" class="pl-t">젓가락<small>면 위를 문질러 가운데로 모으기</small></button><button type="button" data-t="towel" class="pl-t">행주<small>테두리 국물 닦기</small></button></div>
+    <div class="pl-right"><div class="pl-tools"><button type="button" data-t="tweez" class="pl-t">핀셋<small>토핑·면 집어 옮기기<br>휠·우클릭으로 돌리기</small></button><button type="button" data-t="comb" class="pl-t">젓가락·주걱<small>면·밥을 문질러 가운데로 모으기</small></button><button type="button" data-t="knife" class="pl-t">칼<small>전을 가로질러 그어 썰기</small></button><button type="button" data-t="towel" class="pl-t">행주<small>테두리 국물 닦기</small></button></div>
       <div class="pl-score"><b id="plScore">0</b><span>플레이팅 점수</span></div><button type="button" id="plServe" class="big-btn">서빙하기</button><button type="button" id="plBack" class="btn2">주방으로 돌아가기</button></div></div>`;
   $('#stage').appendChild(d);
   d.querySelectorAll('.pl-t').forEach(b=>b.onclick=()=>{PL.tool=b.dataset.t;plSyncTools();AU.pick();});
@@ -1902,7 +1930,7 @@ function plBuildDom(){if($('#plating'))return;const d=document.createElement('di
   const cv2=$('#plCv');cv2.addEventListener('pointerdown',plDown);cv2.addEventListener('pointermove',plMove);addEventListener('pointerup',plUp);cv2.addEventListener('wheel',e=>{e.preventDefault();plRotate(e.deltaY>0?.18:-.18);},{passive:false});
   cv2.addEventListener('contextmenu',e=>{e.preventDefault();plRotate(.4);});addEventListener('keydown',e=>{if(PL.on&&e.code==='Escape')plClose();});}
 function plSyncTools(){for(const b of $$('#plating .pl-t'))b.classList.toggle('on',b.dataset.t===PL.tool);$('#plCv').style.cursor=PL.tool==='towel'?'grab':'crosshair';}
-function platingWanted(){const o=selOrder();if(!o)return false;const R=RID[o.rid];if(!R.plating)return false;const v=vesselOf(R);return !contEmpty(v);}
+function platingWanted(){const o=selOrder();if(!o)return false;const R=RID[o.rid];const v=vesselOf(R);return !contEmpty(v);}
 function plOpen(){plBuildDom();const o=selOrder(),R=RID[o.rid],v=vesselOf(R);PL.on=true;PL.v=v;PL.R=R;PL.tool='tweez';PL.drag=null;
   $('#plSub').textContent=`${R.n} — 모범 플레이팅처럼 담아 보세요. 체크 항목이 점수에 들어가요.`;plDrawRef(R);plSyncTools();$('#plating').hidden=false;$('#tut').hidden=true;AU.pick();
   const loop=()=>{if(!PL.on)return;renderPlating();PL.raf=requestAnimationFrame(loop);};cancelAnimationFrame(PL.raf);loop();}
@@ -1914,14 +1942,15 @@ function plPick(v,lx,ly){for(let i=v.items.length-1;i>=0;i--){const o=v.items[i]
   for(const b of v.beggs)if(Math.hypot(b.x-lx,b.y-ly)<16)return{t:'item',o:b};
   for(const n of v.noodles)for(const s of n.strands)for(const p of s.pts)if(Math.hypot(p.x-lx,p.y-ly)<7)return{t:'noodle',o:n};return null;}
 function plDown(e){if(!PL.on)return;e.preventDefault();const [lx,ly]=plLocal(e);PL.last=[lx,ly];
-  if(e.button===2)return;if(PL.tool==='tweez'){const h=plPick(PL.v,lx,ly);if(h){PL.drag=h;AU.pick();}}else PL.drag={t:PL.tool};}
+  if(e.button===2)return;if(PL.tool==='tweez'){const h=plPick(PL.v,lx,ly);if(h){PL.drag=h;AU.pick();}}else PL.drag={t:PL.tool,sx:lx,sy:ly};}
 function plMove(e){if(!PL.on)return;const [lx,ly]=plLocal(e);const v=PL.v;PL.cur=[lx,ly];if(!PL.drag){PL.hover=PL.tool==='tweez'?plPick(v,lx,ly):null;PL.last=[lx,ly];return;}
   const [ox,oy]=PL.last,dx=lx-ox,dy=ly-oy,mv=Math.hypot(dx,dy);PL.last=[lx,ly];const d=PL.drag;
   if(d.t==='item'){d.o.x+=dx;d.o.y+=dy;}
   else if(d.t==='noodle'){for(const s of d.o.strands){for(const p of s.pts){p.x+=dx;p.y+=dy;p.ox=p.x;p.oy=p.y;}if(s.nt)for(const q of s.nt){q[0]+=dx;q[1]+=dy;}}}
-  else if(d.t==='comb'){if(combNoodles(v,lx,ly,mv)&&Math.random()<.15)AU.pick();}
+  else if(d.t==='comb'){let h=combNoodles(v,lx,ly,mv);for(const o of v.items){if(o.kind!=='grain')continue;const rr3=Math.hypot(o.x,o.y),w=clamp(1-Math.hypot(o.x-lx,o.y-ly)/40,0,1)*Math.min(1,mv/60)*clamp((rr3-v.r*.6)/(v.r*.2),0,1);if(w>0){o.x-=o.x*w*.3;o.y-=o.y*w*.3;h++;}}if(h&&Math.random()<.15)AU.pick();}
   else if(d.t==='towel'&&v.drips){const [r0,r1]=dripR(v);const n0=v.drips.length;v.drips=v.drips.filter(q=>{const r=lerp(r0,r1,q.f);return Math.hypot(Math.cos(q.a)*r-lx,Math.sin(q.a)*r-ly)>16;});if(v.drips.length<n0)AU.pick();}}
 function plUp(){if(!PL.on||!PL.drag)return;const d=PL.drag,v=PL.v;PL.drag=null;
+  if(d.t==='knife'&&PL.cur){const [ex,ey]=PL.cur,dx=ex-d.sx,dy=ey-d.sy,len=Math.hypot(dx,dy);for(const j of v.jeons){const R2=avgRad(j),dist=Math.abs((j.x-d.sx)*dy-(j.y-d.sy)*dx)/(len||1);if(len>R2&&dist<R2*.35){const a=((Math.atan2(dy,dx)%PI)+PI)%PI;j.cuts=j.cuts||[];if(!j.cuts.some(c=>Math.abs(c-a)<.25||Math.abs(c-a)>PI-.25)){j.cuts.push(a);AU.chop('kimchi',v.x);}}}}
   if(d.t==='item'){const o=d.o,ext=o.kind==='piece'?itemExt(o)*.45:o.kind==='begg'?10:avgRad(o)*.8,lim=Math.max(0,v.r-ext),r=Math.hypot(o.x,o.y);if(r>lim){o.x*=lim/r;o.y*=lim/r;}AU.place();}
   if(d.t==='noodle')AU.place();}
 function plRotate(a){const h=PL.drag&&PL.drag.t==='item'?PL.drag.o:PL.hover&&PL.hover.t==='item'?PL.hover.o:null;if(h&&h.rot!==undefined)h.rot+=a;}
@@ -1937,6 +1966,7 @@ function renderPlating(){if(!PL.on)return;const c=$('#plCv'),g=c.getContext('2d'
   if(h&&PL.tool==='tweez'){g.strokeStyle='rgba(255,210,120,.9)';g.lineWidth=1.6/k*1.6;g.setLineDash([4,3]);g.beginPath();if(h.t==='item'){const o=h.o,r=o.kind==='piece'?Math.min(o.r*.9,40):o.kind==='begg'?16:avgRad(o);g.arc(o.x,o.y,r+4,0,TAU);}else{const [x,y]=noodleCenter(h.o);g.arc(x,y,30,0,TAU);}g.stroke();g.setLineDash([]);}
   if(PL.cur){const [x,y]=PL.cur;g.lineCap='round';if(PL.tool==='tweez'){g.strokeStyle='#c9ced4';g.lineWidth=2.2;g.beginPath();g.moveTo(x-2,y-2);g.lineTo(x+40,y-46);g.moveTo(x+2,y+1);g.lineTo(x+46,y-40);g.stroke();}
     else if(PL.tool==='comb'){g.strokeStyle='#caa46a';g.lineWidth=3;g.beginPath();g.moveTo(x-3,y);g.lineTo(x+50,y-50);g.moveTo(x+3,y+3);g.lineTo(x+56,y-44);g.stroke();g.strokeStyle='rgba(255,230,160,.35)';g.lineWidth=1;g.beginPath();g.arc(x,y,70,0,TAU);g.stroke();}
+    else if(PL.tool==='knife'){if(PL.drag&&PL.drag.t==='knife'){g.strokeStyle='rgba(255,240,200,.8)';g.lineWidth=2;g.setLineDash([6,4]);g.beginPath();g.moveTo(PL.drag.sx,PL.drag.sy);g.lineTo(x,y);g.stroke();g.setLineDash([]);}g.fillStyle='#d9dde2';g.beginPath();g.moveTo(x,y);g.lineTo(x+44,y-30);g.lineTo(x+50,y-22);g.lineTo(x+8,y+4);g.closePath();g.fill();g.fillStyle='#2a1c14';rr(g,x+44,y-34,26,10,3);g.fill();}
     else{g.fillStyle='rgba(240,236,226,.95)';rr(g,x-16,y-11,32,22,6);g.fill();g.strokeStyle='rgba(120,160,190,.7)';g.lineWidth=1.5;g.beginPath();g.moveTo(x-12,y-4);g.lineTo(x+12,y-4);g.moveTo(x-12,y+3);g.lineTo(x+12,y+3);g.stroke();}}
   g.setTransform(1,0,0,1,0,0);
   if(!PL.evT||performance.now()-PL.evT>200){PL.evT=performance.now();const ev=platingEval(PL.R,v);$('#plScore').textContent=ev.score;$('#plChecks').innerHTML=ev.checks.map(c=>`<li class="${c.ok?'ok':''}"><i>${c.ok?'✓':'·'}</i><span>${c.t}${c.ok?'':`<small>${c.hint}</small>`}</span></li>`).join('');}}
@@ -1947,7 +1977,7 @@ function idealDish(R){if(R.plating!=='udon')return null;const c=mkCont('bowl',G.
   const nar=makeSlices('naruto',3,7);nar.forEach((s,i)=>{s.x=Math.cos(-.7+i*.32)*c.r*.52;s.y=Math.sin(-.7+i*.32)*c.r*.52;s.rot=rand(0,TAU);c.items.push(s);});
   const sc=makeSlices('scallion',12,4);sc.forEach((s,i)=>{const a=2.5+rand(-.25,.25),r=c.r*.5+rand(-12,12);s.x=Math.cos(a)*r;s.y=Math.sin(a)*r;s.rot=rand(0,TAU);c.items.push(s);});
   for(let i=0;i<24;i++)c.seeds.push({x:Math.cos(2.5)*c.r*.5+rand(-16,16),y:Math.sin(2.5)*c.r*.5+rand(-16,16),type:'shichimi',rot:rand(0,6),a:1});return c;}
-function plDrawRef(R){const cv3=$('#plRef'),g=cv3.getContext('2d');g.setTransform(1,0,0,1,0,0);plTable(g,cv3.width,cv3.height);const c=idealDish(R);
+function plDrawRef(R){const cv3=$('#plRef'),g=cv3.getContext('2d');g.setTransform(1,0,0,1,0,0);plTable(g,cv3.width,cv3.height);if(typeof RIMG!=='undefined'&&RIMG[R.id]){const im=new Image();im.onload=()=>{const W2=cv3.width,s2=Math.max(W2/im.width,W2/im.height),w=im.width*s2,h=im.height*s2;g.drawImage(im,(W2-w)/2,(W2-h)/2,w,h);};im.src=RIMG[R.id];return;}const c=idealDish(R);
   if(!c){g.fillStyle='#f3ead8';g.font='22px "Gowun Dodum", sans-serif';g.textAlign='center';g.fillText('자유롭게 담아 보세요',cv3.width/2,cv3.height/2);return;}
   const k=cv3.width/(2*(L.bowl.r+26));drawVesselAt(g,c,k,cv3.width/2,cv3.height/2,BOWLSTY[R.bowl]);g.setTransform(1,0,0,1,0,0);}
 
@@ -2203,8 +2233,8 @@ function useHeld(x,y){const h=G.held,c=contAt(x,y);
   case'begg':{if(inBoard(x,y)){const p=newPiece('begg',x,y);p.yolk=h.egg.yolk;p.white=h.egg.white;p.T=h.egg.T;G.board.pieces.push(p);AU.place();floatText('껍질을 까서 올렸어요',x,y-40,'#ffe9a0',20);G.held=null;}else if(c){c.beggs.push(Object.assign(h.egg,{x:x-c.x,y:y-c.y}));G.held=null;AU.place();}return;}
   case'noodle':if(c&&c.kind!=='mix'&&c.kind!=='prep'){const n=newNoodle(h.nt,x-c.x,y-c.y);c.noodles.push(n);if(c.t0<0)c.t0=G.t;if(c.liq&&c.liq.vol>15){AU.splash(.3,x);c.liq.T-=n.g*.02*(NT[h.nt].frozen?6:1)*1000/Math.max(200,c.liq.vol);}else AU.thud();
     G.held=h.nt==='ramyeon'?{kind:'packet',id:'packet'}:null;}return;
-  case'noodleObj':if(c){const n=h.n;const cx=x-c.x,cy=y-c.y;if(c.kind==='bowl'&&n.type==='udon'){udonFill(n,c.r*.64,.6);if(Math.random()<.5)addDrip(c,Math.atan2(cy,cx)+rand(-.6,.6),c.liq?liqCol(c.liq):[200,190,160]);}else if(c.kind==='bowl'||c.kind==='plate'||c.kind==='strainer'){nestNoodle(n,c.r*(c.kind==='plate'?.5:.66),cx*.2,cy*.2);if(c.kind==='bowl'&&Math.random()<.5)addDrip(c,Math.atan2(cy,cx)+rand(-.6,.6),c.liq?liqCol(c.liq):[200,190,160]);}else nestNoodle(n,c.r*.7,cx*.3,cy*.3);c.noodles.push(n);if(c.t0<0)c.t0=G.t;AU.splash(.15,x);G.held=null;}return;
-  case'packet':if(c&&c.liq&&c.liq.vol>15){const q=c.liq;q.salt+=4.8;q.spicy+=6;q.umami+=3;q.col=mix(q.col,[206,72,34],.55);q.fat+=6;AU.nz({f:3000,type:'highpass',d:.3,v:.12});for(let i=0;i<14;i++)spawn({k:'flake',type:'chili',x:x+rand(-14,14),y:y+rand(-14,14),z:20,vz:0,amt:0,rot:0,max:2});G.held=null;}else floatText('물이 담긴 냄비에 넣어요',x,y-30,'#ffd0b0',20);return;
+  case'noodleObj':if(c){const n=h.n;const cx=x-c.x,cy=y-c.y;if(c.kind==='bowl'&&(n.type==='udon'||n.type==='ramyeon'||n.type==='ramen')){udonFill(n,c.r*(n.type==='udon'?.64:.8),n.type==='udon'?.6:.35);if(Math.random()<.5)addDrip(c,Math.atan2(cy,cx)+rand(-.6,.6),c.liq?liqCol(c.liq):[200,190,160]);}else if(c.kind==='bowl'||c.kind==='plate'||c.kind==='strainer'){nestNoodle(n,c.r*(c.kind==='plate'?.62:c.kind==='bowl'?.76:.66),cx*.2,cy*.2);if(c.kind==='bowl'&&Math.random()<.5)addDrip(c,Math.atan2(cy,cx)+rand(-.6,.6),c.liq?liqCol(c.liq):[200,190,160]);}else nestNoodle(n,c.r*.7,cx*.3,cy*.3);c.noodles.push(n);if(c.t0<0)c.t0=G.t;AU.splash(.15,x);G.held=null;}return;
+  case'packet':if(c&&c.liq&&c.liq.vol>15){const q=c.liq;q.salt+=4.8;q.spicy+=6;q.umami+=3;q.col=mix(q.col,[222,92,30],.78);q.fat+=6;AU.nz({f:3000,type:'highpass',d:.3,v:.12});for(let i=0;i<14;i++)spawn({k:'flake',type:'chili',x:x+rand(-14,14),y:y+rand(-14,14),z:20,vz:0,amt:0,rot:0,max:2});G.held=null;}else floatText('물이 담긴 냄비에 넣어요',x,y-30,'#ffd0b0',20);return;
   case'ice':if(c){for(let i=0;i<5;i++)c.ice.push({x:x-c.x+rand(-18,18),y:y-c.y+rand(-18,18),m:9,rot:rand(0,1)});if(c.liq)c.liq.T=Math.max(0,c.liq.T-3);AU.clink();G.held=null;}return;
   case'nori':if(c&&(c.kind==='bowl'||c.kind==='plate')){const lx=x-c.x,ly=y-c.y,d=Math.hypot(lx,ly)||1,r=Math.min(d,c.r*.7);c.seeds.push({type:'nori',x:lx/d*r,y:ly/d*r,rot:Math.atan2(ly,lx)+PI/2});AU.place();G.held=null;}return;
   case'butter':if(c&&c.cook){addFluid(c,'butter',12,x,y,0,0,20);AU.sizzleBurst(.25,x);G.held=null;}else if(c){c.seeds.push({type:'butterpat',x:x-c.x,y:y-c.y,rot:0});c.garn=c.garn||{};c.garn.butter=1;G.held=null;AU.place();}return;
@@ -2255,7 +2285,9 @@ cv.addEventListener('pointermove',e=>{const q=toLocal(e);M.x=q.x;M.y=q.y;M.insid
   updateCursor();});
 function wipeAt(x,y){let n=0;G.counter.fluid=G.counter.fluid.filter(q=>{if(dist(q.x,q.y,x,y)<38){n++;return false;}return true;});STX.save();STX.globalCompositeOperation='destination-out';STX.fillStyle='rgba(0,0,0,.25)';STX.beginPath();STX.arc(x,y,26,0,TAU);STX.fill();STX.restore();if(n&&Math.random()<.3){AU.nz({f:2200,d:.08,v:.06});}if(n&&Math.random()<.08)floatText('뽀득',x,y-20,'#e8f4ff',18);}
 function setLevel(b,v){const was=b.level>.001;b.level=clamp(v,0,1);const now=b.level>.001;if(!was&&now){b.ign=.3;b.lit=false;AU.ignite();}if(was&&!now){b.lit=false;b.ign=0;AU.click();b.level=0;}}
+const KEEPLAY={beef:1,chashu:1,ham:1};
 function dropPieces(L2,x,y,spread,fromBoard){const c=contAt(x,y);
+  if(c&&(c.kind==='bowl'||c.kind==='plate')&&L2.length>1&&L2.every(o=>o.type===L2[0].type&&KEEPLAY[o.type])){const cx=c.x+(x-c.x)*.3,cy=c.y+(y-c.y)*.3;for(const o of L2)addItem(c,o,cx+(o.ox||0),cy+(o.oy||0));AU.place();return true;}
   if(c&&(c.kind==='bowl'||c.kind==='plate'||c.kind==='prep')){const R=Math.min(c.r*.55,14+Math.sqrt(L2.length)*9),cx=c.x+(x-c.x)*.45,cy=c.y+(y-c.y)*.45;for(const o of L2){const a=rand(0,TAU),r=Math.sqrt(Math.random())*R;o.rot=rand(0,TAU);addItem(c,o,cx+Math.cos(a)*r,cy+Math.sin(a)*r);}AU.place();return true;}
   if(c){let wet=0;for(const o of L2){const px=x+(o.ox||0)*spread,py=y+(o.oy||0)*spread;if(c.kind==='mix'){addItem(c,o,px,py);}else addItem(c,o,px,py,true);wet+=o.mass*o.moist;}dropFx(c,wet,x,y);return true;}
   if(inTrash(x,y)){AU.trash();return true;}return false;}
