@@ -209,15 +209,15 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 .tl2-news ul{margin:0;padding-left:16px;font-size:13.5px;line-height:1.6;color:#d9c9ab}
 .tl2-ver{position:absolute;left:96px;bottom:16px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(232,220,198,.5);letter-spacing:.06em}
 /* ===== tickets with guests ===== */
-#rail{height:190px}
+#rail{height:auto;max-height:200px;align-items:flex-start}#rail .tk-bar{margin-top:6px}
 .tk{padding-bottom:10px}.tk-av{position:absolute;right:-7px;top:-12px;width:42px;height:42px;border-radius:50%;background:#f7e6c4;border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.35);overflow:visible}
 .tk-av img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 20%}
 .tk-av i{position:absolute;right:-6px;bottom:-4px;font-style:normal;font-size:16px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
 .tk .tk-sp{top:auto;bottom:34px;right:4px}
 .tk-no{padding-right:30px}.tk-who small{font-weight:400;color:#8a755a}.tk-who{font-weight:700}.tk-h{font-style:normal;color:#d8456a;font-size:10px;letter-spacing:-1px}
-.tk em.tk-pf{background:#d8456a}
+.tk em.tk-pf{background:#d8456a}.tk em{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .tk.reg{background:#fff4e6}.tk.critic{background:#2a211b;color:#f3ead8}.tk.critic b{color:#ffd07a}.tk.critic .tk-who,.tk.critic .tk-no{color:#cdb994}.tk.critic .tk-av{border-color:#f0ae3a}
-#served,#recipePop{top:268px}
+#served,#recipePop{top:var(--railB,268px)}
 .sv-h{display:flex;align-items:center;gap:10px}.sv-av{width:52px;height:52px;border-radius:50%;background:#f7e6c4;object-fit:cover;object-position:50% 20%;border:2px solid #8a6a3a;flex:none}
 .sv-q{margin:2px 0 6px;font-family:'Black Han Sans',sans-serif;font-size:17px;line-height:1.3;color:#ffd9a0}.sv-aff{font-size:13px;color:#ffb4c8;margin-bottom:6px}.sv-aff span{color:#ff7fa0;letter-spacing:1px}
 .res-tag img{width:34px;height:34px;border-radius:50%;background:#f7e6c4;vertical-align:middle;object-fit:cover;object-position:50% 20%;margin-right:4px}
@@ -1745,7 +1745,7 @@ function spawnOrder(){const pool=menuPool();if(!pool.length)return;let R=pick(po
   const o={id:G.oid++,rid:R.id,t0:G.t,pat,left:pat,opt:R.opts?pick(R.opts):null,name:pick(NAMES),table:1+((Math.random()*8)|0),steps:{},special:!!(G.day&&G.day.special===R.id),req:pickReq(R)};G.orders.push(o);if(!selOrder())G.sel=o.id;
   AU.bell();floatText('새 주문!',1420,120,'#ffe9a0',30);renderTickets();}
 function gameTick(dt){if(G.mode!=='career')return;const D=G.day;D.t+=dt;G.midT=(G.midT||0)+dt;if(G.midT>10){G.midT=0;midSave();}const open=D.t<DAYLEN;
-  if(open){G.nextOrder-=dt;const maxO=seats();if(G.nextOrder<=0&&G.orders.length<maxO){spawnOrder();G.nextOrder=rand(50,85)/(.75+SAVE.rep*.1);}if(!G.orders.length&&G.nextOrder>12)G.nextOrder=Math.min(G.nextOrder,12);}
+  if(open){G.nextOrder-=dt;const maxO=seats();if(G.nextOrder<=0&&G.orders.length<maxO){spawnOrder();G.nextOrder=rand(57,96)/(.75+SAVE.rep*.1);}if(!G.orders.length&&G.nextOrder>12)G.nextOrder=Math.min(G.nextOrder,12);}
   if(!open&&!G.closeCap){G.closeCap=true;for(const o of G.orders)o.left=Math.min(o.left,150);}
   for(let i=G.orders.length-1;i>=0;i--){const o=G.orders[i];o.left-=dt;if(o.left<=0){G.orders.splice(i,1);D.fail++;SAVE.rep=clamp(SAVE.rep-.15,0,5);guestLeft(o);floatText(`${o.name} 손님이 기다리다 떠났어요`,1420,150,'#ffb38a',22);AU.door();if(G.sel===o.id)G.sel=G.orders[0]?G.orders[0].id:null;renderTickets();}}
   if(!open&&!G.orders.length&&!G.dayEnded){G.dayEnded=true;setTimeout(endDay,800);}}
@@ -2505,7 +2505,7 @@ renderTickets=(orig=>function(){orig();for(const el of $$('#rail .tk')){const o=
   el.classList.toggle('critic',!!o.critic);el.classList.toggle('reg',!!g.reg);const nn=el.querySelector('.tk-no');if(nn)nn.textContent=`#${String(o.id).padStart(3,'0')}`;const w=el.querySelector('.tk-who');if(w)w.innerHTML=`${g.n}${g.reg?` <i class="tk-h">${'♥'.repeat(hearts(o.cust))||'♡'}</i>`:''}${o.table?` <small>${o.table}번</small>`:''}`;
   const a=document.createElement('span');a.className='tk-av';a.innerHTML=`<img alt="" src="${gImg(o.cust)}"><i></i>`;el.appendChild(a);
   if(o.pref){const e=document.createElement('em');e.className='tk-pf';e.textContent='♥ '+PREF[o.pref].t;const p=el.querySelector('.tk-p');el.insertBefore(e,p);}}
-  updateTicketBars();})(renderTickets);
+  updateTicketBars();const hs=$$('#rail .tk').map(e=>e.offsetHeight);$('#stage').style.setProperty('--railB',(66+Math.max(96,...hs)+14)+'px');})(renderTickets);
 updateTicketBars=(orig=>function(){orig();for(const el of $$('#rail .tk')){const o=G.orders.find(q=>q.id==el.dataset.id),i=el.querySelector('.tk-av i');if(!o||!i)continue;const f=o.pat===Infinity?1:clamp(o.left/o.pat,0,1),m=MOOD(f);if(i.textContent!==m){i.textContent=m;const im=el.querySelector('.tk-av img');if(im)im.src=gImg(o.cust,moodK(f));}}})(updateTicketBars);
 renderSteps=(orig=>function(){orig();const o=selOrder();if(o&&o.pref){$('#rpSub').textContent=`${GUEST[o.cust].n}: ${PREF[o.pref].t} · `+$('#rpSub').textContent;}})(renderSteps);
 showToast=(orig=>function(P){orig(P);const g=GUEST[P.o.cust],t=$('#served');if(!g)return;const h=t.querySelector('.sv-h');
@@ -2554,7 +2554,7 @@ function openAch(){if(!SAVE)loadSave();let d=$('#achPanel');if(!d){d=document.cr
   $('#achClose').onclick=()=>d.hidden=true;d.hidden=false;}
 
 /* ---------- settings + BGM ---------- */
-const SET=(()=>{let o={};try{o=JSON.parse(localStorage.getItem('sizzle-opts')||'{}');}catch(e){}return Object.assign({master:.9,sfx:.9,bgm:.5,bubble:true,calm:false,ai:true},o);})();
+const SET=(()=>{let o={};try{o=JSON.parse(localStorage.getItem('sizzle-opts')||'{}');}catch(e){}return Object.assign({master:.9,sfx:.9,bgm:.5,bubble:true,calm:false,ai:false},o);})();
 function saveOpt(){try{localStorage.setItem('sizzle-opts',JSON.stringify(SET));}catch(e){}}
 AU.gv=function(){return this.muted?0:.85*SET.master*SET.sfx;};
 AU.setMute=(orig=>function(m){orig.call(this,m);bgmVol();})(AU.setMute);
