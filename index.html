@@ -278,6 +278,33 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .rv h3{margin:0;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:26px;color:#8e2610}.rv-st{font-size:26px;color:#c9861a;letter-spacing:2px}.rv-st small{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#6b5a47;margin-left:8px;letter-spacing:0}
 .rv p{margin:6px 0;font-size:15px;line-height:1.55}.rv-cats{display:grid;grid-template-columns:60px 1fr;gap:6px 12px;align-items:center;font-size:13.5px;margin:8px 0}.rv-cats .xp{background:#e2d4b8}.rv-rw{font-weight:700;color:#3f8a4a}.rv .big-btn{justify-self:end;font-size:20px;padding:10px 24px}
 .set-pace{display:inline-flex;margin-bottom:6px;background:#e6d8bc;border-color:#b9a383}.set-pace button{color:#5a3a24;font-size:14px;padding:5px 14px}.set-pace button.on{background:var(--chili);color:#fff}
+/* ===== 1.3.2 top bar ===== */
+#top{background:linear-gradient(#2b1e16,#1b130e);border-bottom:1px solid #4a3627;box-shadow:0 3px 12px rgba(0,0,0,.35);gap:12px;padding:0 10px}
+#top .st{gap:10px;align-items:center}
+#clockBox{position:relative;display:inline-flex;align-items:center;background:#130d09;border:1px solid #4a3627;border-radius:8px;padding:4px 10px 6px;overflow:hidden}
+#clockBox #clock{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13.5px;color:#ffd07a}
+#dayBar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.06)}#dayBar b{display:block;min-width:2px;height:100%;background:linear-gradient(90deg,#f0ae3a,#e2692a)}#clockBox.practice #dayBar{display:none}
+#money{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;color:#9fe0a0}
+#top #rep{font-size:14px}
+#hint{flex:1;min-width:0;margin:0 6px;text-align:center;font-size:14px;color:#efe3cc;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:5px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hint.warn{background:rgba(194,58,27,.22);border-color:rgba(255,120,80,.45);color:#ffd2c0}
+#top .bt{gap:2px;background:rgba(0,0,0,.28);border:1px solid #3a2b20;border-radius:10px;padding:3px}
+#top .bt button{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid transparent;border-radius:7px;padding:5px 10px;font-size:13px;color:#e8dcc6;transition:background .12s,border-color .12s}
+#top .bt button:hover{background:rgba(240,174,58,.14);border-color:rgba(240,174,58,.35);color:#fff}
+#top .bt button .ico{order:-1;width:17px;height:17px;flex:none;color:#f0ae3a}
+#top .bt button kbd{margin-left:0;padding:0 4px;border:1px solid #4a3a2e;border-radius:4px;font-size:9.5px;color:#9b8670;line-height:14px}
+#top .bt #btnDrop{background:rgba(194,58,27,.25);border-color:rgba(255,120,80,.4)}
+#lvChip{border-radius:8px;background:#130d09;border-color:#4a3627}
+/* first-day tour prompt */
+.ask{width:520px;padding:30px 34px;text-align:center}.ask h2{margin:0 0 8px;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:34px;color:var(--chili-d)}.ask p{font-size:16px;line-height:1.6;color:#4a3a2e;margin:0 0 20px}.ask p small{font-size:13.5px;color:#8a755a}
+.ask-b{display:flex;gap:10px;justify-content:center}.ask-b .big-btn{font-size:20px;padding:10px 22px}
+.fr{max-height:920px;overflow:auto}.fr-lock{grid-column:1/-1;margin:6px 0 0;font-size:13.5px;color:#5a6a78;text-align:center}
+#recipePop{transition:opacity .15s}#recipePop.peek{opacity:.14;pointer-events:none}
+#hint{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;font-size:13px;padding:3px 14px}
+.menu{width:460px;gap:12px}.menu .big-btn{font-size:24px}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.menu-grid .btn2{padding:12px 8px;font-size:15px}
+.menu-foot{display:flex;justify-content:space-between;gap:6px;border-top:1px dashed #cdb994;padding-top:10px}.menu-foot .btn2{background:none;border:none;padding:4px 6px;font-size:13.5px;color:#8a5a3a;text-decoration:underline;text-underline-offset:3px}.menu-foot .btn2:hover{color:var(--chili)}
+.btn2{border-radius:10px;font-weight:600;transition:transform .08s,background .12s}.btn2:hover{background:#f1e4c6}.btn2:active{transform:translateY(1px)}
 </style>
 </head>
 <body>
@@ -1428,7 +1455,7 @@ function drawCW(c){const g=ctx;let x=c.x,y=c.y;if(c.tossT>0){const pr=1-c.tossT/
   if(!lift&&c.liq&&c.liq.addT!==undefined&&G.t-c.liq.addT<1.4&&c.kind!=='bowl'){const al=Math.min(1,(1.4-(G.t-c.liq.addT))*2),tx=Math.round(c.liq.vol)+' ml';g.globalAlpha=al;g.font='700 18px "IBM Plex Mono", monospace';const w=g.measureText(tx).width+20;rr(g,x-w/2,y-c.r*.18-15,w,28,14);g.fillStyle='rgba(14,40,64,.82)';g.fill();g.fillStyle='#bfe6ff';g.textAlign='center';g.fillText(tx,x,y-c.r*.18+5);g.globalAlpha=1;}
   if(c.foam>.42&&!lift){const p=.5+.5*Math.sin(G.t*10);g.font='15px "Black Han Sans", sans-serif';const tx='넘치기 직전! 찬물 · 불 줄이기',w=g.measureText(tx).width+22;g.fillStyle=`rgba(200,40,20,${.75+.2*p})`;rr(g,x-w/2,y-c.r-44,w,28,14);g.fill();g.fillStyle='#fff';g.textAlign='center';g.fillText(tx,x,y-c.r-25);}
   if(!lift){const la=c.kind==='pan'?(c.id===2?2.2:2.5):c.id===0?PI/2:2.4,lx2=x+Math.cos(la)*(c.r+(c.id===0?20:14)),ly2=y+Math.sin(la)*(c.r+(c.id===0?20:14));g.font='600 12px "Gowun Dodum", sans-serif';const nm=c.name,tw=g.measureText(nm).width+14;g.fillStyle='rgba(8,9,10,.7)';rr(g,lx2-tw/2,ly2-10,tw,20,10);g.fill();g.fillStyle='rgba(240,228,210,.9)';g.textAlign='center';g.fillText(nm,lx2,ly2+4);}
-  if(!lift){const T=c.liq&&c.liq.vol>15?c.liq.T:c.T,tx=x+Math.cos(-.8)*(c.r+6),ty=y+Math.sin(-.8)*(c.r+6);rr(g,tx-4,ty-12,58,22,6);g.fillStyle='rgba(8,9,10,.85)';g.fill();g.fillStyle=(T>=235&&(G.t%.5)<.25)?'#7a2a1a':tempCol(T);g.font='600 13px "IBM Plex Mono", monospace';g.textAlign='left';g.fillText(Math.round(T)+'°C',tx+2,ty+4);
+  if(!lift&&((G.burners[c.burner]&&G.burners[c.burner].lit)||Math.abs((c.liq&&c.liq.vol>15?c.liq.T:c.T)-22)>6)){const T=c.liq&&c.liq.vol>15?c.liq.T:c.T,tx=x+Math.cos(-.8)*(c.r+6),ty=y+Math.sin(-.8)*(c.r+6);rr(g,tx-4,ty-12,58,22,6);g.fillStyle='rgba(8,9,10,.85)';g.fill();g.fillStyle=(T>=235&&(G.t%.5)<.25)?'#7a2a1a':tempCol(T);g.font='600 13px "IBM Plex Mono", monospace';g.textAlign='left';g.fillText(Math.round(T)+'°C',tx+2,ty+4);
     if(c.liq&&c.liq.vol>15){g.fillStyle='rgba(180,210,240,.8)';g.font='500 10px "IBM Plex Mono", monospace';g.fillText(Math.round(c.liq.vol)+'ml',tx+2,ty+20);}}}
 function drawKnobs(){const g=ctx;G.burners.forEach((b,i)=>{const x=KNOBX[i],y=KNOBY;
   for(let k=0;k<=10;k++){const a=-PI/2+k/10*PI*1.4,c=mix([80,150,255],[255,120,50],k/10);g.strokeStyle=rgba(c,k/10<=b.level&&b.level>0?.95:.25);g.lineWidth=k%5?2:3;g.beginPath();g.moveTo(x+Math.cos(a)*33,y+Math.sin(a)*33);g.lineTo(x+Math.cos(a)*39,y+Math.sin(a)*39);g.stroke();}
@@ -1519,8 +1546,8 @@ function drawDragged(c){const g=ctx;if(c.cook)drawCW(c);else if(c.kind==='strain
 function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
   g.drawImage(BG,0,0,W,H);g.drawImage(STAIN,0,0,W,H);drawFluid(g,G.counter,0,0);drawTowelSpot(g);
   const canHover=G.started&&!G.held&&!G.drag,sh=canHover?shelfAt(M.x,M.y):null;
-  for(const p of PANTRY){const lk=!ingOpen(p.id);g.save();if(sh===p&&!lk)g.translate(0,-4);if(lk)g.globalAlpha=.28;drawPantryItem(g,p,p.row===1?140:214);g.restore();
-    if(lk){g.font='13px sans-serif';g.textAlign='center';g.fillStyle='rgba(255,240,220,.85)';g.fillText('🔒',p.x,p.row===1?112:192);continue;}
+  for(const p of PANTRY){const lk=!ingOpen(p.id);g.save();if(sh===p&&!lk)g.translate(0,-4);if(lk)g.globalAlpha=sh===p?.4:.1;drawPantryItem(g,p,p.row===1?140:214);g.restore();
+    if(lk){if(sh===p){g.font='12px sans-serif';g.textAlign='center';g.fillStyle='rgba(255,240,220,.85)';g.fillText('🔒',p.x,p.row===1?112:192);}continue;}
     g.font='600 11px "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle='rgba(246,234,214,.9)';g.fillText(p.n,p.x,p.row===1?150:224);
     if(p.kind==='noodle'&&G.mode!=='practice'){const n=G.stock[p.id]||0;g.font='600 10px "IBM Plex Mono", monospace';g.fillStyle=n?'rgba(240,174,58,.95)':'rgba(220,120,100,.9)';g.fillText(n?'×'+n:'품절',p.x+26,p.row===1?92:170);}}
   if(canHover&&inFridge(M.x,M.y)){g.strokeStyle='rgba(255,220,150,.8)';g.lineWidth=3;rr(g,L.fridge.x-2,L.fridge.y-2,L.fridge.w+4,L.fridge.h+4,12);g.stroke();}
@@ -1748,7 +1775,7 @@ function resetKitchen(mode){G=makeState(mode);if(UPG.burner)for(const b of G.bur
 function startCareer(){tutStop();resetKitchen('career');const m=SAVE.mid&&SAVE.mid.day===SAVE.day?SAVE.mid:null;G.day={n:SAVE.day,t:0,rev:0,tips:0,spend:0,served:0,fail:0,scores:[],gasStart:0};G.started=true;G.nextOrder=6;
   if(m){Object.assign(G.day,{t:m.t,rev:m.rev,tips:m.tips,spend:m.spend,served:m.served,fail:m.fail,scores:m.scores||[],special:m.special});G.gas=m.gas||0;G.combo=m.combo||0;G.closeCap=m.closeCap;G.orders=(m.orders||[]).map(o=>Object.assign({},o,{id:G.oid++,t0:G.t,steps:{}}));G.sel=G.orders[0]?G.orders[0].id:null;G.nextOrder=8;}
   else{G.day.special=pickSpecial();midSave();}
-  hideAll();$('#top').hidden=false;renderTickets();hudTick();AU.door();if(!SAVE.toured)tourStart();else dayBanner(!!m);}
+  hideAll();$('#top').hidden=false;renderTickets();hudTick();AU.door();if(!SAVE.toured)askTour(()=>dayBanner(!!m));else dayBanner(!!m);}
 function startPractice(rid,guide){tutStop();resetKitchen('practice');G.started=true;hideAll();$('#top').hidden=false;const R=RID[rid];G.orders=[{id:G.oid++,rid,t0:0,pat:Infinity,left:Infinity,opt:R.opts?pick(R.opts):null,name:'연습',table:0,steps:{}}];G.sel=G.orders[0].id;renderTickets();hudTick();
   if(guide){if(!SAVE.toured){G.pendingGuide=rid;tourStart();}else tutStart(rid);}else{$('#recipePop').hidden=false;renderSteps();}}
 function hideAll(){for(const id of ['title','dlcPanel','practice','fridge','market','result','settle','menu'])$('#'+id).hidden=true;}
@@ -1804,8 +1831,8 @@ $('#resAgain').addEventListener('click',()=>{$('#result').hidden=true;G.paused=f
 /* ---------- end of day ---------- */
 function endDay(){if(G.mode!=='career')return;const D=G.day,gas=Math.round(G.gas/10)*10,avg=D.scores.length?Math.round(D.scores.reduce((a,b)=>a+b,0)/D.scores.length):0;
   const rentD=D.n<=3?12000:RENT;SAVE.money-=rentD+SEASON+gas;const profit=D.rev+D.tips-D.spend-rentD-SEASON-gas;SAVE.day++;SAVE.mid=null;const spoiled=spoilLots();writeSave();G.started=false;setTimeout(()=>checkAch(0),600);
-  $('#settleBody').innerHTML=`<div class="st-row"><span>매출</span><b>${won(D.rev)}</b></div><div class="st-row"><span>팁</span><b>${won(D.tips)}</b></div><div class="st-row neg"><span>재료 구입</span><b>−${won(D.spend)}</b></div>
-    <div class="st-row neg"><span>가스비</span><b>−${won(gas)}</b></div><div class="st-row neg"><span>임대료${rentD<RENT?' <small>(오픈 할인)</small>':''}</span><b>−${won(rentD)}</b></div><div class="st-row neg"><span>양념·소모품</span><b>−${won(SEASON)}</b></div>
+  $('#settleBody').innerHTML=`<div class="st-row"><span>매출</span><b>${won(D.rev)}</b></div><div class="st-row"><span>팁</span><b>${won(D.tips)}</b></div><div class="st-row neg"><span>재료 구입</span><b>${D.spend?'−':''}${won(D.spend)}</b></div>
+    <div class="st-row neg"><span>가스비</span><b>${gas?'−':''}${won(gas)}</b></div><div class="st-row neg"><span>임대료${rentD<RENT?' <small>(오픈 할인)</small>':''}</span><b>−${won(rentD)}</b></div><div class="st-row neg"><span>양념·소모품</span><b>−${won(SEASON)}</b></div>
     <div class="st-row tot ${profit<0?'neg':''}"><span>오늘 순이익</span><b>${profit<0?'−':''}${won(Math.abs(profit))}</b></div>
     <div class="st-meta"><span>서빙 ${D.served}건 · 놓친 주문 ${D.fail}건 · 평균 ${avg}점</span><span>평판 <span class="stars">${stars(SAVE.rep*20)}</span></span><span>잔고 ${won(SAVE.money)}</span></div>${spoiled.length?`<div class="st-spoil">버린 재료 (유통기한 지남): ${spoiled.map(([id,n])=>ING[id].n+' '+n).join(', ')}</div>`:''}${REC.some(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===SAVE.day)?`<div class="st-new">내일 새 메뉴: ${REC.filter(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===SAVE.day).map(r=>r.n).join(' · ')}</div>`:''}`;
   $('#settleDay').textContent=`DAY ${D.n} 마감`;$('#settle').hidden=false;$('#top').hidden=true;$('#recipePop').hidden=true;}
@@ -1830,8 +1857,9 @@ function itemIcon(id){if(ICON[id])return ICON[id];const c=mk(144,144),g=c.getCon
 /* ---------- fridge ---------- */
 function openFridge(){if(!G.started)return;AU.door();if(G.mode!=='practice')syncLots();const grid=$('#fridgeGrid');grid.innerHTML='';
   const FR=[...FRIDGE].sort((a,b)=>(ingOpen(a[0])?0:1)-(ingOpen(b[0])?0:1));
-  for(const [id,n,,kind] of FR){if(!ingOpen(id)){const b=document.createElement('button');b.type='button';b.className='fr-it locked';b.disabled=true;b.innerHTML=`<img alt="" src="${itemIcon(id)}"><span>${n}</span><em>🔒 ${lockMsg(id)}</em>`;grid.appendChild(b);continue;}const stock=G.mode==='practice'?'∞':kind==='bottle'?(G.stock[id]||0)+'ml':(G.stock[id]||0);const out=G.mode!=='practice'&&(G.stock[id]||0)<=0;
+  let nLock=0;for(const [id,n,,kind] of FR){if(!ingOpen(id)){nLock++;continue;}const stock=G.mode==='practice'?'∞':kind==='bottle'?(G.stock[id]||0)+'ml':(G.stock[id]||0);const out=G.mode!=='practice'&&(G.stock[id]||0)<=0;
     const b=document.createElement('button');b.type='button';b.className='fr-it'+(out?' out':'');b.innerHTML=`<img alt="" src="${itemIcon(id)}"><span>${n}</span><em>${out?'품절':stock}</em>${out?'':freshTag(id)}`;b.disabled=out;b.onclick=()=>{takeFridge(id,kind);$('#fridge').hidden=true;};grid.appendChild(b);}
+  if(nLock){const p=document.createElement('p');p.className='fr-lock';p.textContent=`🔒 나머지 ${nLock}가지 재료는 새 메뉴가 열리면 함께 들어와요.`;grid.appendChild(p);}
   $('#frMarket').hidden=G.mode==='practice';$('#fridge').hidden=false;}
 function takeFridge(id,kind){if(G.held)returnHeld();setTool('hand');let lotD=null;if(G.mode!=='practice'&&kind!=='bottle'){if(tracked(id))lotD=takeLot(id);G.stock[id]--;}
   if(kind==='ing')G.held={kind:'ing',id,piece:newPiece(id,M.x,M.y),src:'fridge'};else if(kind==='bottle')G.held={kind:'bottle',id,stock:true,tilt:0,active:false,poured:0,flow:0};
@@ -2516,7 +2544,7 @@ function orderBubble(o){if(G.mode!=='career'||SET.bubble===false)return;const g=
   b.className=o.critic?'critic':'';b.hidden=false;b.classList.remove('in');void b.offsetWidth;b.classList.add('in');clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,3600);}
 
 /* wrappers on the order / serve flow */
-spawnOrder=(orig=>function(){const n=G.orders.length;orig();const o=G.orders[G.orders.length-1];if(!o||G.orders.length===n)return;assignGuest(o);renderTickets();orderBubble(o);})(spawnOrder);
+spawnOrder=(orig=>function(){const n=G.orders.length;orig();const o=G.orders[G.orders.length-1];if(!o||G.orders.length===n)return;assignGuest(o);renderTickets();renderSteps();hudTick();orderBubble(o);})(spawnOrder);
 renderTickets=(orig=>function(){orig();for(const el of $$('#rail .tk')){const o=G.orders.find(q=>q.id==el.dataset.id);if(!o||!GUEST[o.cust])continue;const g=GUEST[o.cust];
   el.classList.toggle('critic',!!o.critic);el.classList.toggle('reg',!!g.reg);const nn=el.querySelector('.tk-no');if(nn)nn.textContent=`#${String(o.id).padStart(3,'0')}`;const w=el.querySelector('.tk-who');if(w)w.innerHTML=`${g.n}${g.reg?` <i class="tk-h">${'♥'.repeat(hearts(o.cust))||'♡'}</i>`:''}${o.table?` <small>${o.table}번</small>`:''}`;
   const a=document.createElement('span');a.className='tk-av';a.innerHTML=`<img alt="" src="${gImg(o.cust)}"><i></i>`;el.appendChild(a);
@@ -2531,7 +2559,7 @@ showToast=(orig=>function(P){orig(P);const g=GUEST[P.o.cust],t=$('#served');if(!
 showResult=(orig=>function(P){orig(P);const g=GUEST[P.o.cust];$('#quote').textContent=guestQuote(P);const tg=$('.res-tag');tg.innerHTML=g?`<img alt="" src="${gImg(P.o.cust,scoreK(P.res.total))}"> ${g.n}의 한마디`:'손님 한마디';})(showResult);
 gameTick=(orig=>function(dt){orig(dt);if(G.mode!=='career')return;G._gt=(G._gt||0)+dt;if(G._gt>1){G._gt=0;goalsCheck();renderGoals();}})(gameTick);
 startCareer=(orig=>function(){shopInit();decoRefresh();goalsFor(SAVE.day);orig();renderGoals();hudLv();bgmPlay('day');
-  setTimeout(()=>{if(G&&G.started&&G.mode==='career')toast('🎯',`오늘의 목표 · 보상 각 ${won(goalReward())}`,SAVE.goals.list.map(q=>GOALS[q.k].t(q.n)).join(' · '),'long');},SAVE.toured?1200:0);})(startCareer);
+  if(SAVE.toured)setTimeout(()=>{if(G&&G.started&&G.mode==='career')toast('🎯',`오늘의 목표 · 보상 각 ${won(goalReward())}`,SAVE.goals.list.map(q=>GOALS[q.k].t(q.n)).join(' · '),'long');},SAVE.toured?1200:0);})(startCareer);
 startPractice=(orig=>function(rid,guide){orig(rid,guide);renderGoals();hudLv();bgmPlay('day');})(startPractice);
 toTitle=(orig=>function(){orig();renderGoals();})(toTitle);
 endDay=(orig=>function(){if(G.mode!=='career'){orig();return;}goalsCheck(true);const gs=SAVE.goals&&SAVE.goals.day===G.day.n?SAVE.goals.list:null;orig();const X=xpBar();
@@ -2972,6 +3000,38 @@ startCareer=(orig=>function(){orig();if(G&&G.day)criticPlan();})(startCareer);
 /* critic chip in the HUD while a visit is expected */
 hudTick=(orig=>function(){orig();if(!G||G.mode!=='career'||!G.day)return;let c=$('#critChip');const on=G.day.criticAt&&!G.day.criticDone;
   if(on&&!c){c=document.createElement('span');c.id='critChip';$('#top .st').appendChild(c);}if(c){c.hidden=!on;if(on)c.textContent=`📰 평론가 ${critHH()}시쯤`;}})(hudTick);
+
+/* ---------- 1.3.2 polish: icon top bar · calmer toasts · opt-in kitchen tour ---------- */
+const ICO={
+  fridge:'<path d="M6 3h12v18H6z"/><path d="M6 9h12M9 5.5v2M9 11.5v4"/>',
+  book:'<path d="M5 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H5z"/><path d="M19 4h-4a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h4z"/>',
+  cart:'<path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8H18l2-7H6.2"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>',
+  sound:'<path d="M4 10h3l5-4v12l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/>',
+  pause:'<path d="M8 5v14M16 5v14"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',drop:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  shop:'<path d="M4 9l1.5-5h13L20 9M4 9h16v11H4zM9 20v-6h6v6"/>'};
+const svgI=k=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+(function(){const set=(id,k,tip)=>{const b=$('#'+id);if(!b)return;b.insertAdjacentHTML('beforeend',svgI(k));b.title=tip||'';};
+  set('btnFridge','fridge','냉장고 열기 (F)');set('btnRecipe','book','지금 주문 레시피');set('btnMarket','cart','장보기');set('btnMute','sound','소리 켜기/끄기 (M)');set('btnPause','pause','잠깐 멈춤 (P)');set('btnMenu','menu','메뉴 (Esc)');set('btnDrop','drop','들고 있는 것 내려놓기 (우클릭)');
+  const r=$('#btnRot');if(r)r.remove();
+  const clock=$('#clock');if(clock&&!$('#dayBar')){const w=document.createElement('span');w.id='clockBox';clock.before(w);w.appendChild(clock);w.insertAdjacentHTML('beforeend','<i id="dayBar"><b></b></i>');}})();
+hudTick=(orig=>function(){orig();if(!G)return;const b=$('#dayBar b');if(b)b.style.width=G.mode==='career'&&G.day?Math.min(100,G.day.t/DAYLEN*100).toFixed(1)+'%':'0';const box=$('#clockBox');if(box)box.classList.toggle('practice',G.mode!=='career');})(hudTick);
+/* toasts: at most three on screen, the rest wait their turn; hold them while the tour is talking */
+const TQ=[];
+toast=(orig=>function(...a){const box=$('#toasts'),busy=(box&&box.querySelectorAll('.toast:not(.out)').length>=3)||(TUT.on&&TUT.kind==='tour');if(busy){TQ.push(a);return;}orig(...a);})(toast);
+setInterval(()=>{if(!TQ.length||(TUT.on&&TUT.kind==='tour'))return;const box=$('#toasts');if(box&&box.querySelectorAll('.toast:not(.out)').length>=3)return;const a=TQ.shift();toast(...a);},700);
+/* first day: ask before starting the 22-step tour */
+function askTour(then){let d=$('#askTour');if(!d){d=document.createElement('div');d.id='askTour';d.className='overlay';$('#stage').appendChild(d);}
+  d.innerHTML=`<div class="ask paper"><h2>어서 오세요, 사장님!</h2><p>오늘이 첫 영업이에요. 주방을 한 바퀴 둘러보고 시작할까요?<br><small>냉장고·도구·화구·서빙까지 하나씩 짚어 드려요. 나중에 메뉴에서도 볼 수 있어요.</small></p><div class="ask-b"><button type="button" class="btn2" id="atSkip">바로 영업하기</button><button type="button" class="big-btn" id="atGo">둘러보기 (약 2분)</button></div></div>`;
+  d.hidden=false;if(G)G.paused=true;$('#atGo').onclick=()=>{d.hidden=true;tourStart();};$('#atSkip').onclick=()=>{d.hidden=true;SAVE.toured=true;writeSave();if(G)G.paused=false;then&&then();};}
+/* recipe card steps aside while you carry food to the pass */
+hudTick=(orig=>function(){orig();const p=$('#recipePop');if(!p||!G)return;const carry=M.x>1244&&(G.held||G.ladle||(G.drag&&G.drag.kind!=='knob')||G.tool==='towel');p.classList.toggle('peek',!!carry);})(hudTick);
+/* first order of a shift opens its recipe card by itself */
+renderTickets=(orig=>function(){const had=G._lastSel;orig();if(!G||!G.started)return;if(G.sel&&G.sel!==had&&!had&&$('#recipePop').hidden&&!G.held&&!(TUT.on)){$('#recipePop').hidden=false;renderSteps();}G._lastSel=G.sel;})(renderTickets);
+/* pause menu: one big resume, a 2x2 grid of the useful things, quiet links for the rest */
+(function(){const m=$('#menu .menu');if(!m||m.dataset.v2)return;m.dataset.v2=1;const g=document.createElement('div');g.className='menu-grid';const f=document.createElement('div');f.className='menu-foot';
+  for(const id of ['menuBook','menuGuide','menuShop','menuSet'])if($('#'+id))g.appendChild($('#'+id));for(const id of ['menuTour','menuEnd','menuTitle'])if($('#'+id))f.appendChild($('#'+id));
+  const keys=m.querySelector('.menu-keys');$('#menuResume').after(g);g.after(f);if(keys)m.appendChild(keys);})();
+hideAll=(orig=>function(){orig();const b=$('#bubble');if(b)b.hidden=true;})(hideAll);
 
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
