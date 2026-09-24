@@ -1,0 +1,47 @@
+<div id="root"><div id="stage">
+<canvas id="c"></canvas>
+<div id="top" hidden>
+  <div class="st"><span id="clock">DAY 1 · 11:00</span><span id="money">0원</span><span id="rep" class="stars"></span></div>
+  <p id="hint"></p>
+  <div class="bt"><button type="button" id="btnDrop" hidden>내려놓기</button><button type="button" id="btnRot">도마 돌리기</button><button type="button" id="btnFridge">냉장고<kbd>F</kbd></button><button type="button" id="btnRecipe">레시피</button><button type="button" id="btnMarket">장보기</button><button type="button" id="btnMute">소리 끄기<kbd>M</kbd></button><button type="button" id="btnPause">일시정지<kbd>P</kbd></button><button type="button" id="btnMenu">메뉴</button></div>
+</div>
+<div id="rail"></div>
+<div id="recipePop" hidden><img id="rpImg" alt="" hidden><button type="button" id="rpClose">닫기</button><h3 id="rpTitle"></h3><div id="rpSub"></div><ol id="steps"></ol></div>
+<button id="serve" type="button" disabled>서빙</button>
+<div id="alarm" hidden>삐— 삐— 연기 감지!</div>
+<div id="served" hidden></div>
+<div id="tut" hidden></div>
+<div id="tour" hidden></div>
+
+<div id="title" class="overlay" hidden>
+  <div class="tl2-bg"></div><div class="tl2-shade"></div>
+  <div class="tl2-steam" aria-hidden="true"><i style="left:1200px;top:10px"></i><i style="left:1480px;top:170px;animation-delay:-2.1s"></i><i style="left:790px;top:290px;animation-delay:-1.2s"></i><i style="left:1510px;top:690px;animation-delay:-3s"></i></div>
+  <div class="tl2-l">
+    <div class="logo"><span class="lg1">지글지글</span><span class="lg2">키친</span><em>2nd SEASON</em></div>
+    <nav class="tl2-menu">
+      <button type="button" id="tlStart" class="tl-main">영업 시작</button>
+      <button type="button" id="tlPractice">연습 모드</button>
+      <button type="button" id="tlBook">레시피 북 <kbd>Tab</kbd></button>
+      <button type="button" id="tlShop">우리 가게</button>
+      <button type="button" id="tlAch">업적</button>
+      <button type="button" id="tlDlc">DLC</button>
+      <button type="button" id="tlSettings">설정</button>
+      <button type="button" id="tlTour">주방 둘러보기</button>
+      <button type="button" id="tlReset" class="tl-dim">새 게임</button>
+    </nav>
+    <div id="tlSave" class="tl2-save"></div>
+  </div>
+  <aside class="tl2-news"><small>업데이트 v1.3</small><b>손님과 가게</b><ul><li>손님 12명 · 단골 4명 추가</li><li>가게 등급 · 인테리어 추가</li><li>오늘의 목표 추가</li><li>레시피 북(Tab) · 일시정지(Esc)</li><li>설정 · 배경 음악 지원</li></ul></aside>
+  <div class="tl2-ver">v1.3.0 · SIZZLE KITCHEN · ↑↓ 선택 · Enter 확인</div>
+</div>
+
+<div id="dlcPanel" class="overlay" hidden><div class="panel paper"><h2>DLC</h2><p class="sub">켜진 팩의 메뉴만 손님이 주문해요. 연습 모드에도 적용돼요.</p><div id="dlcList"></div><div class="pnl-foot"><button type="button" id="dlcClose" class="big-btn">확인</button></div></div></div>
+<div id="practice" class="overlay" hidden><div class="panel paper"><h2>연습 모드</h2><p class="sub">재료 무제한, 시간 제한 없음. 한 가지 요리를 끝까지 만들어 채점받아요.</p><label class="pr-guide"><input type="checkbox" id="prGuide" checked> 단계별 가이드 켜기 — 어디를 클릭할지 화살표로 알려주고, 한 단계씩 따라 하면 자동으로 다음으로 넘어가요.</label><div id="prList"></div><div class="pnl-foot"><button type="button" id="prBack" class="btn2">타이틀로</button></div></div></div>
+<div id="fridge" class="overlay" hidden><div class="fr"><h2>냉장고</h2><div id="fridgeGrid"></div><div class="pnl-foot"><button type="button" id="frMarket" class="btn2">장보기</button><button type="button" id="frClose" class="btn2">문 닫기</button></div></div></div>
+<div id="market" class="overlay" hidden><div class="mk paper"><h2>장보기</h2><div id="mkList"></div><div class="mk-foot"><span>잔고 <span id="mkMoney"></span></span><span>합계 <b id="mkTotal">0원</b></span><span><button type="button" id="mkClose" class="btn2">닫기</button> <button type="button" id="mkBuy" class="big-btn" style="font-size:20px;padding:10px 22px">주문하기</button></span></div></div></div>
+<div id="result" class="overlay" hidden><div class="res paper"><div class="res-l"><img id="resImg" alt="내가 만든 요리"><div id="stamp" class="stamp"></div><div class="score"><span id="scoreNum">0</span><small>/ 100</small></div><div id="stars" class="stars"></div></div>
+  <div><div class="res-tag">손님 한마디</div><h3 id="resName"></h3><blockquote id="quote"></blockquote><div id="bars" class="bars"></div><ul id="notes"></ul><div class="res-foot"><span id="resFoot"></span><button type="button" id="resAgain" class="big-btn" style="font-size:20px;padding:10px 22px">계속</button></div></div></div></div>
+<div id="settle" class="overlay" hidden><div class="stl paper"><h2 id="settleDay">마감</h2><div id="settleBody"></div><div class="st-btns"><button type="button" id="stTitle" class="btn2">타이틀</button><button type="button" id="stMarket" class="btn2">장보기</button><button type="button" id="stNext" class="big-btn" style="font-size:20px;padding:10px 22px">다음 날 영업</button></div></div></div>
+<div id="pauseOv" class="overlay" hidden><div class="pause-card"><b>일시정지</b><span>시간이 멈췄어요. 아무 곳이나 클릭하거나 P를 누르면 계속해요.</span></div></div><div id="menu" class="overlay" hidden><div class="menu paper"><h2>일시정지</h2><button type="button" id="menuResume" class="big-btn">계속하기</button><button type="button" id="menuGuide" class="btn2">이 요리 가이드 켜기</button><button type="button" id="menuTour" class="btn2">주방 둘러보기</button><button type="button" id="menuEnd" class="btn2">오늘 영업 마감하기</button></div></div>
+<canvas id="dish" width="600" height="600" hidden></canvas>
+</div></div>
