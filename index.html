@@ -979,16 +979,19 @@ function toss(c){if(!c||c.tossT>0)return;c.tossT=.45;AU.whoosh();
 function noodleCenter(n){let x=0,y=0;for(const s of n.strands){x+=s.pts[6].x;y+=s.pts[6].y;}return[x/n.strands.length,y/n.strands.length];}
 function stepStrands(c,n,dt){const d=NT[n.type],liquid=c.liq&&c.liq.vol>20;
   const soft=n.T<0?0:clamp(n.done*1.5,0,1),stiff=lerp(.85,.04,soft),L0=n.sl*(1+n.mush*.12);
-  const damp=liquid?.82:c.kind==='pan'?.72:.8,bo=liquid?(c.boil||0):0,jit=bo*22+(liquid&&c.liq.T>85?(c.liq.T-85)/15*4:0),tt=G.t;
+  const sz=clamp(c.r/110,.6,1),damp=(liquid?.82:c.kind==='pan'?.72:.8)-(1-sz)*.45,bo=liquid?(c.boil||0):0,jit=(bo*22+(liquid&&c.liq.T>85?(c.liq.T-85)/15*4:0))*sz*sz,tt=G.t;
   const [cx,cy]=noodleCenter(n),clump=n.stick*(n.T<0?.2:.05);if(n.air>0)n.air-=dt;
-  const ax=(c.ax||0)*dt*dt*.5,ay=(c.ay||0)*dt*dt*.5,R=c.r-10,Rs=c.r*(liquid?.72:.8);
+  const ax=(c.ax||0)*dt*dt*.5,ay=(c.ay||0)*dt*dt*.5,R=c.r-10,Rs=c.r*((liquid?.72:.8)+(1-sz)*.45);
   for(const s of n.strands){const P=s.pts;
     for(const p of P){const vx=(p.x-p.ox)*damp,vy=(p.y-p.oy)*damp;p.ox=p.x;p.oy=p.y;let fx=0,fy=0;
       if(jit){const k=p.x*.03+p.y*.02;fx+=Math.sin(tt*4.2+s.ph+k)*jit;fy+=Math.cos(tt*3.7+s.ph*1.7-k)*jit;}
       fx+=(cx-p.x)*clump;fy+=(cy-p.y)*clump;const pr=Math.hypot(p.x,p.y);if(pr>Rs){const k=(pr-Rs)*(liquid?7:4)/pr;fx-=p.x*k;fy-=p.y*k;}p.x+=vx+fx*dt-ax;p.y+=vy+fy*dt-ay;}
+    const kc=liquid?clamp((1-sz)*3.5,0,.9):0,bx=kc?P.map(p=>p.x):null,by=kc?P.map(p=>p.y):null;
     for(let it=0;it<2;it++){for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],dx=b.x-a.x,dy=b.y-a.y,dd=Math.hypot(dx,dy)||1,df=(dd-L0)/dd*.5;a.x+=dx*df;a.y+=dy*df;b.x-=dx*df;b.y-=dy*df;}
       if(stiff>.05)for(let i=1;i<P.length-1;i++){const a=P[i-1],b=P[i+1],m=P[i];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;m.x+=(mx-m.x)*stiff*.5;m.y+=(my-m.y)*stiff*.5;}
-      for(const p of P){const r=Math.hypot(p.x,p.y);if(r>R){const f=R/r;p.x*=f;p.y*=f;p.ox=p.ox*f+(p.x-p.ox*f)*.5;p.oy=p.oy*f+(p.y-p.oy*f)*.5;}}}}}
+      for(const p of P){const r=Math.hypot(p.x,p.y);if(r>R){const f=R/r;p.x*=f;p.y*=f;p.ox=p.ox*f+(p.x-p.ox*f)*.5;p.oy=p.oy*f+(p.y-p.oy*f)*.5;}}}
+    if(kc)for(let i=0;i<P.length;i++){P[i].ox+=(P[i].x-bx[i])*kc;P[i].oy+=(P[i].y-by[i])*kc;}}
+  if(liquid&&!c.agit){let Lm=0,I=0;for(const s of n.strands)for(const p of s.pts){Lm+=p.x*(p.y-p.oy)-p.y*(p.x-p.ox);I+=p.x*p.x+p.y*p.y;}const w=I?Lm/I*(.35+(1-sz)*.9):0;if(w)for(const s of n.strands)for(const p of s.pts){p.ox-=p.y*w;p.oy+=p.x*w;}}}
 function nestNoodle(n,R,cx,cy){const cnt=n.strands.length;n.strands.forEach((s,i)=>{const a0=i/cnt*TAU+rand(-.3,.3),r0=R*Math.sqrt(rand(.004,1))*.85,dir=i%2?1:-1;let a=a0;s.pts.forEach((p,k)=>{const r=Math.max(6,r0+Math.sin(k*.9+s.ph)*R*.07);p.x=(cx||0)+Math.cos(a)*r;p.y=(cy||0)+Math.sin(a)*r*.92;p.ox=p.x;p.oy=p.y;a+=dir*n.sl*.92/Math.max(12,r);});s.nt=s.pts.map(p=>[p.x,p.y]);});}
 function strandPush(n,lx,ly,vx,vy,rad,dt,c){let hit=0;for(const s of n.strands)for(const p of s.pts){const d2=(p.x-lx)**2+(p.y-ly)**2;if(d2<rad*rad){const f=1-Math.sqrt(d2)/rad;p.x+=vx*dt*.7*f;p.y+=vy*dt*.7*f;hit++;}}
   if(hit&&Math.hypot(vx,vy)>40){n.stick=Math.max(0,n.stick-dt*1.4*(n.T<0?.3:1));n.stirT=1;n.mixEven=Math.min(1,n.mixEven+dt*Math.min(1,Math.hypot(vx,vy)/600)*.45);}}
