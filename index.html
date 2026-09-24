@@ -161,6 +161,10 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 #recipePop #rpClose{position:absolute;z-index:2;background:rgba(255,248,236,.92);border-radius:5px}
 .fr-it.locked{opacity:.45;filter:grayscale(.8);cursor:not-allowed}.fr-it.locked em{color:#8a5a3a}
 .mk-row.locked{opacity:.45;filter:grayscale(.7)}.mk-row.locked .mk-q{font-size:12.5px;color:#8a5a3a}
+#pauseOv{cursor:pointer;background:rgba(14,10,8,.55)}
+.pause-card{background:#1f1814;border:1px solid #8a6a3a;border-radius:14px;padding:22px 30px;display:grid;gap:6px;text-align:center;color:#f3ead8;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.pause-card b{font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:40px;color:#ffd08a}.pause-card span{font-size:14px;color:#cdbb9a}
+#served{cursor:pointer}#served::after{content:'클릭하면 닫혀요';position:absolute;right:12px;top:10px;font-size:11px;color:#8a755a}
 </style>
 </head>
 <body>
@@ -169,7 +173,7 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 <div id="top" hidden>
   <div class="st"><span id="clock">DAY 1 · 11:00</span><span id="money">0원</span><span id="rep" class="stars"></span></div>
   <p id="hint"></p>
-  <div class="bt"><button type="button" id="btnDrop" hidden>내려놓기</button><button type="button" id="btnRot">도마 돌리기</button><button type="button" id="btnFridge">냉장고<kbd>F</kbd></button><button type="button" id="btnRecipe">레시피</button><button type="button" id="btnMarket">장보기</button><button type="button" id="btnMute">소리 끄기<kbd>M</kbd></button><button type="button" id="btnMenu">메뉴</button></div>
+  <div class="bt"><button type="button" id="btnDrop" hidden>내려놓기</button><button type="button" id="btnRot">도마 돌리기</button><button type="button" id="btnFridge">냉장고<kbd>F</kbd></button><button type="button" id="btnRecipe">레시피</button><button type="button" id="btnMarket">장보기</button><button type="button" id="btnMute">소리 끄기<kbd>M</kbd></button><button type="button" id="btnPause">일시정지<kbd>P</kbd></button><button type="button" id="btnMenu">메뉴</button></div>
 </div>
 <div id="rail"></div>
 <div id="recipePop" hidden><img id="rpImg" alt="" hidden><button type="button" id="rpClose">닫기</button><h3 id="rpTitle"></h3><div id="rpSub"></div><ol id="steps"></ol></div>
@@ -213,7 +217,7 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 <div id="result" class="overlay" hidden><div class="res paper"><div class="res-l"><img id="resImg" alt="내가 만든 요리"><div id="stamp" class="stamp"></div><div class="score"><span id="scoreNum">0</span><small>/ 100</small></div><div id="stars" class="stars"></div></div>
   <div><div class="res-tag">손님 한마디</div><h3 id="resName"></h3><blockquote id="quote"></blockquote><div id="bars" class="bars"></div><ul id="notes"></ul><div class="res-foot"><span id="resFoot"></span><button type="button" id="resAgain" class="big-btn" style="font-size:20px;padding:10px 22px">계속</button></div></div></div></div>
 <div id="settle" class="overlay" hidden><div class="stl paper"><h2 id="settleDay">마감</h2><div id="settleBody"></div><div class="st-btns"><button type="button" id="stTitle" class="btn2">타이틀</button><button type="button" id="stMarket" class="btn2">장보기</button><button type="button" id="stNext" class="big-btn" style="font-size:20px;padding:10px 22px">다음 날 영업</button></div></div></div>
-<div id="menu" class="overlay" hidden><div class="menu paper"><h2>일시정지</h2><button type="button" id="menuResume" class="big-btn">계속하기</button><button type="button" id="menuGuide" class="btn2">이 요리 가이드 켜기</button><button type="button" id="menuTour" class="btn2">주방 둘러보기</button><button type="button" id="menuEnd" class="btn2">오늘 영업 마감하기</button></div></div>
+<div id="pauseOv" class="overlay" hidden><div class="pause-card"><b>일시정지</b><span>시간이 멈췄어요. 아무 곳이나 클릭하거나 P를 누르면 계속해요.</span></div></div><div id="menu" class="overlay" hidden><div class="menu paper"><h2>일시정지</h2><button type="button" id="menuResume" class="big-btn">계속하기</button><button type="button" id="menuGuide" class="btn2">이 요리 가이드 켜기</button><button type="button" id="menuTour" class="btn2">주방 둘러보기</button><button type="button" id="menuEnd" class="btn2">오늘 영업 마감하기</button></div></div>
 <canvas id="dish" width="600" height="600" hidden></canvas>
 </div></div>
 <script>
@@ -1673,7 +1677,7 @@ function stars(s){const st=Math.round(s/20*2)/2;let h='';for(let i=1;i<=5;i++)h+
 function quoteFor(s){return s>=90?'“사장님, 이거 레시피 좀 알려주세요!”':s>=75?'“이 집 잘하네요. 또 올게요.”':s>=60?'“무난하게 맛있어요.”':s>=40?'“음… 배는 부르네요.”':'“이건… 다시 만들어 주실 수 있나요?”';}
 function showToast(P){const t=$('#served');t.innerHTML=`<div class="sv-h"><b>${P.R.n}</b><span>${P.o.name}</span></div><div class="sv-s"><span class="sv-n">${P.res.total}</span><span class="stars">${stars(P.res.total)}</span></div>
   <div class="sv-m">+${won(P.pay)}${P.tip?` <i>팁 +${won(P.tip)}</i>`:''}${G.combo>1?` <i class="cb">${G.combo}연속 호평!</i>`:''}</div><ul>${P.res.notes.slice(0,3).map(n=>`<li class="${n.t}">${n.s}</li>`).join('')}</ul><button type="button" id="svMore">자세히 보기</button>`;
-  t.hidden=false;t.classList.remove('in');void t.offsetWidth;t.classList.add('in');$('#svMore').onclick=()=>showResult(P);clearTimeout(t._tm);t._tm=setTimeout(()=>{t.hidden=true;},8000);}
+  t.hidden=false;t.classList.remove('in');void t.offsetWidth;t.classList.add('in');$('#svMore').onclick=e=>{e.stopPropagation();t.hidden=true;showResult(P);};t.onclick=()=>{t.hidden=true;};t.title='클릭하면 닫혀요';clearTimeout(t._tm);t._tm=setTimeout(()=>{t.hidden=true;},8000);}
 function showResult(P){const s=P.res.total;$('#resImg').src=P.img;$('#resImg').classList.toggle('hero',!!P.hero);$('#scoreNum').textContent=s;$('#stamp').textContent=s>=90?'셰프의 한 접시':s>=75?'단골 예약':s>=60?'합격':s>=40?'배는 불러요':'다시 도전';
   $('#stars').innerHTML=stars(s);$('#resName').textContent=P.R.n+(P.o.opt?` · ${P.o.opt[0]}`:'');$('#quote').textContent=quoteFor(s);
   $('#bars').innerHTML=P.res.cats.map(([k,v])=>`<span>${k}</span><div class="tr"><div class="fi" style="width:${clamp(v,0,100).toFixed(0)}%"></div></div><span class="v">${Math.round(v)}</span>`).join('');
@@ -1760,6 +1764,9 @@ $('#dlcClose').addEventListener('click',()=>{$('#dlcPanel').hidden=true;renderTi
 let resetArm=0;$('#tlReset').addEventListener('click',e=>{const b=e.currentTarget;if(performance.now()-resetArm<2500){try{localStorage.removeItem('sizzle-kitchen-v2');}catch(_){}SAVE=null;loadSave();renderTitle();b.textContent='새 게임';resetArm=0;}else{resetArm=performance.now();b.textContent='한 번 더 누르면 초기화';setTimeout(()=>b.textContent='새 게임',2500);}});
 $('#btnRecipe').addEventListener('click',()=>{const p=$('#recipePop');p.hidden=!p.hidden;renderSteps();});
 $('#btnMarket').addEventListener('click',()=>openMarket());const muteLbl=()=>{$('#btnMute').firstChild.textContent=AU.muted?'소리 켜기':'소리 끄기';};muteLbl();$('#btnMute').addEventListener('click',()=>{AU.setMute(!AU.muted);muteLbl();});addEventListener('keydown',e=>{if(e.code==='KeyM'){AU.setMute(!AU.muted);muteLbl();}});$('#btnRot').addEventListener('click',()=>rotateBoard());$('#btnDrop').addEventListener('click',()=>{returnHeld();G.ladle=null;});$('#btnFridge').addEventListener('click',()=>openFridge());
+function setPause(on){if(!G||!G.started)return;if(!$('#menu').hidden||!$('#result').hidden||(typeof PL!=='undefined'&&PL.on))return;G.paused=on;$('#pauseOv').hidden=!on;if(on)midSave&&G.mode==='career'&&midSave();}
+$('#btnPause').addEventListener('click',()=>setPause(!G.paused));$('#pauseOv').addEventListener('click',()=>setPause(false));
+addEventListener('keydown',e=>{if(e.code==='KeyP'&&G&&G.started&&!e.repeat){if(!$('#pauseOv').hidden)setPause(false);else if(!G.paused)setPause(true);}});
 $('#btnMenu').addEventListener('click',()=>{G.paused=true;$('#menuEnd').textContent=G.mode==='career'?'오늘 영업 마감하기':'연습 끝내기';$('#menu').hidden=false;});
 $('#menuResume').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;});
 $('#menuEnd').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;if(G.mode==='career'){G.orders=[];G.day.t=DAYLEN;G.dayEnded=true;endDay();}else toTitle();});
