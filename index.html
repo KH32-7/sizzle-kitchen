@@ -281,7 +281,7 @@ const saltPct=q=>q&&q.vol>1?q.salt/q.vol*100:0;
 const NT={
   somyeon:{n:'소면',cook:38,col:[247,242,228],w:2.1,len:190,cnt:72,starch:1.3,g:100,wave:0},
   ramyeon:{n:'라면 사리',cook:44,col:[238,202,122],w:2.8,len:150,cnt:54,starch:1.2,g:120,wave:1},
-  udon:{n:'우동면',cook:28,col:[246,240,224],w:6.5,len:140,cnt:26,starch:.5,g:230,wave:0,frozen:1},
+  udon:{n:'우동면',cook:28,col:[246,240,224],w:6.5,len:140,cnt:34,starch:.5,g:230,wave:0,frozen:1},
   ramen:{n:'생라멘',cook:20,col:[242,216,140],w:2.8,len:160,cnt:50,starch:.7,g:130,wave:.5},
   yakisoba:{n:'야키소바면',cook:40,col:[214,172,96],w:3.2,len:120,cnt:44,starch:.2,g:150,wave:.8,pre:1},
   spaghetti:{n:'스파게티',cook:52,col:[236,206,128],w:2.5,len:200,cnt:60,starch:.45,g:100,wave:0},
@@ -696,7 +696,7 @@ function pourAll(src,dst){if(dst.kind==='bowl'&&src.liq&&src.liq.vol>60){const n
   if(!dst)return;const vessel=dst.kind==='plate'||dst.kind==='bowl';const k=vessel?Math.min(.62,dst.r*.8/src.r):Math.min(1,(dst.r*.85)/src.r);let n=0;
   if(src.kind==='mix'){pourBatter(src,dst);return;}
   for(const o of src.items){const wx=src.x+o.x,wy=src.y+o.y;o.x=o.x*k+rand(-4,4);o.y=o.y*k+rand(-4,4);const d=Math.hypot(o.x,o.y),lim=dst.r*.9;if(d>lim){o.x*=lim/d;o.y*=lim/d;}o.z=isCook(dst)?rand(5,20):0;o.vz=0;o.vx=o.vy=0;o.flipT=0;if(vessel||dst.kind==='strainer'||dst.kind==='prep')animTo(o,wx,wy,dst);if(isCook(dst))o.cooked=true;dst.items.push(o);n++;}
-  for(const nd of src.noodles){if(dst.kind==='bowl')neatNoodle(nd,dst.r*.84,0,0,.55);else if(vessel||dst.kind==='strainer')nestNoodle(nd,dst.r*(dst.kind==='plate'?.5:dst.kind==='strainer'?.8:.66),0,0);else moveNoodle(nd,src,dst,k,0,0);dst.noodles.push(nd);n++;}
+  for(const nd of src.noodles){if(dst.kind==='bowl')neatNoodle(nd,dst.r*.76,0,0,.55);else if(vessel||dst.kind==='strainer')nestNoodle(nd,dst.r*(dst.kind==='plate'?.5:dst.kind==='strainer'?.8:.66),0,0);else moveNoodle(nd,src,dst,k,0,0);dst.noodles.push(nd);n++;}
   for(const e of src.eggs){const wx=src.x+e.x,wy=src.y+e.y;e.x*=k;e.y*=k;if(vessel)animTo(e,wx,wy,dst);dst.eggs.push(e);n++;}
   for(const j of src.jeons){const wx=src.x+j.x,wy=src.y+j.y;j.x*=k;j.y*=k;if(vessel)animTo(j,wx,wy,dst);const lim=dst.r-avgRad(j)*.7;if(Math.hypot(j.x,j.y)>lim){j.x=j.y=0;}dst.jeons.push(j);n++;}
   for(const b of src.beggs){b.x*=k;b.y*=k;dst.beggs.push(b);n++;}
@@ -1164,7 +1164,7 @@ function noodleCol(n){const d=NT[n.type];let c=d.col;if(n.done>.4)c=mix(c,[252,2
 function drawNoodle(g,n,ox,oy){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+Math.min(n.mush,1.2)*.22)*(n.T<0?1.1:1);g.lineCap='round';g.lineJoin='round';
   const addPath=(s,dx,dy)=>{const P=s.pts;g.moveTo(ox+dx+P[0].x,oy+dy+P[0].y);for(let i=1;i<P.length-1;i++){const mx=(P[i].x+P[i+1].x)/2,my=(P[i].y+P[i+1].y)/2;let px=P[i].x,py=P[i].y;if(d.wave){const nx=-(P[i+1].y-P[i-1].y),ny=P[i+1].x-P[i-1].x,l=Math.hypot(nx,ny)||1,o=Math.sin(i*2.1+s.ph)*d.wave*2.6;px+=nx/l*o;py+=ny/l*o;}g.quadraticCurveTo(ox+dx+px,oy+dy+py,ox+dx+mx,oy+dy+my);}g.lineTo(ox+dx+P[P.length-1].x,oy+dy+P[P.length-1].y);};
   if(d.w>=5){const edge=rgba(mix(c,[120,95,60],.35),1),body=rgba(c,1),hl=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.5:.38})`;g.beginPath();for(const s of n.strands)addPath(s,.8,1.6);g.strokeStyle='rgba(0,0,0,.2)';g.lineWidth=w+1.6;g.stroke();
-    for(const s of n.strands){g.beginPath();addPath(s,0,0);g.strokeStyle=edge;g.lineWidth=w;g.stroke();g.strokeStyle=body;g.lineWidth=w*.7;g.stroke();g.beginPath();addPath(s,-w*.16,-w*.18);g.strokeStyle=hl;g.lineWidth=Math.max(.8,w*.22);g.stroke();}return;}
+    for(const s of n.strands){const dp=s.dep||0;g.beginPath();addPath(s,0,0);g.strokeStyle=dp?rgba(mix(mix(c,[120,95,60],.35),[90,62,30],dp*.3),1):edge;g.lineWidth=w;g.stroke();g.strokeStyle=dp?rgba(mix(c,[214,186,136],dp*.38),1):body;g.lineWidth=w*.7;g.stroke();g.beginPath();addPath(s,-w*.16,-w*.18);g.strokeStyle=hl;g.lineWidth=Math.max(.8,w*.22);g.stroke();}return;}
   g.beginPath();for(const s of n.strands)addPath(s,.8,1.4);g.strokeStyle='rgba(0,0,0,.24)';g.lineWidth=w+1.4;g.stroke();
   g.beginPath();for(const s of n.strands)addPath(s,0,0);g.strokeStyle=rgba(mix(c,[0,0,0],.12),1);g.lineWidth=w;g.stroke();g.strokeStyle=rgba(c,1);g.lineWidth=w*.72;g.stroke();
   g.beginPath();for(let i=0;i<n.strands.length;i+=2)addPath(n.strands[i],-w*.18,-w*.2);g.strokeStyle=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.42:.26})`;g.lineWidth=Math.max(.7,w*.26);g.stroke();}
@@ -1814,16 +1814,18 @@ function midSave(){if(!G||G.mode!=='career'||!G.started||G.dayEnded||!G.day)retu
 addEventListener('visibilitychange',()=>{if(document.hidden)midSave();});addEventListener('pagehide',midSave);
 
 /* ---------- plating: neat noodles · broth · bowl styles · drips · plating mode · hero shot ---------- */
-/* neat noodle arrangement: strands run side by side and fold back at the bowl wall */
-function neatNoodle(n,R,cx,cy,mess){mess=mess===undefined?.5:mess;cx=cx||0;cy=cy||0;const S=n.strands,cnt=S.length,th=rand(0,TAU),L0=n.sl,W=R*.66;
-  const vmax=u=>Math.sqrt(Math.max(0,(R*.9)**2-u*u));const order=S.map((_,i)=>i).sort(()=>Math.random()-.5);
-  order.forEach((si,k)=>{const s=S[si],P=s.pts,m=P.length;let u=((k+.5)/cnt*2-1)*W+rand(-2.5,2.5),dir=k%2?1:-1,v=-dir*vmax(u)*rand(.55,.9);
-    const bt=th+Math.sin(Math.floor(k/5)*1.9)*.1,ca=Math.cos(bt),sa=Math.sin(bt),amp=rand(1.5,3.5),ph=rand(0,TAU),T=[];
-    for(let j=0;j<m;j++){const uu=u+Math.sin(v*.06+ph)*amp;T.push([cx+uu*ca-v*sa,cy+uu*sa+v*ca]);
-      let nv=v+dir*L0;if(Math.abs(nv)>vmax(u)){dir=-dir;u+=(u>0?-1:1)*L0*.55;nv=v+dir*L0*.35;}v=nv;}
-    s.nt=T;const rot=rand(-.5,.5)*mess,ox=rand(-10,10)*mess,oy=rand(-10,10)*mess,cr=Math.cos(rot),sr=Math.sin(rot);
-    P.forEach((p,j)=>{const x=T[j][0]-cx,y=T[j][1]-cy;p.x=cx+x*cr-y*sr+ox+rand(-3,3)*mess;p.y=cy+x*sr+y*cr+oy+rand(-3,3)*mess;const r=Math.hypot(p.x,p.y),lim=R*.97;if(r>lim){p.x*=lim/r;p.y*=lim/r;}p.ox=p.x;p.oy=p.y;});});
-  n.neatDone=0;}
+/* coiled noodle mound: strands wound in rings around the centre, filled in the middle (no donut hole) */
+function neatNoodle(n,R,cx,cy,mess){mess=mess===undefined?.5:mess;cx=cx||0;cy=cy||0;const S=n.strands,cnt=S.length,L0=n.sl,m=S[0].pts.length,len=L0*(m-1);
+  S.forEach((s,k)=>{const T=[],cross=k<Math.round(cnt*.12),ph=rand(0,TAU);
+    if(cross){const a0=rand(0,TAU),ca=Math.cos(a0),sa=Math.sin(a0),span=Math.min(len,R*1.5),amp=R*rand(.12,.26),off=rand(-.15,.15)*R;
+      for(let j=0;j<m;j++){const t=(j/(m-1)-.5)*span,u=Math.sin(t/span*PI*1.6+ph)*amp+off;T.push([cx+t*ca-u*sa,cy+t*sa+u*ca]);}s.dep=.05;}
+    else{const r0=R*(.3+.64*Math.pow(Math.random(),.7)),dir=Math.random()<.5?1:-1;let a=rand(0,TAU);
+      for(let j=0;j<m;j++){const r=Math.max(R*.14,r0*(1-.12*j/(m-1))+Math.sin(j*.9+ph)*R*.03);T.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r*.96]);a+=dir*L0/Math.max(14,r);}s.dep=r0/R;}
+    s.nt=T;const rot=rand(-.6,.6)*mess,ox=rand(-12,12)*mess,oy=rand(-12,12)*mess,cr=Math.cos(rot),sr=Math.sin(rot);
+    s.pts.forEach((p,j)=>{const x=T[j][0]-cx,y=T[j][1]-cy;p.x=cx+x*cr-y*sr+ox+rand(-4,4)*mess;p.y=cy+x*sr+y*cr+oy+rand(-4,4)*mess;const r=Math.hypot(p.x,p.y),lim=R*1.05;if(r>lim){p.x*=lim/r;p.y*=lim/r;}p.ox=p.x;p.oy=p.y;});});
+  S.sort((a,b)=>(b.dep||0)-(a.dep||0));}
+function noodleCoil(n){const [cx,cy]=noodleCenter(n);let sum=0,L2=0,rad=0,np=0;for(const s of n.strands){const P=s.pts;for(let i=0;i<P.length-1;i++){const dx=P[i+1].x-P[i].x,dy=P[i+1].y-P[i].y,l=Math.hypot(dx,dy),rx=(P[i].x+P[i+1].x)/2-cx,ry=(P[i].y+P[i+1].y)/2-cy,rr=Math.hypot(rx,ry);
+    if(l<.5||rr<10)continue;sum+=Math.abs(dx*ry-dy*rx)/(l*rr)*l;L2+=l;}for(const p of P){rad+=Math.hypot(p.x-cx,p.y-cy);np++;}}return{coil:L2?sum/L2:0,spread:np?rad/np:0,cx,cy};}
 function noodleAlign(n){let C=0,Sn=0,Ln=0;for(const s of n.strands){const P=s.pts;for(let i=0;i<P.length-1;i++){const dx=P[i+1].x-P[i].x,dy=P[i+1].y-P[i].y,l=Math.hypot(dx,dy);if(l<.5)continue;const a=Math.atan2(dy,dx)*2;C+=Math.cos(a)*l;Sn+=Math.sin(a)*l;Ln+=l;}}return Ln?Math.hypot(C,Sn)/Ln:0;}
 function combNoodles(v,lx,ly,moved){let hit=0;for(const n of v.noodles)for(const s of n.strands){if(!s.nt)continue;s.pts.forEach((p,j)=>{const w=clamp(1-Math.hypot(p.x-lx,p.y-ly)/70,0,1)*Math.min(1,moved/90);if(w<=0)return;hit++;p.x+=(s.nt[j][0]-p.x)*w;p.y+=(s.nt[j][1]-p.y)*w;p.ox=p.x;p.oy=p.y;});}return hit;}
 
@@ -1868,14 +1870,14 @@ function centroid(list){let x=0,y=0;for(const o of list){x+=o.x;y+=o.y;}return[x
 function platingEval(R,v){const checks=[],add=(ok,t,hint)=>checks.push({ok:!!ok,t,hint});
   const pcs=vPiecesOf(v),lim=v.r;
   if(R.plating==='udon'){
-    const n=v.noodles[0];const al=n?Math.max(...v.noodles.map(noodleAlign)):0;add(n&&al>=.42,'면이 가지런히 누워 있어요','젓가락으로 면을 한 방향으로 빗어 주세요');
+    const n=v.noodles[0];const nc=n?noodleCoil(n):null;add(nc&&nc.coil>=.72&&Math.hypot(nc.cx,nc.cy)<v.r*.25&&nc.spread<v.r*.62,'면이 가운데 동그랗게 소복해요','젓가락으로 면 위를 빙글빙글 돌려 가운데로 동그랗게 모아요');
     let tot=0,cov=0;for(const nd of v.noodles)for(const s of nd.strands)for(let j=0;j<s.pts.length;j+=2){const p=s.pts[j];tot++;if(pcs.some(o=>Math.hypot(o.x-p.x,o.y-p.y)<o.r*.9))cov++;}
     add(n&&tot&&cov/tot<=.3,'면이 잘 보여요','토핑이 면을 너무 많이 덮었어요 — 한쪽으로 모아요');
     const nar=vPiecesOf(v,'naruto'),sc=vPiecesOf(v,'scallion').concat(vPiecesOf(v,'jjokpa'));const ns=circSpread(nar);
     add(nar.length>=2&&ns.R>.8&&ns.r>v.r*.38,'어묵이 한쪽에 부채꼴로 모였어요','어묵을 그릇 한쪽 가장자리에 겹쳐 놓아요');
     let scOk=false;if(sc.length>=3){const [sx,sy]=centroid(sc),comp=sc.reduce((s,o)=>s+Math.hypot(o.x-sx,o.y-sy),0)/sc.length;let sep=true;if(nar.length){const [nx,ny]=centroid(nar);sep=Math.hypot(nx-sx,ny-sy)>v.r*.45;}scOk=comp<v.r*.28&&sep;}
     add(scOk,'파는 반대편에 소복이','송송 썬 파를 어묵 반대쪽에 한데 모아요');}
-  else{const nd=v.noodles.filter(n=>n.strands[0].nt);if(nd.length)add(Math.max(...nd.map(noodleAlign))>=.35,'면이 가지런해요','젓가락으로 면을 빗어 주세요');}
+  else{const nd=v.noodles.filter(n=>n.strands[0].nt);if(nd.length)add(nd.some(n=>noodleCoil(n).coil>=.68),'면이 동그랗게 담겼어요','젓가락으로 면을 동그랗게 모아요');}
   const out=pcs.filter(o=>Math.hypot(o.x,o.y)+itemExt(o)*.4>lim);add(!out.length,'재료가 그릇 안에 있어요','테두리에 걸친 재료를 안으로 옮겨요');
   add(!(v.drips&&v.drips.length),'그릇 테두리가 깨끗해요','행주로 테두리에 튄 국물을 닦아요');
   const score=Math.round(checks.filter(c=>c.ok).length/checks.length*100);return{score,checks};}
@@ -1885,7 +1887,7 @@ const PL={on:false,v:null,R:null,tool:'tweez',drag:null,hover:null,last:null,raf
 function plBuildDom(){if($('#plating'))return;const d=document.createElement('div');d.id='plating';d.className='overlay';d.hidden=true;
   d.innerHTML=`<div class="pl-wrap"><div class="pl-left"><h2>플레이팅</h2><p class="pl-sub" id="plSub"></p><div class="pl-ref"><canvas id="plRef" width="440" height="440"></canvas><span>모범 플레이팅</span></div><ul id="plChecks"></ul></div>
     <div class="pl-mid"><canvas id="plCv" width="1080" height="1080"></canvas></div>
-    <div class="pl-right"><div class="pl-tools"><button type="button" data-t="tweez" class="pl-t">핀셋<small>토핑·면 집어 옮기기<br>휠·우클릭으로 돌리기</small></button><button type="button" data-t="comb" class="pl-t">젓가락<small>면 위를 문질러 가지런히</small></button><button type="button" data-t="towel" class="pl-t">행주<small>테두리 국물 닦기</small></button></div>
+    <div class="pl-right"><div class="pl-tools"><button type="button" data-t="tweez" class="pl-t">핀셋<small>토핑·면 집어 옮기기<br>휠·우클릭으로 돌리기</small></button><button type="button" data-t="comb" class="pl-t">젓가락<small>면 위를 빙글빙글 — 동그랗게 모으기</small></button><button type="button" data-t="towel" class="pl-t">행주<small>테두리 국물 닦기</small></button></div>
       <div class="pl-score"><b id="plScore">0</b><span>플레이팅 점수</span></div><button type="button" id="plServe" class="big-btn">서빙하기</button><button type="button" id="plBack" class="btn2">주방으로 돌아가기</button></div></div>`;
   $('#stage').appendChild(d);
   d.querySelectorAll('.pl-t').forEach(b=>b.onclick=()=>{PL.tool=b.dataset.t;plSyncTools();AU.pick();});
@@ -1934,7 +1936,7 @@ function renderPlating(){if(!PL.on)return;const c=$('#plCv'),g=c.getContext('2d'
 /* reference plate: a synthetic ideal dish drawn with the same renderer */
 const REFIMG={};
 function idealDish(R){if(R.plating!=='udon')return null;const c=mkCont('bowl',G.bowl.x,G.bowl.y,G.bowl.r);c.hx=c.x;c.hy=c.y;c.id=99;c.garn={};c.drips=[];
-  liqAdd(c,'dashi',380,82);liqAdd(c,'tsuyu',40,82);const n=newNoodle('udon',0,0);n.done=1;n.T=80;neatNoodle(n,c.r*.84,0,0,0);c.noodles.push(n);
+  liqAdd(c,'dashi',380,82);liqAdd(c,'tsuyu',40,82);const n=newNoodle('udon',0,0);n.done=1;n.T=80;neatNoodle(n,c.r*.76,0,0,0);c.noodles.push(n);
   const nar=makeSlices('naruto',3,7);nar.forEach((s,i)=>{s.x=Math.cos(-.7+i*.32)*c.r*.52;s.y=Math.sin(-.7+i*.32)*c.r*.52;s.rot=rand(0,TAU);c.items.push(s);});
   const sc=makeSlices('scallion',12,4);sc.forEach((s,i)=>{const a=2.5+rand(-.25,.25),r=c.r*.5+rand(-12,12);s.x=Math.cos(a)*r;s.y=Math.sin(a)*r;s.rot=rand(0,TAU);c.items.push(s);});
   for(let i=0;i<24;i++)c.seeds.push({x:Math.cos(2.5)*c.r*.5+rand(-16,16),y:Math.sin(2.5)*c.r*.5+rand(-16,16),type:'shichimi',rot:rand(0,6),a:1});return c;}
@@ -2187,7 +2189,7 @@ function useHeld(x,y){const h=G.held,c=contAt(x,y);
   case'begg':{if(inBoard(x,y)){const p=newPiece('begg',x,y);p.yolk=h.egg.yolk;p.white=h.egg.white;p.T=h.egg.T;G.board.pieces.push(p);AU.place();floatText('껍질을 까서 올렸어요',x,y-40,'#ffe9a0',20);G.held=null;}else if(c){c.beggs.push(Object.assign(h.egg,{x:x-c.x,y:y-c.y}));G.held=null;AU.place();}return;}
   case'noodle':if(c&&c.kind!=='mix'&&c.kind!=='prep'){const n=newNoodle(h.nt,x-c.x,y-c.y);c.noodles.push(n);if(c.t0<0)c.t0=G.t;if(c.liq&&c.liq.vol>15){AU.splash(.3,x);c.liq.T-=n.g*.02*(NT[h.nt].frozen?6:1)*1000/Math.max(200,c.liq.vol);}else AU.thud();
     G.held=h.nt==='ramyeon'?{kind:'packet',id:'packet'}:null;}return;
-  case'noodleObj':if(c){const n=h.n;const cx=x-c.x,cy=y-c.y;if(c.kind==='bowl'){neatNoodle(n,c.r*.84,cx*.12,cy*.12,.6);if(Math.random()<.5)addDrip(c,Math.atan2(cy,cx)+rand(-.6,.6),c.liq?liqCol(c.liq):[200,190,160]);}else if(c.kind==='plate'||c.kind==='strainer')nestNoodle(n,c.r*(c.kind==='plate'?.5:.66),cx*.2,cy*.2);else nestNoodle(n,c.r*.7,cx*.3,cy*.3);c.noodles.push(n);if(c.t0<0)c.t0=G.t;AU.splash(.15,x);G.held=null;}return;
+  case'noodleObj':if(c){const n=h.n;const cx=x-c.x,cy=y-c.y;if(c.kind==='bowl'){neatNoodle(n,c.r*.76,cx*.12,cy*.12,.6);if(Math.random()<.5)addDrip(c,Math.atan2(cy,cx)+rand(-.6,.6),c.liq?liqCol(c.liq):[200,190,160]);}else if(c.kind==='plate'||c.kind==='strainer')nestNoodle(n,c.r*(c.kind==='plate'?.5:.66),cx*.2,cy*.2);else nestNoodle(n,c.r*.7,cx*.3,cy*.3);c.noodles.push(n);if(c.t0<0)c.t0=G.t;AU.splash(.15,x);G.held=null;}return;
   case'packet':if(c&&c.liq&&c.liq.vol>15){const q=c.liq;q.salt+=4.8;q.spicy+=6;q.umami+=3;q.col=mix(q.col,[206,72,34],.55);q.fat+=6;AU.nz({f:3000,type:'highpass',d:.3,v:.12});for(let i=0;i<14;i++)spawn({k:'flake',type:'chili',x:x+rand(-14,14),y:y+rand(-14,14),z:20,vz:0,amt:0,rot:0,max:2});G.held=null;}else floatText('물이 담긴 냄비에 넣어요',x,y-30,'#ffd0b0',20);return;
   case'ice':if(c){for(let i=0;i<5;i++)c.ice.push({x:x-c.x+rand(-18,18),y:y-c.y+rand(-18,18),m:9,rot:rand(0,1)});if(c.liq)c.liq.T=Math.max(0,c.liq.T-3);AU.clink();G.held=null;}return;
   case'nori':if(c&&(c.kind==='bowl'||c.kind==='plate')){const lx=x-c.x,ly=y-c.y,d=Math.hypot(lx,ly)||1,r=Math.min(d,c.r*.7);c.seeds.push({type:'nori',x:lx/d*r,y:ly/d*r,rot:Math.atan2(ly,lx)+PI/2});AU.place();G.held=null;}return;
