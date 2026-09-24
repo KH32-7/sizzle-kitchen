@@ -118,6 +118,25 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 .to-b{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}.to-b button{background:#f0e0c0;border:1px solid #d6b98a;border-radius:6px;padding:6px 12px;font-size:14px;color:#5a3a14}.to-b .big-btn{font-size:17px;padding:7px 18px;color:#fff6ea;background:var(--chili);border:none}
 .pr-guide{display:flex;gap:10px;align-items:flex-start;background:#fff3d6;border:1.5px solid #e8b865;border-radius:8px;padding:10px 12px;margin:-6px 0 14px;font-size:14.5px;line-height:1.45;color:#5a3a14;cursor:pointer}.pr-guide input{width:18px;height:18px;accent-color:var(--chili);margin-top:2px}
 @media (prefers-reduced-motion:reduce){#alarm,.tk.late,#served.in{animation:none}}
+.tk-sp{position:absolute;top:6px;right:6px;font-style:normal;font-family:'Black Han Sans',sans-serif;font-size:11px;background:var(--amber);color:#3a2206;border-radius:3px;padding:1px 5px;transform:rotate(4deg)}
+.tk em.tk-rq{background:#2f6fa8}
+.fr-it i.fr-f{font-style:normal;font-size:10.5px;border-radius:3px;padding:0 4px;background:#e4ecf2;color:#3a6a90}
+.fr-it i.fr-f.ok{background:#dff0dc;color:#2f6a36}.fr-it i.fr-f.warn{background:#fbe9c8;color:#8a5a0a}.fr-it i.fr-f.bad{background:#f6d6cc;color:#9a2a14}
+.up-box{background:#efe3c9;border:1.5px solid #cdb994;border-radius:8px;padding:8px 12px;margin-bottom:10px}
+.up-box h4{margin:0 0 6px;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:17px;color:var(--chili-d)}.up-box h4 small{font-family:'Gowun Dodum',sans-serif;font-size:12px;color:#8a755a;margin-left:6px}
+.up-row{display:grid;grid-template-columns:120px 1fr 90px 64px;gap:10px;align-items:center;padding:4px 0;border-top:1px dashed #d8c7a4;font-size:13.5px}
+.up-row b{font-weight:700;color:#3a2a1c}.up-row span{color:#6b5a47;font-size:12.5px}.up-row em{font-style:normal;font-family:'IBM Plex Mono',monospace;text-align:right}
+.up-row button{background:var(--chili);color:#fff;border:none;border-radius:5px;height:28px;font-weight:700}.up-row button:disabled{background:#c9bba0;color:#fff;cursor:default}
+.up-row.own b::after{content:' ✓';color:var(--good)}
+#toasts{position:absolute;left:50%;top:70px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center;z-index:30;pointer-events:none}
+.toast{display:flex;gap:12px;align-items:center;background:rgba(31,24,20,.95);border:1px solid #8a6a3a;border-radius:10px;padding:10px 18px 10px 12px;color:#f6ead6;box-shadow:0 12px 30px rgba(0,0,0,.45);animation:toastIn .4s cubic-bezier(.2,.8,.3,1.2);transition:opacity .5s,transform .5s;min-width:280px}
+.toast.out{opacity:0;transform:translateY(-10px)}
+.toast>i{font-style:normal;font-size:24px;width:34px;height:34px;display:grid;place-items:center;background:#3a2a1c;border-radius:50%;color:var(--amber)}
+.toast b{display:block;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:17px;color:#ffe3b0}.toast span{font-size:13px;color:#d9c7ab}
+.toast.ach{border-color:var(--amber);background:linear-gradient(90deg,rgba(80,52,16,.97),rgba(31,24,20,.96))}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px) scale(.96)}to{opacity:1;transform:none}}
+.st-spoil{margin-top:8px;font-size:13px;color:#9a2a14}.st-new{margin-top:6px;font-size:14px;color:var(--good);font-weight:700}
+.pr em .stars{font-size:12px}
 </style>
 </head>
 <body>
@@ -126,7 +145,7 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2p
 <div id="top" hidden>
   <div class="st"><span id="clock">DAY 1 · 11:00</span><span id="money">0원</span><span id="rep" class="stars"></span></div>
   <p id="hint"></p>
-  <div class="bt"><button type="button" id="btnFridge">냉장고<kbd>F</kbd></button><button type="button" id="btnRecipe">레시피</button><button type="button" id="btnMarket">장보기</button><button type="button" id="btnMenu">메뉴</button></div>
+  <div class="bt"><button type="button" id="btnDrop" hidden>내려놓기</button><button type="button" id="btnRot">도마 돌리기</button><button type="button" id="btnFridge">냉장고<kbd>F</kbd></button><button type="button" id="btnRecipe">레시피</button><button type="button" id="btnMarket">장보기</button><button type="button" id="btnMute">소리 끄기<kbd>M</kbd></button><button type="button" id="btnMenu">메뉴</button></div>
 </div>
 <div id="rail"></div>
 <div id="recipePop" hidden><button type="button" id="rpClose">닫기</button><h3 id="rpTitle"></h3><div id="rpSub"></div><ol id="steps"></ol></div>
@@ -189,7 +208,7 @@ const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,Mat
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
 function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function josa(w,a,b){const c=w.charCodeAt(w.length-1);if(c<0xAC00||c>0xD7A3)return w+a;return w+((c-0xAC00)%28?a:b);}
-const stage=$('#stage'),cv=$('#c'),ctx=cv.getContext('2d');
+const stage=$('#stage'),cv=$('#c');let ctx=cv.getContext('2d');
 let S=1,DPR=1,PX=1;
 
 /* ---------- layout ---------- */
@@ -212,6 +231,7 @@ const KN_UP=150,KN_DN=58,LAT=1700,LATW=2400;
 /* ---------- liquids ---------- */
 // salt: g per ml; film: px^2 of spread per ml (thin = large); vis: viscosity damping; wat: fraction that evaporates
 const LQ={
+  vinegar:{n:'식초',salt:0,col:[236,228,196],a:.16,film:520,vis:2,wat:1,sour:4},
   water:{n:'물',salt:0,col:[190,210,225],a:.28,film:520,vis:2.2,wat:1},
   pastaw:{n:'면수',salt:.006,col:[222,222,205],a:.4,film:480,vis:2.6,wat:1,starch:1},
   anchovy:{n:'멸치육수',salt:.004,col:[214,188,128],a:.4,film:500,vis:2.4,wat:1,umami:.8},
@@ -232,7 +252,7 @@ const LQ={
   juice:{n:'육즙',salt:.004,col:[150,40,36],a:.75,film:420,vis:2.6,wat:1},
 };
 function newLiq(){return{vol:0,T:22,salt:0,umami:0,spicy:0,sweet:0,sour:0,fat:0,starch:0,col:[200,210,220],aroma:0,dark:0};}
-function liqAdd(c,key,ml,T){if(ml<=0)return;if(!c.liq)c.liq=newLiq();const q=c.liq,d=LQ[key]||LQ.water,nv=q.vol+ml;
+function liqAdd(c,key,ml,T){if(ml<=0)return;if(!c.liq)c.liq=newLiq();c.liq.addT=(typeof G!=='undefined'&&G)?G.t:0;const q=c.liq,d=LQ[key]||LQ.water,nv=q.vol+ml;
   q.T=(q.T*q.vol+(T===undefined?20:T)*ml)/nv;q.col=mix(q.col,d.col,Math.min(1,ml/nv));
   q.salt+=ml*d.salt;q.umami+=ml*(d.umami||0);q.spicy+=ml*(d.spicy||0);q.sweet+=ml*(d.sweet||0);q.sour+=ml*(d.sour||0);q.fat+=ml*(d.fat||0)+(d.oil?ml:0);q.aroma+=ml*(d.aroma||0);q.dark+=ml*(d.dark||0);q.starch+=ml*(d.starch||0)*.02;q.vol=nv;}
 function liqTake(q,f){const o=newLiq();for(const k of ['vol','salt','umami','spicy','sweet','sour','fat','starch','aroma','dark']){o[k]=q[k]*f;q[k]-=o[k];}o.T=q.T;o.col=[...q.col];return o;}
@@ -329,9 +349,11 @@ function finalize(p){const P=p.poly;let A=0,cx=0,cy=0;for(let i=0,n=P.length;i<n
   let m=0,x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const q of P){q[0]-=cx;q[1]-=cy;m=Math.max(m,Math.hypot(q[0],q[1]));x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);}
   p.tx+=cx;p.ty+=cy;const c=Math.cos(p.rot),s=Math.sin(p.rot);p.x+=c*cx-s*cy;p.y+=s*cx+c*cy;p.area=Math.abs(A);p.r=Math.sqrt(p.area/PI);p.mass=p.area/400;p.rb=m;p.ex=x1-x0;p.ey=y1-y0;checkDisc(p);}
 function checkDisc(p){const d=ING[p.type];p.disc=false;if(!d.cyl||!d.shH)return;if(p.ey>=d.shH*.72&&p.ex<=Math.max(11,p.ey*.95)){p.disc=true;p.dr=p.ey/2;if(d.cyl==='ring'){const arr=SCAL[p.type];p.ringCol=arr[clamp(Math.round(p.tx+d.tw/2),0,arr.length-1)];}p.r=Math.max(p.r,p.dr*.8);}}
-function clipPoly(P,nx,ny,d,sgn){const out=[],n=P.length;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];const fa=(nx*a[0]+ny*a[1]-d)*sgn,fb=(nx*b[0]+ny*b[1]-d)*sgn;if(fa>=0)out.push([a[0],a[1]]);if((fa>=0)!==(fb>=0)){const t=fa/(fa-fb);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);}}return out;}
+function commonIds(a,b){if(!a[2]||!b[2])return null;const r=a[2].filter(x=>b[2].includes(x));return r.length?r:null;}
+function clipPoly(P,nx,ny,d,sgn,lid){const out=[],n=P.length;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];const fa=(nx*a[0]+ny*a[1]-d)*sgn,fb=(nx*b[0]+ny*b[1]-d)*sgn;if(fa>=0)out.push(a[2]?[a[0],a[1],a[2].slice()]:[a[0],a[1]]);if((fa>=0)!==(fb>=0)){const t=fa/(fa-fb),ids=(commonIds(a,b)||[]).concat(lid===undefined?[]:[lid]);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,ids]);}}return out;}
+let CUTID=1;
 function polyArea(P){let A=0;for(let i=0,n=P.length;i<n;i++){const a=P[i],b=P[(i+1)%n];A+=a[0]*b[1]-b[0]*a[1];}return Math.abs(A/2);}
-function clonePiece(p,poly){const o=Object.assign({},p,{id:PID++,poly,coat:{...p.coat},face:[...p.face]});if(p.L){o.L=[...p.L];o.Lm=[...p.Lm];}return o;}
+function clonePiece(p,poly){if(p._under)delete p._under;const o=Object.assign({},p,{id:PID++,poly,coat:{...p.coat},face:[...p.face]});if(p.L){o.L=[...p.L];o.Lm=[...p.Lm];}return o;}
 function pointInPiece(p,x,y){const dx=x-p.x,dy=y-p.y,c=Math.cos(p.rot),s=Math.sin(p.rot);const lx=c*dx+s*dy,ly=-s*dx+c*dy;if(p.disc)return lx*lx+ly*ly<p.dr*p.dr*1.2;const P=p.poly;let ins=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>ly)!==(b[1]>ly)&&lx<(b[0]-a[0])*(ly-a[1])/(b[1]-a[1])+a[0])ins=!ins;}return ins;}
 function makeGrains(n,lx,ly,R,T0){const a=[];for(let i=0;i<n;i++){const t=rand(0,TAU),r=Math.sqrt(Math.random())*R;a.push({kind:'grain',ci:i,x:lx+Math.cos(t)*r,y:ly+Math.sin(t)*r*.85,vx:0,vy:0,z:rand(0,22),vz:0,av:0,rot:rand(0,TAU),r:3.6,mass:.33,T:T0,Tmax:T0,moist:.28,cook:0,face:[0,0],down:Math.random()<.5?0:1,coat:{salt:0,dark:0,chili:0,oil:0,sauce:0},stick:1,crowd:6,nc:0,flipT:0,pend:false,aroma:0,fire:0,bitter:0,cooked:false});}return a;}
 function newNoodle(type,lx,ly){const d=NT[type],st=[];const cnt=d.cnt,seg=12,sl=d.len/seg;
@@ -358,18 +380,19 @@ const BOT={
   anchovy:{w:46,body:'#f1e6c8',cap:'#3a6ab0',label:'멸치육수',lab:'#3a6ab0',ink:'#fff',rate:30,carton:1},
   kbroth:{w:46,body:'#f4e2d8',cap:'#c03020',label:'김치말이',lab:'#c03020',ink:'#fff',rate:30,carton:1},
   rstock:{w:46,body:'#efe2cc',cap:'#7a3a18',label:'라멘육수',lab:'#7a3a18',ink:'#fff',rate:30,carton:1},
+  vinegar:{w:34,body:'rgba(238,230,196,.78)',cap:'#3a8a3a',label:'식초',lab:'#f4f2e2',ink:'#2a6a2a',rate:6},
   dashi:{w:46,body:'#f3ecd8',cap:'#2a2a2a',label:'다시',lab:'#2a2a2a',ink:'#f3ecd8',rate:30,carton:1},
 };
 const SHK={chili:{n:'고춧가루',fill:'#b52a18',dot:'#e0552c',rate:2.2},salt:{n:'소금',fill:'#f4f4f0',dot:'#d8d8d8',rate:4},pepper:{n:'후추',fill:'#3a3430',dot:'#6a605a',rate:.8},
   sesame:{n:'통깨',fill:'#e6d3a0',dot:'#fff4d8',rate:1.6},gim:{n:'김가루',fill:'#1f2a1c',dot:'#3f5a36',rate:1.5},shichimi:{n:'시치미',fill:'#c0501c',dot:'#2a2a2a',rate:1.2},
-  aonori:{n:'아오노리',fill:'#3a6a2a',dot:'#6a9a4a',rate:1.2},parm:{n:'파마산',fill:'#f2e6b8',dot:'#d8c890',rate:2},parsley:{n:'파슬리',fill:'#3a7a2a',dot:'#6aaa4a',rate:1}};
+  aonori:{n:'아오노리',fill:'#3a6a2a',dot:'#6a9a4a',rate:1.2},parm:{n:'파마산',fill:'#f2e6b8',dot:'#d8c890',rate:2},parsley:{n:'파슬리',fill:'#3a7a2a',dot:'#6aaa4a',rate:1},sugar:{n:'설탕',fill:'#fbfaf4',dot:'#ffffff',rate:3}};
 const PANTRY=[
   {id:'oil',x:182,row:1,kind:'bottle'},{id:'olive',x:246,row:1,kind:'bottle'},{id:'soy',x:308,row:1,kind:'bottle'},{id:'ses',x:368,row:1,kind:'bottle'},
   {id:'tsuyu',x:428,row:1,kind:'bottle'},{id:'shoyu',x:488,row:1,kind:'bottle'},{id:'ysauce',x:550,row:1,kind:'bottle'},{id:'bibim',x:612,row:1,kind:'bottle'},
   {id:'tomato',x:676,row:1,kind:'bottle'},{id:'water',x:746,row:1,kind:'bottle'},
   {id:'flour',x:828,row:1,kind:'powder',n:'부침가루'},{id:'somyeon',x:912,row:1,kind:'noodle',nt:'somyeon',n:'소면'},{id:'ramyeon',x:996,row:1,kind:'noodle',nt:'ramyeon',n:'라면'},
   {id:'spaghetti',x:1080,row:1,kind:'noodle',nt:'spaghetti',n:'스파게티'},{id:'nori',x:1164,row:1,kind:'nori',n:'김'},
-  ...['chili','salt','pepper','sesame','gim','shichimi','aonori','parm','parsley'].map((id,i)=>({id,x:182+i*66,row:2,kind:'shaker'})),
+  ...['chili','salt','pepper','sesame','gim','shichimi','aonori','parm','parsley','sugar'].map((id,i)=>({id,x:182+i*66,row:2,kind:'shaker'})),{id:'vinegar',x:852,row:2,kind:'bottle'},
 ];
 for(const p of PANTRY){if(p.kind==='bottle')p.n=BOT[p.id].label.replace('야키소바','야키소바 소스');if(p.kind==='shaker')p.n=SHK[p.id].n;}
 
@@ -397,9 +420,9 @@ function drawPack(g,id){
   if(id==='spaghetti'){rr(g,-20,-46,40,92,3);g.fillStyle='#1f4fa0';g.fill();g.fillStyle='#f3e2a8';g.fillRect(-14,-30,28,40);g.strokeStyle='#d6b86a';for(let i=-12;i<=12;i+=3){g.beginPath();g.moveTo(i,-28);g.lineTo(i,8);g.stroke();}g.fillStyle='#fff';g.font='9px "Black Han Sans", sans-serif';g.textAlign='center';g.fillText('SPAGHETTI',0,28);return;}
   if(id==='nori'){for(let i=0;i<3;i++){rr(g,-26+i*3,-30+i*4,52,60,2);g.fillStyle=i===2?'#1e2a1c':'#2a3826';g.fill();}g.fillStyle='rgba(120,160,110,.25)';for(let i=0;i<30;i++)g.fillRect(-20+Math.random()*40,-22+Math.random()*50,1.5,1.5);return;}}
 function drawPantryItem(g,p,y){g.save();
-  if(p.kind==='bottle'){g.translate(p.x,y-86);g.scale(.62,.62);g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(4,134,26,7,0,0,TAU);g.fill();drawBottle(g,p.id);}
-  else if(p.kind==='shaker'){g.translate(p.x,y-44);g.scale(.78,.78);g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(3,60,22,6,0,0,TAU);g.fill();drawShaker(g,p.id);}
-  else{g.translate(p.x,y-44);g.scale(.86,.86);g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(4,46,34,8,0,0,TAU);g.fill();drawPack(g,p.id);}
+  if(p.kind==='bottle'){g.translate(p.x,y-78);g.scale(.62,.62*.86);g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(4,134,26,7,0,0,TAU);g.fill();drawBottle(g,p.id);}
+  else if(p.kind==='shaker'){g.translate(p.x,y-40);g.scale(.78,.78*.86);g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(3,60,22,6,0,0,TAU);g.fill();drawShaker(g,p.id);}
+  else{g.translate(p.x,y-40);g.scale(.86,.86*.86);g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(4,46,34,8,0,0,TAU);g.fill();drawPack(g,p.id);}
   g.restore();}
 
 /* ---------- static scene ---------- */
@@ -456,9 +479,15 @@ function drawBG(g){const R=mulberry(7);
     const kx=KNOBX[i];g.fillStyle='#17181b';g.beginPath();g.arc(kx,KNOBY,40,0,TAU);g.fill();
     // mini map
     const mx=kx-12,my=KNOBY+30;for(let q=0;q<4;q++){g.fillStyle=q===i?'#ff8a3d':'rgba(255,255,255,.18)';g.beginPath();g.arc(mx+(q%2)*24,my+(q>1?10:0),3.2,0,TAU);g.fill();}});
+  drawPlateBowl(g);
+  // trash
+  const Tr=L.trash;g.save();g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=14;g.shadowOffsetY=6;g.fillStyle='#8d9196';g.beginPath();g.arc(Tr.x,Tr.y,Tr.r,0,TAU);g.fill();g.restore();steelDisc(g,Tr.x,Tr.y,Tr.r);
+  g.strokeStyle='rgba(40,42,46,.5)';g.lineWidth=2;g.beginPath();g.moveTo(Tr.x-Tr.r*.8,Tr.y-4);g.lineTo(Tr.x+Tr.r*.8,Tr.y-4);g.stroke();g.fillStyle='rgba(40,42,46,.75)';g.font='600 11px "Gowun Dodum", sans-serif';g.textAlign='center';g.fillText('음식물',Tr.x,Tr.y+16);
+}
+function drawPlateBowl(g){let pg;
   // plate
   const P=L.plate;g.save();g.shadowColor='rgba(0,0,0,.4)';g.shadowBlur=26;g.shadowOffsetY=12;g.fillStyle='#f2efe8';g.beginPath();g.arc(P.x,P.y,P.r,0,TAU);g.fill();g.restore();
-  let pg=g.createRadialGradient(P.x-40,P.y-50,10,P.x,P.y,P.r);pg.addColorStop(0,'#ffffff');pg.addColorStop(1,'#e6e2d9');g.fillStyle=pg;g.beginPath();g.arc(P.x,P.y,P.r,0,TAU);g.fill();
+  pg=g.createRadialGradient(P.x-40,P.y-50,10,P.x,P.y,P.r);pg.addColorStop(0,'#ffffff');pg.addColorStop(1,'#e6e2d9');g.fillStyle=pg;g.beginPath();g.arc(P.x,P.y,P.r,0,TAU);g.fill();
   g.strokeStyle='rgba(70,110,120,.45)';g.lineWidth=2.2;g.beginPath();g.arc(P.x,P.y,P.r*.9,0,TAU);g.stroke();
   pg=g.createRadialGradient(P.x,P.y,P.r*.55,P.x,P.y,P.r*.74);pg.addColorStop(0,'rgba(0,0,0,0)');pg.addColorStop(.85,'rgba(0,0,0,.05)');pg.addColorStop(1,'rgba(255,255,255,.5)');g.fillStyle=pg;g.beginPath();g.arc(P.x,P.y,P.r*.74,0,TAU);g.fill();
   // bowl
@@ -466,9 +495,6 @@ function drawBG(g){const R=mulberry(7);
   pg=g.createRadialGradient(Bw.x-30,Bw.y-40,10,Bw.x,Bw.y,Bw.r);pg.addColorStop(0,'#f7f2e8');pg.addColorStop(1,'#d9cfbd');g.fillStyle=pg;g.beginPath();g.arc(Bw.x,Bw.y,Bw.r,0,TAU);g.fill();
   pg=g.createRadialGradient(Bw.x+18,Bw.y+22,Bw.r*.2,Bw.x,Bw.y,Bw.r*.9);pg.addColorStop(0,'#faf6ee');pg.addColorStop(.7,'#e8dfcf');pg.addColorStop(1,'#b9ad98');g.fillStyle=pg;g.beginPath();g.arc(Bw.x,Bw.y,Bw.r*.9,0,TAU);g.fill();
   g.strokeStyle='rgba(40,70,120,.5)';g.lineWidth=3;g.beginPath();g.arc(Bw.x,Bw.y,Bw.r-5,0,TAU);g.stroke();g.lineWidth=1;g.beginPath();g.arc(Bw.x,Bw.y,Bw.r-11,0,TAU);g.stroke();
-  // trash
-  const Tr=L.trash;g.save();g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=14;g.shadowOffsetY=6;g.fillStyle='#8d9196';g.beginPath();g.arc(Tr.x,Tr.y,Tr.r,0,TAU);g.fill();g.restore();steelDisc(g,Tr.x,Tr.y,Tr.r);
-  g.strokeStyle='rgba(40,42,46,.5)';g.lineWidth=2;g.beginPath();g.moveTo(Tr.x-Tr.r*.8,Tr.y-4);g.lineTo(Tr.x+Tr.r*.8,Tr.y-4);g.stroke();g.fillStyle='rgba(40,42,46,.75)';g.font='600 11px "Gowun Dodum", sans-serif';g.textAlign='center';g.fillText('음식물',Tr.x,Tr.y+16);
 }
 function drawGrates(g){for(const b of BURN){const R=b.rb+(b.rb>50?80:56),r0=b.rb+14;g.lineCap='round';
   for(const pass of [0,1,2]){g.strokeStyle=pass===0?'rgba(0,0,0,.5)':pass===1?'#2b2c30':'rgba(255,255,255,.1)';g.lineWidth=pass===0?13:pass===1?11:2;const o=pass===0?3:pass===2?-2:0;
@@ -499,7 +525,7 @@ AU.init=function(){
   if(this.on){if(this.C.state==='suspended')this.C.resume();return;}
   let C;try{C=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
   this.C=C;const comp=C.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=12;comp.ratio.value=5;comp.attack.value=.004;comp.release.value=.2;
-  this.master=C.createGain();this.master.gain.value=.85;this.master.connect(comp);comp.connect(C.destination);
+  this.master=C.createGain();this.master.gain.value=this.muted?0:.85;this.master.connect(comp);comp.connect(C.destination);
   const sr=C.sampleRate;
   const nb=C.createBuffer(1,sr*2,sr),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;this.nbuf=nb;
   const cb=C.createBuffer(1,sr*3,sr),cd=cb.getChannelData(0);for(let i=0;i<cd.length;i++){if(Math.random()<.0022){const amp=Math.pow(Math.random(),2)*.9+.05,len=(15+Math.random()*90)|0,dec=3+Math.random()*12;for(let j=0;j<len&&i+j<cd.length;j++)cd[i+j]+=amp*(Math.random()*2-1)*Math.exp(-j/dec);}}this.cbuf=cb;
@@ -512,6 +538,8 @@ AU.init=function(){
   const o=C.createOscillator();o.type='square';o.frequency.value=3150;const af=C.createBiquadFilter();af.type='lowpass';af.frequency.value=5000;const ag=C.createGain();ag.gain.value=0;o.connect(af);af.connect(ag);ag.connect(this.master);o.start();this.alarm=ag;
   this.on=true;if(C.state==='suspended')C.resume();};
 AU.loop=function(buf,type,f,q){const C=this.C,s=C.createBufferSource();s.buffer=buf;s.loop=true;const fl=C.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=C.createGain();g.gain.value=0;const pn=C.createStereoPanner?C.createStereoPanner():null;s.connect(fl);fl.connect(g);if(pn){g.connect(pn);pn.connect(this.master);}else g.connect(this.master);s.start(0,Math.random()*buf.duration*.9);return{s,fl,g,pn};};
+AU.muted=false;try{AU.muted=localStorage.getItem('sizzle-mute')==='1';}catch(e){}
+AU.setMute=function(m){this.muted=m;try{localStorage.setItem('sizzle-mute',m?'1':'0');}catch(e){}if(this.on)this.master.gain.setTargetAtTime(m?0:.85,this.C.currentTime,.05);};
 AU.set=function(p,v,tc){p.setTargetAtTime(v,this.C.currentTime,tc||.06);};
 AU.panOf=x=>clamp((x/W)*2-1,-1,1)*.6;
 AU.out=function(node,pan){if(pan&&this.C.createStereoPanner){const p=this.C.createStereoPanner();p.pan.value=pan;node.connect(p);p.connect(this.master);}else node.connect(this.master);};
@@ -618,12 +646,12 @@ function fluidTotal(c,pred){let s=0;for(const q of c.fluid)if(!pred||pred(q))s+=
 
 /* ---------- board ---------- */
 function chop(kx,ky){
-  if(G.t-G.knife.last<.07)return;G.knife.last=G.t;G.knife.down=1;
+  if(G.t-G.knife.last<((SAVE&&SAVE.up&&SAVE.up.knife)?.045:.07))return;G.knife.last=G.t;G.knife.down=1;
   const a=G.knife.ang,nx=Math.cos(a),ny=Math.sin(a),dx=Math.sin(a),dy=-Math.cos(a);
   const B=G.board.pieces,add=[],rem=new Set();let hit=null;
   for(const p of B){const px=p.x-kx,py=p.y-ky,dn=px*nx+py*ny,dd=px*dx+py*dy;if(Math.abs(dn)>p.rb||dd>KN_UP+p.rb||dd<-KN_DN-p.rb)continue;
     const c=Math.cos(p.rot),s=Math.sin(p.rot),lnx=c*nx+s*ny,lny=-s*nx+c*ny,d=(kx-p.x)*nx+(ky-p.y)*ny;
-    const A=clipPoly(p.poly,lnx,lny,d,-1),Bp=clipPoly(p.poly,lnx,lny,d,1);if(A.length<3||Bp.length<3)continue;
+    const lid=CUTID++,A=clipPoly(p.poly,lnx,lny,d,-1,lid),Bp=clipPoly(p.poly,lnx,lny,d,1,lid);if(A.length<3||Bp.length<3)continue;
     const aA=polyArea(A),aB=polyArea(Bp);if(aA<1||aB<1)continue;hit=hit||p.type;if(aA<6||aB<6)continue;
     const pa=clonePiece(p,A),pb=clonePiece(p,Bp);finalize(pa);finalize(pb);pa.x-=nx;pa.y-=ny;pb.x+=nx*2.4;pb.y+=ny*2.4;pb.rot+=rand(-.02,.02);
     if(p.type==='beef'&&p.cooked&&!p.juiceLost){const rest=G.t-(p.offT||0);if(p.offT>0&&rest<25){pa.juiceLost=pb.juiceLost=true;for(let i=0;i<8;i++){MX.fillStyle='rgba(150,30,30,.18)';MX.beginPath();MX.arc(kx-L.board.x+rand(-30,30),ky-L.board.y+rand(-30,30),rand(3,9),0,TAU);MX.fill();}floatText('육즙이 흘러나와요…',kx,ky-60,'#ffb0a0',22);}}
@@ -738,7 +766,7 @@ function stepEgg(c,e,dt){const T=c.T;let evap=0,smoke=0;e.pour=Math.min(1,e.pour
   const sp=1-Math.min(1,e.set),rate=Math.min(1,dt*2.4*sp*sp),N=e.rad.length;
   for(let i=0;i<N;i++){const a=i/N*TAU,t=e.tr[i]*e.pour;e.rad[i]+=(t-e.rad[i])*rate*(e.rad[i]<t?1:.3);const px=e.x+Math.cos(a)*e.rad[i],py=e.y+Math.sin(a)*e.rad[i],d=Math.hypot(px,py),lim=c.r-5;if(d>lim)e.rad[i]=Math.max(10,e.rad[i]-(d-lim));}
   const oil=c.oilAmt>1;if(T>68)e.set=Math.min(1.2,e.set+(T-68)/90*.05*(oil?1:.85)*dt);if(T>150)e.edge+=(T-150)/100*.07*(oil?1:1.4)*dt;
-  if(T>125&&e.pour>.5)e.fb[e.down]+=(T-125)/100*.04*(oil?1:1.5)*dt;if(T>75)e.yolk+=(T-75)/100*(e.down===1?.1:.011)*dt;e.T=lerp(e.T,Math.min(T,100),dt*.5);
+  if(T>125&&e.pour>.5)e.fb[e.down]+=(T-125)/100*.04*(oil||UPG.nonstick?1:1.5)*(UPG.nonstick&&e.fb[e.down]>1?.7:1)*dt;if(T>75)e.yolk+=(T-75)/100*(e.down===1?.1:.011)*dt;e.T=lerp(e.T,Math.min(T,100),dt*.5);
   if(T>100&&e.moist>.1){const x=(T-100)/150*((1-Math.min(1,e.set))*.6+.15)*dt*.5;e.moist-=x*.2;evap+=x*8;}
   if(e.fb[e.down]>1.15)smoke+=(e.fb[e.down]-1.15)*6;
   if(T>150&&e.set>.12&&e.set<.95&&Math.random()<dt*6*(T-150)/100){const a=rand(0,TAU),r=rand(15,avgRad(e)-6);spawn({k:'bub',x:c.x+e.x+Math.cos(a)*r,y:c.y+e.y+Math.sin(a)*r,r:rand(2,4.5),max:rand(.3,.7),pop:true});}
@@ -754,7 +782,7 @@ function stepJeon(c,j,dt){const T=c.T;let evap=0,smoke=0;j.pour=Math.min(1,j.pou
   for(let i=0;i<N;i++){const a=i/N*TAU,t=j.tr[i]*j.pour;j.rad[i]+=(t-j.rad[i])*Math.min(1,dt*2*sp*sp+.001);const px=j.x+Math.cos(a)*j.rad[i],py=j.y+Math.sin(a)*j.rad[i],d=Math.hypot(px,py),lim=c.r-6;if(d>lim)j.rad[i]=Math.max(10,j.rad[i]-(d-lim));}
   const oilUnder=c.oilAmt>1.5,thick=clamp(j.thick,.4,3);
   if(T>80)j.set=Math.min(1.4,j.set+(T-80)/80*.045/thick*dt*(j.down===1?1.4:1));
-  if(T>118)j.fb[j.down]+=(T-118)/100*.042*(oilUnder?1:1.7)*dt;if(T>150)j.edge+=(T-150)/100*.07*(c.oilAmt>4?1.4:c.oilAmt>1?1:.4)*dt;
+  if(T>118)j.fb[j.down]+=(T-118)/100*.042*(oilUnder||UPG.nonstick?1:1.7)*(UPG.nonstick&&j.fb[j.down]>1?.7:1)*dt;if(T>150)j.edge+=(T-150)/100*.07*(c.oilAmt>4?1.4:c.oilAmt>1?1:.4)*dt;
   if(c.oilAmt>.3){for(const q of c.fluid)if(LQ[q.k].oil&&q.m>0){const a=Math.min(q.m,dt*.03);q.m-=a;j.oil+=a;}}
   if(T>100&&j.set<1){const x=(T-100)/120*(1-j.set*.7)*dt*.6;evap+=x*6;}
   if(j.fb[j.down]>1.2)smoke+=(j.fb[j.down]-1.2)*8;
@@ -782,13 +810,13 @@ function stepFry(c,dt){const b=G.burners[c.burner];
     if(it.z>.5){it.T+=(30-it.T)*.3*dt;continue;}
     const d=it.kind==='grain'?{cookRate:.12,brownRate:.03,hk:1}:ING[it.type],contact=oilF/(1+it.crowd*.32);
     if(it.L){const cap=150+(1-Math.min(1,it.moist/.35))*70;steakStep(it,Math.min(c.T,cap),30+(it.baste||0),dt,2.2*contact+.4,.35);it.baste=Math.max(0,(it.baste||0)-dt*40);heatOut+=(c.T-it.L[it.down===0?0:11])*.15*it.mass*dt;
-      if(c.T>125){const mb=it.moist>.3?.2:1;it.face[it.down]+=d.brownRate*(c.T-125)/110*mb*(c.oilAmt>1?1:1.3)*dt;}if(c.T>100)it.moist=Math.max(0,it.moist-dt*.003*(c.T-100)/100);
+      if(c.T>125){const mb=it.moist>.3?.2:1;it.face[it.down]+=d.brownRate*(c.T-125)/110*mb*(c.oilAmt>1||UPG.nonstick?1:1.3)*dt;}if(c.T>100)it.moist=Math.max(0,it.moist-dt*.003*(c.T-100)/100);
       if(c.T>130&&Math.random()<dt*2)evap+=.8;if(it.face[it.down]>1.3)smoke+=(it.face[it.down]-1.3)*it.mass;it.offT=G.t;continue;}
     const k=it.kind==='grain'?.3:d.hk*clamp(22/Math.sqrt(it.area),.35,1.6);
     if(it.moist>.02&&it.T>=99.5){const q=Math.max(0,c.T-100)*k*contact,e=q*dt/LAT;it.moist=Math.max(0,it.moist-e);evap+=e*it.mass;heatOut+=q*dt*it.mass;it.T=100;}
     else{const dq=(c.T-it.T)*k*contact*dt;it.T+=dq;heatOut+=dq*it.mass;if(it.moist>.02&&it.T>100)it.T=100;}
     if(it.T>it.Tmax)it.Tmax=it.T;if(it.T>55)it.cook+=(it.T-55)/45*d.cookRate*dt;
-    if(c.T>125){const m=it.moist,mb=m>.3?.1:m>.12?.45:1;it.face[it.down]+=d.brownRate*(c.T-125)/110*mb*(c.oilAmt>1.5?1:1.5)/(1+it.crowd*.2)*dt;const f=it.face[it.down];if(f>1.05)smoke+=(f-1.05)*it.mass*1.5;}
+    if(c.T>125){const m=it.moist,mb=m>.3?.1:m>.12?.45:1;it.face[it.down]+=d.brownRate*(c.T-125)/110*mb*(c.oilAmt>1.5||UPG.nonstick?1:1.5)*(UPG.nonstick&&it.face[it.down]>1?.7:1)/(1+it.crowd*.2)*dt;const f=it.face[it.down];if(f>1.05)smoke+=(f-1.05)*it.mass*1.5;}
     if(it.kind==='grain'&&it.T>60)it.stick=Math.max(0,it.stick-dt*.035);
     if(it.type==='garlic'&&it.face[it.down]>.3)c.flav.garlic+=dt*.1;}
   for(const e of [...c.eggs]){const r=stepEgg(c,e,dt);evap+=r.evap;smoke+=r.smoke;}
@@ -845,7 +873,7 @@ function stepLiquid(c,dt){const q=c.liq,b=G.burners[c.burner];
   else{q.T+=dT;c.boil=lerp(c.boil,q.T>88?(q.T-88)/12*.35:0,dt*2);if(q.T>70)c.evapNow+=(q.T-70)/30*.3*dt*60*.02;}
   c.T=q.T;const conc=q.vol>1?q.salt/q.vol:0;
   // foam & boil-over
-  if(q.T>=99&&c.boil>.3)c.foam+=dt*((q.starch/Math.max(.2,q.vol/1000))*1.3*c.boil-.35);else c.foam-=dt*.5;c.foam=clamp(c.foam,0,1.3);
+  if(q.T>=99&&c.boil>.3)c.foam+=dt*((q.starch/Math.max(.2,q.vol/1000))*1.0*c.boil-.4);else c.foam-=dt*.5;c.foam=clamp(c.foam,0,1.3);
   if(c.foam>1&&c.onBurner){q.vol=Math.max(0,q.vol-90);c.foam=.35;b.lit=false;b.level=0;G.stats.boilOver=(G.stats.boilOver||0)+1;AU.splash(.6,c.x);AU.hot();
     floatText('넘쳤어요! 불이 꺼졌어요',c.x,c.y-c.r-10,'#ffb38a',26);for(let i=0;i<30;i++){const a=rand(0,TAU);STX.fillStyle='rgba(240,236,220,.12)';STX.beginPath();STX.arc(c.x+Math.cos(a)*(c.r+rand(0,30)),c.y+Math.sin(a)*(c.r+rand(0,30)),rand(3,9),0,TAU);STX.fill();}}
   physics(c,dt,true);
@@ -915,7 +943,7 @@ function pourBatter(m,dst){if(!isCook(dst)||dst.kind!=='pan'){if(dst.kind==='tra
 /* ---------- pouring & sprinkling ---------- */
 const BROTHY=new Set(['water','anchovy','kbroth','rstock','dashi','pastaw']);
 const liqKey=id=>id;
-function deliverAt(key,x,y,m,vx,vy,T){const c=contAt(x,y);
+function deliverAt(key,x,y,m,vx,vy,T){const c=contAt(x,y);if(c&&c.flav&&key==='vinegar')c.flav.sour=(c.flav.sour||0)+m;
   if(!c){if(inSink(x,y))return;addFluid(G.counter,key,m,x,y,vx*.3,vy*.3,T);return;}
   if(c.kind==='mix'){c.water+=m*(LQ[key].wat?1:.6);if(LQ[key].salt)c.salt=(c.salt||0)+m*LQ[key].salt;if(Math.random()<.2)spawn({k:'ring',x,y,r:3,max:.5});return;}
   if(c.kind==='strainer'){for(const n of c.noodles)n.rinse=Math.min(1,n.rinse+m*.002);return;}
@@ -943,6 +971,7 @@ function landFlake(f){if(f.type==='flour')return;const c=contAt(f.x,f.y);
     if(hit)hit.coat.chili+=f.amt*6/hit.mass;else{let oq=null;for(const q of c.fluid)if(LQ[q.k].oil&&(q.x-lx)**2+(q.y-ly)**2<(q.r||8)**2){oq=q;break;}
       if(oq){oq.chili=(oq.chili||0)+f.amt*6;if(c.T>195){c.flav.bitter+=f.amt*(c.T-195)/100;if(Math.random()<.3)spawn({k:'smoke',x:f.x,y:f.y,vx:rand(-8,8),vy:rand(-30,-15),r:8,gr:24,a:.3,max:1.6,seed:rand(0,9)});}else if(c.T>110)c.flav.chiliOil+=f.amt;}
       else if(c.noodles.length)c.noodles[0].coat.chili+=f.amt*4;}}
+  if(f.type==='sugar'){if(c.flav)c.flav.sweet=(c.flav.sweet||0)+f.amt;if(liq)c.liq.sweet+=f.amt;return;}
   if(liq&&f.type!=='gim'&&f.type!=='sesame'&&f.type!=='aonori'&&f.type!=='parsley'&&f.type!=='shichimi'&&f.type!=='pepper'&&f.type!=='parm')return;
   if(c.seeds.length<500)c.seeds.push({x:lx,y:ly,type:f.type,rot:f.rot,a:1});c.garn=c.garn||{};c.garn[f.type]=(c.garn[f.type]||0)+f.amt;}
 
@@ -969,7 +998,7 @@ function update(dt){G.t+=dt;FC++;
   for(const p of G.board.pieces)if(p.L)steakStep(p,24,24,dt,.7,.7);if(G.held&&G.held.piece&&G.held.piece.L)steakStep(G.held.piece,24,24,dt,.7,.7);
   let smokeTot=0;
   for(const c of G.cw){c.evapRate=lerp(c.evapRate,c.evapNow/dt,.25);c.evapNow=0;c.smokeRate=lerp(c.smokeRate,c.smokeNow/dt,.2);c.smokeNow=0;smokeTot+=c.smokeRate;
-    const st=c.evapRate*dt*9+(c.boil||0)*dt*14;c.steamB+=st;let tries=0;
+    const st=c.evapRate*dt*9+(c.boil||0)*dt*14+(c.liq&&c.liq.T>72?(c.liq.T-72)/28*dt*5:0);c.steamB+=st;let tries=0;
     while(c.steamB>1&&tries<8){c.steamB--;tries++;let px=rand(-.6,.6)*c.r,py=rand(-.6,.6)*c.r;if(!c.liq&&c.items.length){const o=c.items[(Math.random()*c.items.length)|0];px=o.x;py=o.y;}
       spawn({k:'steam',x:c.x+px,y:c.y+py,vx:rand(-10,10),vy:rand(-42,-20),r:rand(8,15),gr:rand(18,32),a:rand(.12,.24)*(c.liq?1.2:1),max:rand(1.2,2.3),seed:rand(0,9)});}
     if(c.steamB>6)c.steamB=0;
@@ -977,14 +1006,16 @@ function update(dt){G.t+=dt;FC++;
     if(c.oilAmt>2&&c.T>160&&c.evapRate>1&&Math.random()<dt*c.evapRate*.6)splatter(c.x+rand(-.6,.6)*c.r,c.y+rand(-.6,.6)*c.r,1+(Math.random()*2|0));
     if(c.boil>.4&&Math.random()<dt*c.boil*3)spawn({k:'ring',x:c.x+rand(-.7,.7)*c.r,y:c.y+rand(-.7,.7)*c.r,r:rand(2,5),max:.4});
     if(c.flare>0){c.flare=Math.max(0,c.flare-dt*1.1);for(let i=0;i<5*c.flare;i++){const a=rand(0,TAU),r=rand(0,c.r*.8);spawn({k:'fire',x:c.x+Math.cos(a)*r,y:c.y+Math.sin(a)*r,vx:rand(-20,20),vy:rand(-120,-50),r:rand(16,34)*(.5+c.flare),max:rand(.3,.6)});}}}
+  for(const c of G.cw)underFx(c);
   for(const v of [G.plate,G.bowl]){const hotL=v.liq&&v.liq.T>55,hotI=v.items.some(o=>o.T>60)||v.noodles.some(n=>n.T>60);if((hotL||hotI)&&Math.random()<dt*(hotL?5:2)){spawn({k:'steam',x:v.x+rand(-.5,.5)*v.r,y:v.y+rand(-.5,.5)*v.r,vx:rand(-6,6),vy:rand(-30,-15),r:rand(8,12),gr:rand(14,24),a:rand(.08,.16),max:rand(1.4,2.4),seed:rand(0,9)});}}
   if(G.landSnd>0){if(G.landSnd>3){AU.thud();const c=G.cw.find(q=>q.tossT>0);if(c&&c.T>130)AU.sizzleBurst(.35,c.x);}G.landSnd=0;}
-  G.smoke=lerp(G.smoke,smokeTot,Math.min(1,dt*1.5));if(G.smoke>8)G.alarmT+=dt;else G.alarmT=Math.max(0,G.alarmT-dt*1.5);
+  G.smoke=lerp(G.smoke,smokeTot,Math.min(1,dt*1.5));if(G.smoke>(UPG.fan?16:8))G.alarmT+=dt;else G.alarmT=Math.max(0,G.alarmT-dt*1.5);
   if(G.alarmT>3){if(!G.alarmOn){G.alarmOn=true;G.stats.alarm=(G.stats.alarm||0)+1;}}else if(G.alarmT<=0)G.alarmOn=false;
   const PT=G.parts;
   for(let i=PT.length-1;i>=0;i--){const q=PT[i];q.life+=dt;let dead=q.life>=q.max;
     if(q.k==='steam'||q.k==='smoke'){q.x+=q.vx*dt;q.y+=q.vy*dt;q.r+=q.gr*dt;q.vx+=Math.sin(G.t*2+q.seed)*8*dt;}
     else if(q.k==='fire'){q.x+=q.vx*dt;q.y+=q.vy*dt;q.r*=1+dt*.8;}
+    else if(q.k==='spark'){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.94;q.vy*=.94;}
     else if(q.k==='pd'){if(dead)deliverAt(q.key,q.x1,q.y1,q.m,q.vx+rand(-80,80),q.vy+rand(-80,80));}
     else if(q.k==='drop'||q.k==='juice'){q.vz-=900*dt;q.z+=q.vz*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.z<=0){dead=true;
         if(q.k==='juice'&&inBoard(q.x,q.y)){MX.fillStyle=rgba(q.col,.12);MX.beginPath();MX.arc(q.x-L.board.x,q.y-L.board.y,rand(1,2.5),0,TAU);MX.fill();}
@@ -1004,48 +1035,84 @@ function overlays(g,p,d){const c=Math.min(1,p.cook);if(c>.02&&d.tint[3]){g.fillS
   if(p.coat.dark>.004){g.fillStyle=`rgba(92,46,14,${Math.min(.5,p.coat.dark*5)})`;g.fill();}
   if(p.type!=='kimchi'&&p.coat.chili>.02){g.fillStyle=`rgba(190,45,18,${Math.min(.55,p.coat.chili*.8)})`;g.fill();}
   if(p.coat.sauce>.01){g.fillStyle=`rgba(120,50,24,${Math.min(.45,p.coat.sauce*2)})`;g.fill();}}
+const VOL={kimchi:{th:3,cut:[232,130,96],skin:[140,26,12]},onion:{th:9,cut:[246,242,226],skin:[214,200,150],dome:1},ham:{th:11,cut:[238,168,156],skin:[190,104,92]},
+  scallion:{th:7,cut:[236,242,222],skin:[82,130,52],cyl:1},jjokpa:{th:4,cut:[230,240,215],skin:[70,120,40],cyl:1},buchu:{th:2.5,cut:[150,190,110],skin:[40,80,24]},
+  zucchini:{th:11,cut:[226,234,190],skin:[60,100,34],cyl:1},carrot:{th:9,cut:[250,152,62],skin:[196,88,20],cyl:1},cucumber:{th:9,cut:[208,230,178],skin:[36,70,26],cyl:1},
+  cabbage:{th:3,cut:[236,242,214],skin:[170,200,130]},pork:{th:3,cut:[242,206,196],skin:[206,126,116]},chashu:{th:13,cut:[222,164,146],skin:[96,48,22],cyl:1},
+  naruto:{th:9,cut:[252,248,242],skin:[212,202,192],cyl:1},squid:{th:3,cut:[252,248,242],skin:[196,166,166]},garlic:{th:6,cut:[250,244,226],skin:[216,200,166],dome:1},
+  beef:{th:15,cut:[170,40,45],skin:[104,22,26]},begg:{th:10,cut:[252,250,244],skin:[222,214,196],dome:1},curd:{th:4,cut:[252,228,130],skin:[226,186,78]}};
+const SHR={onion:.1,scallion:.14,jjokpa:.18,buchu:.22,zucchini:.12,cabbage:.22,pork:.14,kimchi:.06,carrot:.06,squid:.2,curd:.05,chashu:.03,naruto:.04};
+function volOf(p){const v=VOL[p.type]||{th:4,cut:[230,230,220],skin:[150,150,140]};const c=Math.min(1,p.cook||0);let th=v.th*(1-c*(SHR[p.type]?.45:.1));if(p.L)th*=1-clamp((p.Tmax-40)/60,0,1)*.12;return{v,th,sc:1-c*(SHR[p.type]||0)-(p.L?clamp((p.Tmax-40)/60,0,1)*.08:0)};}
+function wallCol(p,v,cut){let c=cut?v.cut:v.skin;const d=ING[p.type];if(cut&&p.L)c=doneCol(Math.max(p.Lm[5],p.Lm[6]));else if(cut&&d.tint[3]&&p.cook>.05)c=mix(c,d.tint,Math.min(1,p.cook)*d.tint[3]);
+  const b=Math.max(p.face[0],p.face[1]);if(!cut&&b>.3)c=mix(c,d.brown,Math.min(.8,b*.6));if(p.coat.dark>.01)c=mix(c,[92,46,14],Math.min(.5,p.coat.dark*5));return c;}
+function drawWalls(g,p,th,v){if(th<.8)return;const P=p.poly,n=P.length,s=Math.sin(p.rot),co=Math.cos(p.rot),ox=s*th,oy=co*th;let A=0;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];A+=a[0]*b[1]-b[0]*a[1];}const sg=A>0?1:-1;
+  const buckets=[[],[],[],[]];// skinL, skinR, cutL, cutR
+  for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,nx=sg*dy/l,ny=-sg*dx/l,wy=s*nx+co*ny,wx=co*nx-s*ny;if(wy<.02)continue;const cut=!!commonIds(a,b);buckets[(cut?2:0)+(wx>.25?1:0)].push(a,b);}
+  const col0=wallCol(p,v,false),col1=wallCol(p,v,true);
+  buckets.forEach((E,k)=>{if(!E.length)return;g.beginPath();for(let i=0;i<E.length;i+=2){const a=E[i],b=E[i+1];g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.lineTo(b[0]+ox,b[1]+oy);g.lineTo(a[0]+ox,a[1]+oy);g.closePath();}
+    const base=k<2?col0:col1,shade=k%2?.68:.86;g.fillStyle=rgba(mix(base,[0,0,0],1-shade),1);g.fill();if(k>=2&&p.L){g.strokeStyle=rgba(mix(col0,[60,30,15],.5),.9);g.lineWidth=1.6;g.stroke();}});}
+function drawBevel(g,p){const P=p.poly,n=P.length,s=Math.sin(p.rot),co=Math.cos(p.rot);let A=0;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];A+=a[0]*b[1]-b[0]*a[1];}const sg=A>0?1:-1;
+  g.beginPath();let any=false;const dk=[];for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,nx=sg*dy/l,ny=-sg*dx/l,wx=co*nx-s*ny,wy=s*nx+co*ny,lit=-.6*wx-.8*wy;if(lit>.25){g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);any=true;}else if(lit<-.3)dk.push(a,b);}
+  if(any){g.strokeStyle='rgba(255,255,250,.38)';g.lineWidth=1.3;g.stroke();}if(dk.length){g.beginPath();for(let i=0;i<dk.length;i+=2){g.moveTo(dk[i][0],dk[i][1]);g.lineTo(dk[i+1][0],dk[i+1][1]);}g.strokeStyle='rgba(0,0,0,.22)';g.lineWidth=1;g.stroke();}}
+function drawVolumeShade(g,p,v){const d=ING[p.type];if(v.cyl&&d.shH){const H=d.shH,gr=g.createLinearGradient(0,-H/2-p.ty,0,H/2-p.ty);gr.addColorStop(0,'rgba(0,0,0,.26)');gr.addColorStop(.28,'rgba(255,255,255,.2)');gr.addColorStop(.5,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.34)');g.fillStyle=gr;g.fill();}
+  else if(v.dome){const R=Math.max(d.shH||40,40)*.7,gr=g.createRadialGradient(-p.tx-R*.3,-p.ty-R*.35,R*.1,-p.tx,-p.ty,R*1.2);gr.addColorStop(0,'rgba(255,255,255,.3)');gr.addColorStop(.6,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.28)');g.fillStyle=gr;g.fill();}
+  else{const R=Math.max(20,p.rb),gr=g.createLinearGradient(-R,-R,R,R);gr.addColorStop(0,'rgba(255,255,255,.12)');gr.addColorStop(.5,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.1)');g.fillStyle=gr;g.fill();}}
 const DONE_COL=[[20,[140,24,36]],[45,[152,28,40]],[50,[184,46,60]],[55,[212,92,100]],[60,[214,132,124]],[65,[190,150,136]],[72,[160,126,106]],[90,[132,100,80]]];
 function doneCol(T){if(T<=DONE_COL[0][0])return DONE_COL[0][1];for(let i=1;i<DONE_COL.length;i++){if(T<=DONE_COL[i][0]){const a=DONE_COL[i-1],b=DONE_COL[i];return mix(a[1],b[1],(T-a[0])/(b[0]-a[0]));}}return DONE_COL[DONE_COL.length-1][1];}
-function drawDisc(g,p,d){const r=p.dr,cy=d.cyl;
+function drawDisc(g,p,d){const r=p.dr,cy=d.cyl,v=VOL[p.type]||{skin:[150,150,140]},t=Math.min(5,Math.max(2,p.ex*.4)),s=Math.sin(p.rot),co=Math.cos(p.rot);
+  g.save();g.translate(s*t,co*t);g.beginPath();g.ellipse(0,0,r,r*.92,0,0,TAU);g.fillStyle=rgba(mix(wallCol(p,v,false),[0,0,0],.2),1);g.fill();g.restore();
   if(cy==='ring'||cy==='sring'){const R=r,ri=r*(cy==='sring'?.62:.54);g.beginPath();g.ellipse(0,0,R,R*.9,0,0,TAU);g.moveTo(ri,0);g.ellipse(0,0,ri,ri*.85,0,0,TAU,true);g.fillStyle=cy==='sring'?'#f6eee4':rgba(p.ringCol||[230,240,200],1);g.fill();overlays(g,p,d);
-    g.strokeStyle=cy==='sring'?'rgba(170,120,120,.5)':'rgba(70,100,40,.5)';g.lineWidth=1;g.stroke();return;}
+    g.strokeStyle=cy==='sring'?'rgba(170,120,120,.5)':'rgba(70,100,40,.5)';g.lineWidth=1;g.stroke();g.strokeStyle='rgba(255,255,255,.35)';g.beginPath();g.ellipse(0,0,R-1,R*.9-1,0,3.4,4.9);g.stroke();return;}
   g.beginPath();g.ellipse(0,0,r,r*.94,0,0,TAU);
   if(cy==='zuc'){g.fillStyle='#e6ecc4';g.fill();overlays(g,p,d);g.strokeStyle='#4a7a2c';g.lineWidth=Math.max(1.5,r*.12);g.stroke();g.fillStyle='rgba(200,210,150,.8)';for(let i=0;i<8;i++){const a=i/8*TAU;g.beginPath();g.ellipse(Math.cos(a)*r*.38,Math.sin(a)*r*.38,r*.1,r*.05,a,0,TAU);g.fill();}}
   else if(cy==='carrot'){g.fillStyle='#f08a2a';g.fill();overlays(g,p,d);g.fillStyle='rgba(255,190,110,.6)';g.beginPath();g.arc(0,0,r*.5,0,TAU);g.fill();g.strokeStyle='rgba(180,70,10,.5)';g.lineWidth=1;g.beginPath();g.ellipse(0,0,r,r*.94,0,0,TAU);g.stroke();}
   else if(cy==='cuc'){g.fillStyle='#d6e8b4';g.fill();overlays(g,p,d);g.strokeStyle='#2c5220';g.lineWidth=Math.max(1.5,r*.14);g.stroke();g.fillStyle='rgba(240,248,220,.9)';for(let i=0;i<3;i++){const a=i/3*TAU+.5;g.beginPath();g.ellipse(Math.cos(a)*r*.3,Math.sin(a)*r*.3,r*.22,r*.12,a,0,TAU);g.fill();}}
-  else if(cy==='chashu'){g.fillStyle='#d9a08c';g.fill();overlays(g,p,d);g.strokeStyle='#6a3218';g.lineWidth=r*.18;g.stroke();g.strokeStyle='rgba(250,236,220,.8)';g.lineWidth=2;g.beginPath();for(let t=0;t<14;t++){const a=t*.9,rr2=r*.7*(1-t/16);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();}
-  else if(cy==='naruto'){g.fillStyle='#fbf7f0';g.fill();overlays(g,p,d);g.strokeStyle='#e0799a';g.lineWidth=2.4;g.beginPath();for(let t=0;t<40;t++){const a=t*.35,rr2=r*.7*(t/40);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();g.strokeStyle='rgba(200,190,180,.7)';g.lineWidth=1;g.beginPath();for(let t=0;t<=48;t++){const a=t/48*TAU,rr2=r*(1+(t%2?.06:-.02));g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2*.94);}g.stroke();}
-  else if(cy==='garlic'){g.fillStyle='#f6eed6';g.fill();overlays(g,p,d);g.strokeStyle='rgba(200,180,130,.7)';g.lineWidth=1;g.stroke();g.beginPath();g.moveTo(-r*.5,0);g.lineTo(r*.5,0);g.stroke();}}
-function drawSlab(g,p){const len=p.ey,w=22,L2=p.Lm,n=L2.length;g.fillStyle='rgba(0,0,0,.18)';g.fillRect(-w/2+2,-len/2+3,w,len);
+  else if(cy==='chashu'){g.fillStyle='#d9a08c';g.fill();overlays(g,p,d);g.strokeStyle='#6a3218';g.lineWidth=r*.18;g.stroke();g.strokeStyle='rgba(250,236,220,.8)';g.lineWidth=2;g.beginPath();for(let t2=0;t2<14;t2++){const a=t2*.9,rr2=r*.7*(1-t2/16);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();}
+  else if(cy==='naruto'){g.fillStyle='#fbf7f0';g.fill();overlays(g,p,d);g.strokeStyle='#e0799a';g.lineWidth=2.4;g.beginPath();for(let t2=0;t2<40;t2++){const a=t2*.35,rr2=r*.7*(t2/40);g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2);}g.stroke();g.strokeStyle='rgba(200,190,180,.7)';g.lineWidth=1;g.beginPath();for(let t2=0;t2<=48;t2++){const a=t2/48*TAU,rr2=r*(1+(t2%2?.06:-.02));g.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2*.94);}g.stroke();}
+  else if(cy==='garlic'){g.fillStyle='#f6eed6';g.fill();overlays(g,p,d);g.strokeStyle='rgba(200,180,130,.7)';g.lineWidth=1;g.stroke();g.beginPath();g.moveTo(-r*.5,0);g.lineTo(r*.5,0);g.stroke();}
+  const hl=g.createRadialGradient(-r*.35,-r*.4,1,0,0,r);hl.addColorStop(0,'rgba(255,255,255,.28)');hl.addColorStop(.6,'rgba(255,255,255,0)');hl.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=hl;g.beginPath();g.ellipse(0,0,r,r*.94,0,0,TAU);g.fill();}
+function drawSlab(g,p){const len=p.ey,w=22,L2=p.Lm,n=L2.length,s=Math.sin(p.rot),co=Math.cos(p.rot),t=4;
+  g.fillStyle='rgba(60,20,15,.9)';g.save();g.translate(s*t,co*t);rr(g,-w/2,-len/2,w,len,4);g.fill();g.restore();
   const gr=g.createLinearGradient(-w/2,0,w/2,0);for(let i=0;i<n;i++){const c=doneCol(L2[i]);gr.addColorStop(i/(n-1),rgba(c,1));}
   const f0=p.face[0],f1=p.face[1];rr(g,-w/2,-len/2,w,len,4);g.fillStyle=gr;g.fill();
   g.fillStyle=rgba(mix([150,70,40],[40,20,10],clamp(f0-1,0,1)),Math.min(1,f0));g.fillRect(-w/2,-len/2,2.6,len);g.fillStyle=rgba(mix([150,70,40],[40,20,10],clamp(f1-1,0,1)),Math.min(1,f1));g.fillRect(w/2-2.6,-len/2,2.6,len);
-  if(!p.juiceLost){g.fillStyle='rgba(255,255,255,.18)';g.fillRect(-w/2+4,-len/2+3,3,len-6);}}
-function drawPiece(g,p,x,y,sc){const d=ING[p.type];g.save();g.translate(x,y);g.rotate(p.rot);if(sc&&sc!==1)g.scale(sc,sc);if(p.flipT>0)g.scale(Math.max(.12,Math.abs(2*p.flipT-1)),1);
+  const gl=g.createLinearGradient(0,-len/2,0,len/2);gl.addColorStop(0,'rgba(255,255,255,.2)');gl.addColorStop(.4,'rgba(255,255,255,0)');gl.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=gl;rr(g,-w/2,-len/2,w,len,4);g.fill();
+  if(!p.juiceLost){g.fillStyle='rgba(255,255,255,.22)';g.fillRect(-w/2+4,-len/2+3,3,len-6);}}
+function drawPiece(g,p,x,y,sc,flat){const d=ING[p.type];g.save();g.translate(x,y);g.rotate(p.rot);const V=volOf(p),k=(sc||1)*V.sc;if(k!==1)g.scale(k,k);if(p.flipT>0)g.scale(Math.max(.12,Math.abs(2*p.flipT-1)),1);
   if(p.disc){drawDisc(g,p,d);g.restore();return;}
   if(p.L&&p.area<p.orig*.75&&p.ex<36){drawSlab(g,p);g.restore();return;}
+  if(!flat)drawWalls(g,p,V.th/k,V.v);
   tracePoly(g,p.poly);
   if(d.custom==='begg'){g.fillStyle='#fbf8f0';g.fill();if(p.area<p.orig*.8){g.save();g.clip();const y2=p.yolk||0,c=y2<.35?[246,150,18]:y2<.8?mix([236,138,30],[240,190,80],(y2-.35)/.45):mix([246,214,120],[200,200,120],clamp(y2-1.1,0,1)*2);
       g.fillStyle=rgba(c,1);g.beginPath();g.arc(-p.tx,-p.ty,13,0,TAU);g.fill();if(y2<.5){g.fillStyle='rgba(255,255,255,.5)';g.beginPath();g.ellipse(-p.tx-4,-p.ty-4,4,2.5,-.5,0,TAU);g.fill();}g.restore();}
-    const gr=g.createRadialGradient(-8,-8,2,0,0,34);gr.addColorStop(0,'rgba(255,255,255,.4)');gr.addColorStop(1,'rgba(200,190,170,.2)');g.fillStyle=gr;g.fill();g.strokeStyle=d.edge;g.lineWidth=1;g.stroke();g.restore();return;}
-  if(d.custom==='curd'){g.fillStyle=rgba(mix([255,248,210],[248,210,70],p.yolkMix||.7),1);g.fill();overlays(g,p,d);g.strokeStyle='rgba(255,255,240,.6)';g.lineWidth=1;g.stroke();g.restore();return;}
+    else{tracePoly(g,p.poly);drawVolumeShade(g,p,V.v);}tracePoly(g,p.poly);g.strokeStyle=d.edge;g.lineWidth=1;g.stroke();if(!flat)drawBevel(g,p);g.restore();return;}
+  if(d.custom==='curd'){g.fillStyle=rgba(mix([255,248,210],[248,210,70],p.yolkMix||.7),1);g.fill();overlays(g,p,d);drawVolumeShade(g,p,V.v);g.strokeStyle='rgba(255,255,240,.6)';g.lineWidth=1;g.stroke();g.restore();return;}
   const tex=TEX[p.type],pat=PAT[p.type];pat.setTransform(new DOMMatrix([1/TS,0,0,1/TS,-p.tx-tex.lw/2,-p.ty-tex.lh/2]));g.fillStyle=pat;g.fill();
-  if(p.L){const v=p.face[1-p.down];if(v>.05){g.save();g.clip();g.globalAlpha=Math.min(1,v*.9);g.fillStyle='rgba(120,62,30,.85)';g.fill();g.drawImage(SPOTS,-128,-128,256,256);if(v>1.1){g.globalAlpha=Math.min(.85,(v-1.1)*1.3);g.fillStyle='#1c1008';g.fill();}g.restore();}if(p.baste>0){g.fillStyle='rgba(255,230,160,.25)';g.fill();}}
+  if(p.L){const vv=p.face[1-p.down];if(vv>.05){g.save();g.clip();g.globalAlpha=Math.min(1,vv*.9);g.fillStyle='rgba(120,62,30,.85)';g.fill();g.drawImage(SPOTS,-128,-128,256,256);if(vv>1.1){g.globalAlpha=Math.min(.85,(vv-1.1)*1.3);g.fillStyle='#1c1008';g.fill();}g.restore();}if(p.baste>0){g.fillStyle='rgba(255,230,160,.25)';g.fill();}}
   else overlays(g,p,d);
+  if(p.stale){g.fillStyle='rgba(120,110,80,.22)';g.fill();}
+  drawVolumeShade(g,p,V.v);
   g.lineWidth=1;g.strokeStyle=d.edge;g.stroke();const hid=p.face[p.down],vis=p.face[1-p.down];
   if(hid>.9&&hid>vis+.3){g.lineWidth=2;g.strokeStyle=`rgba(35,18,8,${Math.min(.7,(hid-.9)*1.2)})`;g.stroke();}
-  if(p.coat.oil>.03||(p.moist>.7&&p.cooked)){const r=Math.min(p.r,20);g.strokeStyle='rgba(255,250,232,.3)';g.lineWidth=1.2;g.beginPath();g.moveTo(-r*.45,-r*.25);g.quadraticCurveTo(-r*.1,-r*.5,r*.25,-r*.4);g.stroke();}
+  if(!flat)drawBevel(g,p);
+  if(p.coat.oil>.03||(p.moist>.7&&p.cooked)){const r=Math.min(p.r,20);g.strokeStyle='rgba(255,250,232,.38)';g.lineWidth=1.2;g.beginPath();g.moveTo(-r*.45,-r*.25);g.quadraticCurveTo(-r*.1,-r*.5,r*.25,-r*.4);g.stroke();}
   g.restore();}
-function pieceShadow(g,p,x,y,off,a){g.save();g.translate(x+off,y+off*1.3);g.rotate(p.rot);if(p.disc){g.beginPath();g.arc(0,0,p.dr,0,TAU);}else tracePoly(g,p.poly);g.fillStyle=`rgba(0,0,0,${a})`;g.fill();g.restore();}
+function pieceShadow(g,p,x,y,off,a){const th=(VOL[p.type]||{th:4}).th;g.save();g.translate(x+off*.6+th*.25,y+off+th*.9);g.rotate(p.rot);const k=volOf(p).sc;if(k!==1)g.scale(k,k);if(p.disc){g.beginPath();g.arc(0,0,p.dr,0,TAU);}else tracePoly(g,p.poly);g.fillStyle=`rgba(0,0,0,${a})`;g.fill();g.restore();}
 const RICE=[247,244,234];
 function grainCol(o){let c=RICE;const ch=Math.min(1,o.coat.chili*3.2);if(ch>.01)c=mix(c,[216,84,40],ch*.85);const so=Math.min(1,o.coat.dark*7);if(so>.01)c=mix(c,[150,92,48],so*.55);
-  const b=o.face[1-o.down];if(b>.05)c=mix(c,[178,112,52],Math.min(1,b)*.7);if(b>1)c=mix(c,[40,26,14],Math.min(.9,(b-1)*1.4));if(o.coat.oil>.05)c=mix(c,[255,250,225],.08);return rgba(c,1);}
-function drawGrains(g,list,ox,oy){if(!list.length)return;g.fillStyle='rgba(0,0,0,.22)';g.beginPath();for(const o of list){const x=ox+o.dx,y=oy+o.dy,c=Math.cos(o.rot),s=Math.sin(o.rot);g.moveTo(x+.8+c*5.2,y+1+s*5.2);g.ellipse(x+.8,y+1,5.2,2.9,o.rot,0,TAU);}g.fill();
-  for(const o of list){if(!o.col||((FC+o.ci)&7)===0)o.col=grainCol(o);g.fillStyle=o.col;g.beginPath();g.ellipse(ox+o.dx,oy+o.dy,5,2.6,o.rot,0,TAU);g.fill();}}
+  const b=o.face[1-o.down];if(b>.05)c=mix(c,[178,112,52],Math.min(1,b)*.7);if(b>1)c=mix(c,[40,26,14],Math.min(.9,(b-1)*1.4));if(o.coat.oil>.05)c=mix(c,[255,250,225],.08);return rgba(c.map(v=>Math.round(v/5)*5),1);}
+const GSPR=new Map(),GSS=3;
+function grainSpr(col){let c=GSPR.get(col);if(c)return c;c=mk(16*GSS,10*GSS);const g=c.getContext('2d');g.scale(GSS,GSS);g.translate(7.5,4.6);g.fillStyle='rgba(0,0,0,.24)';g.beginPath();g.ellipse(1,1.6,5.2,2.9,0,0,TAU);g.fill();
+  g.fillStyle=col;g.beginPath();g.ellipse(0,0,5,2.6,0,0,TAU);g.fill();g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.ellipse(-1,-.9,2.4,.9,0,0,TAU);g.fill();if(GSPR.size>600)GSPR.clear();GSPR.set(col,c);return c;}
+function drawGrains(g,list,ox,oy){if(!list.length)return;const m=g.getTransform();
+  for(const o of list){if(!o.col||((FC+o.ci)&7)===0)o.col=grainCol(o);if(o._r!==o.rot){o._r=o.rot;o._c=Math.cos(o.rot);o._s=Math.sin(o.rot);}const c=o._c,s=o._s,x=ox+o.dx,y=oy+o.dy;
+    g.setTransform(m.a*c+m.c*s,m.b*c+m.d*s,-m.a*s+m.c*c,-m.b*s+m.d*c,m.a*x+m.c*y+m.e,m.b*x+m.d*y+m.f);g.drawImage(grainSpr(o.col),-7.5,-4.6,16,10);}
+  g.setTransform(m);}
 function eggPath(g,e){const N=e.rad.length,pts=[];for(let i=0;i<N;i++){const a=i/N*TAU;pts.push([Math.cos(a)*e.rad[i],Math.sin(a)*e.rad[i]]);}
   g.beginPath();const l=pts[N-1],f=pts[0];g.moveTo((l[0]+f[0])/2,(l[1]+f[1])/2);for(let i=0;i<N;i++){const a=pts[i],b=pts[(i+1)%N];g.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);}g.closePath();}
 function drawEgg(g,e,x,y){g.save();g.translate(x,y);if(e.flipA>0)g.scale(1,Math.max(.1,Math.abs(2*e.flipA-1)));
   if(e.ribbon){g.strokeStyle='rgba(250,238,190,.9)';g.lineCap='round';for(let i=0;i<9;i++){g.lineWidth=rand(2,4);g.beginPath();const a=i*.7+G.t*.2;g.arc(Math.cos(a)*14,Math.sin(a)*14,20+i*3,a,a+1.2);g.stroke();}g.strokeStyle='rgba(245,190,60,.85)';for(let i=0;i<5;i++){g.lineWidth=2.5;g.beginPath();const a=i*1.3+G.t*.2;g.arc(0,0,10+i*5,a,a+.9);g.stroke();}g.restore();return;}
+  {const th=e.set>.3?2.5:1.2;g.save();g.translate(0,th);eggPath(g,e);g.fillStyle=`rgba(200,190,170,${.25+.35*clamp(e.set,0,1)})`;g.fill();g.restore();}
   eggPath(g,e);const s=clamp(e.set,0,1);
   if(e.down===0){g.fillStyle=`rgba(${lerp(222,252,s)|0},${lerp(230,249,s)|0},${lerp(220,241,s)|0},${.3+.66*s})`;g.fill();if(s<.8){g.strokeStyle=`rgba(255,255,255,${(.8-s)*.55})`;g.lineWidth=1.5;g.stroke();}}else{g.fillStyle='rgba(250,246,236,.97)';g.fill();}
   const vb=e.fb[1-e.down];if(vb>.03){g.fillStyle=`rgba(196,128,52,${Math.min(1,vb)*.62})`;g.fill();if(vb>1){g.fillStyle=`rgba(40,24,10,${Math.min(.85,(vb-1)*1.5)})`;g.fill();}}
@@ -1059,11 +1126,11 @@ function drawEgg(g,e,x,y){g.save();g.translate(x,y);if(e.flipA>0)g.scale(1,Math.
   if(e.crack>0){g.save();g.globalAlpha=Math.min(1,e.crack*1.5);const o=(1-e.crack)*26;for(const sd of [-1,1]){g.save();g.translate(x+sd*(10+o),y-20-o*.6);g.rotate(sd*(.6+(1-e.crack)));g.fillStyle='#f3e3c6';g.beginPath();g.ellipse(0,0,13,9,0,sd>0?PI:0,sd>0?TAU:PI);g.fill();g.strokeStyle='rgba(150,120,80,.6)';g.stroke();g.restore();}g.restore();}}
 function drawBegg(g,b,x,y){g.save();g.translate(x,y);g.rotate(b.rot);g.fillStyle='rgba(0,0,0,.2)';g.beginPath();g.ellipse(2,3,17,21,0,0,TAU);g.fill();const gr=g.createRadialGradient(-5,-7,2,0,0,22);gr.addColorStop(0,'#fbf1df');gr.addColorStop(1,'#d8bd96');g.fillStyle=gr;g.beginPath();g.ellipse(0,0,16,20,0,0,TAU);g.fill();
   if(b.crack){g.strokeStyle='rgba(120,90,60,.6)';g.lineWidth=1;g.beginPath();g.moveTo(-8,-4);g.lineTo(-2,-1);g.lineTo(3,-6);g.lineTo(9,-2);g.stroke();}g.fillStyle='rgba(255,255,255,.45)';g.beginPath();g.ellipse(-5,-8,3.5,5,-.4,0,TAU);g.fill();g.restore();}
-function drawJeon(g,j,x,y){g.save();g.translate(x,y);if(j.flipA>0)g.scale(1,Math.max(.08,Math.abs(2*j.flipA-1)));eggPath(g,j);
+function drawJeon(g,j,x,y){g.save();g.translate(x,y);if(j.flipA>0)g.scale(1,Math.max(.08,Math.abs(2*j.flipA-1)));const th=clamp(j.thick*3.2,2.5,7);g.save();g.translate(0,th);eggPath(g,j);g.fillStyle=rgba(mix(j.col,[120,70,20],clamp(Math.max(j.fb[0],j.fb[1])*.5,0,.7)),1);g.fill();g.restore();eggPath(g,j);
   const vis=j.fb[1-j.down],top=j.down===0,base=j.col;
   g.fillStyle=rgba(top?mix(base,[250,240,215],(1-Math.min(1,j.set))*.25):mix(base,[226,176,96],.3),1);g.fill();
   g.save();g.clip();
-  for(const p of j.pieces){drawPiece(g,p,p.x,p.y,.9);}
+  for(const p of j.pieces){drawPiece(g,p,p.x,p.y,.9,true);}
   if(top){g.fillStyle=rgba(base,.52-Math.min(.25,j.set*.2));g.fillRect(-200,-200,400,400);if(j.lumps>.3){g.fillStyle='rgba(255,255,248,.8)';const R=mulberry(j.pieces.length+7);for(let i=0;i<j.lumps*30;i++){g.beginPath();g.arc((R()-.5)*avgRad(j)*1.6,(R()-.5)*avgRad(j)*1.6,R()*2.5+1,0,TAU);g.fill();}}}
   if(vis>.05){g.globalAlpha=Math.min(.95,vis*.85);g.fillStyle='rgba(186,112,40,.55)';g.fillRect(-200,-200,400,400);g.drawImage(SPOTS,-150,-150,300,300);if(vis>1.05){g.globalAlpha=Math.min(.85,(vis-1.05)*1.4);g.fillStyle='#1a0e06';g.fillRect(-200,-200,400,400);}g.globalAlpha=1;}
   if(top&&j.set<.9){const gl=g.createRadialGradient(-avgRad(j)*.3,-avgRad(j)*.4,4,0,0,avgRad(j));gl.addColorStop(0,`rgba(255,255,255,${.3*(1-j.set)})`);gl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gl;g.fillRect(-200,-200,400,400);}
@@ -1071,21 +1138,26 @@ function drawJeon(g,j,x,y){g.save();g.translate(x,y);if(j.flipA>0)g.scale(1,Math
   g.restore();
   if(j.edge>.05){g.lineWidth=3+Math.min(1.4,j.edge)*6;g.strokeStyle=`rgba(170,100,34,${Math.min(.95,j.edge*.8)})`;g.stroke();if(j.edge>1.3){g.strokeStyle=`rgba(40,22,8,${Math.min(.8,(j.edge-1.3)*1.2)})`;g.lineWidth=3;g.stroke();}
     const N=j.rad.length;g.fillStyle=`rgba(150,86,28,${Math.min(.85,j.edge*.7)})`;for(let i=0;i<N*2;i++){const a=i/(N*2)*TAU,r=j.rad[i>>1]-2-((i*29)%6);g.beginPath();g.arc(Math.cos(a)*r,Math.sin(a)*r,1.4+((i*11)%3)*.7,0,TAU);g.fill();}}
-  if(j.oil>.5||top){g.strokeStyle=`rgba(255,248,220,${top?.25:.18})`;g.lineWidth=2;g.beginPath();g.arc(0,0,avgRad(j)*.7,3.6,4.6);g.stroke();}g.restore();}
+  if(j.oil>.5||top){g.strokeStyle=`rgba(255,248,220,${top?.3:.22})`;g.lineWidth=2.2;g.beginPath();g.arc(0,0,avgRad(j)*.72,3.5,4.7);g.stroke();}g.restore();}
 function noodleCol(n){const d=NT[n.type];let c=d.col;if(n.done>.4)c=mix(c,[252,248,236],Math.min(.25,(n.done-.4)*.4));
   const dk=Math.min(1,n.coat.dark/(n.g*.12));if(dk>.02)c=mix(c,[140,82,40],dk*.7);const ch=Math.min(1,n.coat.chili/(n.g*.12));if(ch>.02)c=mix(c,[206,58,30],ch*.8);
   if(n.coat.sauce>1&&n.sauceCol)c=mix(c,n.sauceCol,Math.min(.85,n.coat.sauce/(n.g*.35)));if(n.brown>.1)c=mix(c,[170,110,50],Math.min(.6,n.brown*.6));return c;}
 function drawNoodle(g,n,ox,oy){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+Math.min(n.mush,1.2)*.22)*(n.T<0?1.1:1);g.lineCap='round';g.lineJoin='round';
-  const path=s=>{const P=s.pts;g.beginPath();g.moveTo(ox+P[0].x,oy+P[0].y);for(let i=1;i<P.length-1;i++){let mx=(P[i].x+P[i+1].x)/2,my=(P[i].y+P[i+1].y)/2;let px=P[i].x,py=P[i].y;if(d.wave){const nx=-(P[i+1].y-P[i-1].y),ny=P[i+1].x-P[i-1].x,l=Math.hypot(nx,ny)||1,o=Math.sin(i*2.1+s.ph)*d.wave*2.6;px+=nx/l*o;py+=ny/l*o;}g.quadraticCurveTo(ox+px,oy+py,ox+mx,oy+my);}g.lineTo(ox+P[P.length-1].x,oy+P[P.length-1].y);};
-  g.strokeStyle='rgba(0,0,0,.2)';g.lineWidth=w+1.6;for(const s of n.strands){path(s);g.stroke();}
-  g.strokeStyle=rgba(c,1);g.lineWidth=w;for(const s of n.strands){path(s);g.stroke();}
-  if(w>2.5){g.strokeStyle=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.35:.18})`;g.lineWidth=Math.max(.8,w*.28);for(let i=0;i<n.strands.length;i+=2){path(n.strands[i]);g.stroke();}}}
-function drawLiquid(g,c,q,x,y,R,am){const vol=q.vol,a=clamp(.18+vol/2400+liqDark(q)*.45,.2,.9)*(am||1),QC=liqCol(q),d=Math.max(.35,Math.min(1,vol/(c.kind==='bowl'?300:c.kind==='pan'?120:900)));const rr2=R*(.86+.14*d);
+  const addPath=(s,dx,dy)=>{const P=s.pts;g.moveTo(ox+dx+P[0].x,oy+dy+P[0].y);for(let i=1;i<P.length-1;i++){const mx=(P[i].x+P[i+1].x)/2,my=(P[i].y+P[i+1].y)/2;let px=P[i].x,py=P[i].y;if(d.wave){const nx=-(P[i+1].y-P[i-1].y),ny=P[i+1].x-P[i-1].x,l=Math.hypot(nx,ny)||1,o=Math.sin(i*2.1+s.ph)*d.wave*2.6;px+=nx/l*o;py+=ny/l*o;}g.quadraticCurveTo(ox+dx+px,oy+dy+py,ox+dx+mx,oy+dy+my);}g.lineTo(ox+dx+P[P.length-1].x,oy+dy+P[P.length-1].y);};
+  g.beginPath();for(const s of n.strands)addPath(s,.8,1.4);g.strokeStyle='rgba(0,0,0,.24)';g.lineWidth=w+1.4;g.stroke();
+  g.beginPath();for(const s of n.strands)addPath(s,0,0);g.strokeStyle=rgba(mix(c,[0,0,0],.12),1);g.lineWidth=w;g.stroke();g.strokeStyle=rgba(c,1);g.lineWidth=w*.72;g.stroke();
+  g.beginPath();for(let i=0;i<n.strands.length;i+=2)addPath(n.strands[i],-w*.18,-w*.2);g.strokeStyle=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.42:.26})`;g.lineWidth=Math.max(.7,w*.26);g.stroke();}
+function drawLiquid(g,c,q,x,y,R,am){const vol=q.vol,cap=c.kind==='bowl'?520:c.kind==='pan'?160:c.kind==='sauce'?700:1600,d=Math.min(1,vol/cap),a=clamp(.2+d*.42+liqDark(q)*.45,.2,.9)*(am||1),QC=mix(liqCol(q),[70,120,150],(1-liqDark(q))*d*.45);const rr2=R*(.5+.5*Math.sqrt(d));
+  if(c.kind!=='pan'&&c.kind!=='bowl'){g.save();g.beginPath();g.arc(x,y,R,0,TAU);g.arc(x,y,rr2,0,TAU,true);g.fillStyle='rgba(20,24,30,.16)';g.fill('evenodd');g.restore();}
+  const tt0=(typeof G!=='undefined'&&G)?G.t:0;
   const gr=g.createRadialGradient(x-rr2*.3,y-rr2*.3,rr2*.1,x,y,rr2);gr.addColorStop(0,rgba(mix(QC,[255,255,255],.15),a*.85));gr.addColorStop(1,rgba(mix(QC,[0,0,0],.2),Math.min(.95,a*1.15)));g.fillStyle=gr;g.beginPath();g.arc(x,y,rr2,0,TAU);g.fill();
   if(q.fat>5){const R2=mulberry(c.id||3);g.fillStyle='rgba(255,220,140,.35)';for(let i=0;i<Math.min(40,q.fat/2);i++){const a2=R2()*TAU,r=Math.sqrt(R2())*rr2*.85,s=R2()*4+1.5;g.beginPath();g.arc(x+Math.cos(a2+G.t*.05)*r,y+Math.sin(a2+G.t*.05)*r,s,0,TAU);g.fill();}}
   const b=c.boil||0;if(b>.05){g.strokeStyle=`rgba(255,255,255,${.2+b*.4})`;g.lineWidth=1;const n=(b*30)|0;for(let i=0;i<n;i++){const a2=rand(0,TAU),r=Math.sqrt(Math.random())*rr2*.9;g.beginPath();g.arc(x+Math.cos(a2)*r,y+Math.sin(a2)*r,rand(1.5,4+b*5),0,TAU);g.stroke();}}
   else if(q.T>70){g.fillStyle='rgba(255,255,255,.3)';for(let i=0;i<(q.T-70)/4;i++){g.beginPath();g.arc(x+rand(-.7,.7)*rr2,y+rand(-.7,.7)*rr2,rand(.8,1.8),0,TAU);g.fill();}}
-  g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=6;g.beginPath();g.arc(x,y,rr2-6,PI*1.05,PI*1.45);g.stroke();}
+  g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=6;g.beginPath();g.arc(x,y,rr2-6,PI*1.05,PI*1.45);g.stroke();
+  g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=2.2;g.beginPath();g.arc(x,y,rr2,0,TAU);g.stroke();g.strokeStyle='rgba(0,0,0,.28)';g.lineWidth=3.5;g.beginPath();g.arc(x,y,rr2+3,0,TAU);g.stroke();
+  if(q.addT!==undefined&&tt0-q.addT<.35){const w=(tt0*6)%1;g.strokeStyle=`rgba(255,255,255,${.5*(1-w)})`;g.lineWidth=1.5;g.beginPath();g.arc(x,y,rr2*(.2+.75*w),0,TAU);g.stroke();}
+  const tt=(typeof G!=='undefined'&&G)?G.t:0;g.lineWidth=2.5;for(let i=0;i<3;i++){const an=tt*.25+i*2.1,rad=rr2*(.28+.2*i);g.strokeStyle=`rgba(255,255,255,${.07+.05*Math.sin(tt*1.7+i)})`;g.beginPath();g.arc(x+Math.cos(tt*.3+i)*4,y+Math.sin(tt*.27+i)*3,rad,an,an+.7);g.stroke();}}
 function drawSheen(g,c,q,R){g.fillStyle=rgba(liqCol(q),.2+liqDark(q)*.25);g.beginPath();g.arc(0,0,R*.97,0,TAU);g.fill();const gr=g.createLinearGradient(-R,-R,R*.3,R*.3);gr.addColorStop(0,'rgba(255,255,255,.16)');gr.addColorStop(.5,'rgba(255,255,255,0)');g.fillStyle=gr;g.beginPath();g.arc(0,0,R*.97,0,TAU);g.fill();}
 function drawFoam(g,c,x,y){if(c.foam<.12)return;const R=c.r,f=c.foam;g.fillStyle=`rgba(252,250,242,${Math.min(.92,f*.9)})`;const R2=mulberry(c.id*13+1);
   for(let i=0;i<f*140;i++){const a=R2()*TAU+G.t*.3,r=R*(1-Math.pow(R2(),.6)*f*.95);g.beginPath();g.arc(x+Math.cos(a)*r,y+Math.sin(a)*r,R2()*6+2+f*3,0,TAU);g.fill();}}
@@ -1152,8 +1224,23 @@ function drawRackTools(){const g=ctx,rh=G.started&&!G.held&&!G.drag?rackAt(M.x,M
     else if(t.id==='ladle'){g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(x0+16,y+3,14,0,TAU);g.fill();steelDisc(g,x0+14,y,14);g.fillStyle='#9aa2a9';g.beginPath();g.arc(x0+14,y,10,0,TAU);g.fill();const hg=g.createLinearGradient(0,y-3,0,y+3);hg.addColorStop(0,'#e3e6e9');hg.addColorStop(1,'#80878e');g.fillStyle=hg;rr(g,x0+26,y-3,x1-x0-26,6,3);g.fill();}
     else if(t.id==='probe'){g.strokeStyle='#cfd4d9';g.lineWidth=2;g.beginPath();g.moveTo(x0,y);g.lineTo(x0+24,y);g.stroke();rr(g,x0+22,y-9,x1-x0-22,18,5);g.fillStyle='#e0412a';g.fill();g.fillStyle='#16201a';rr(g,x0+26,y-5,14,10,2);g.fill();}
     g.restore();}
-  g.fillStyle='rgba(255,225,190,.45)';g.font='600 10px "IBM Plex Mono", monospace';g.textAlign='left';g.fillText('TOOLS',L.rack.x+10,L.rack.y+L.rack.h-5);}
+  g.font='600 10px "IBM Plex Mono", monospace';g.textAlign='left';RACKT.forEach((t,i)=>{g.fillStyle='rgba(0,0,0,.5)';rr(g,t.x0+2,L.rack.y+3,14,13,3);g.fill();g.fillStyle='rgba(255,225,190,.85)';g.fillText(String(i+2),t.x0+6,L.rack.y+13);});g.fillStyle='rgba(255,225,190,.45)';g.fillText('Q 도구↔손',L.rack.x+L.rack.w-70,L.rack.y+L.rack.h-5);}
 
+function underState(v){return v<.35?0:v<.5?1:v<=1.05?2:3;}
+const UCOL=[[235,225,200],[240,200,90],[120,210,90],[225,60,35]];
+function drawUnder(g,x,y,R,v,label){const st=underState(v),t=G.t,c=UCOL[st];
+  g.save();g.strokeStyle=rgba(st===0?[240,230,205]:st===1?[240,200,90]:st===2?[226,160,50]:[210,50,30],st===3?.55+.35*Math.sin(t*12):st===0?.3:.6);g.lineWidth=st>=2?4:2.5;g.setLineDash(st===0?[4,6]:[]);g.beginPath();g.arc(x,y,R+4,0,TAU);g.stroke();g.restore();
+  const gx=x+R*.72+8,gy=y-R*.72-8,pulse=st===2?1+.12*Math.sin(t*8):1;g.save();g.translate(gx,gy);g.scale(pulse,pulse);
+  g.fillStyle='rgba(15,10,8,.88)';g.beginPath();g.arc(0,0,15,0,TAU);g.fill();g.strokeStyle='rgba(255,255,255,.15)';g.lineWidth=4;g.beginPath();g.arc(0,0,10,0,TAU);g.stroke();
+  g.strokeStyle=rgba(c,1);g.lineWidth=4;g.lineCap='round';g.beginPath();g.arc(0,0,10,-PI/2,-PI/2+TAU*clamp(v/1.05,.02,1));g.stroke();
+  g.fillStyle=rgba(c,1);g.font='700 12px "IBM Plex Mono", monospace';g.textAlign='center';g.fillText(st===2?'✓':st===3?'!':Math.round(clamp(v/.5,0,1)*100)+'',0,4);g.restore();
+  if(label){const txt=st===2?'뒤집기 OK':st===3?'타요!':st===1?'거의 됐어요':'아랫면 익는 중';g.font='600 12px "Gowun Dodum", sans-serif';const w=g.measureText(txt).width+12;g.fillStyle=st===3?'rgba(160,30,15,.9)':st===2?'rgba(40,90,30,.9)':'rgba(15,10,8,.78)';rr(g,gx-w/2,gy+18,w,20,8);g.fill();g.fillStyle='#fff';g.textAlign='center';g.fillText(txt,gx,gy+32);}}
+function underFx(c){if(c.liq&&c.liq.vol>15)return;const list=[];for(const j of c.jeons)list.push([j,j.fb[j.down],avgRad(j),'jeon']);for(const e of c.eggs)if(!e.poach&&e.pour>.8)list.push([e,e.fb[e.down],avgRad(e),'egg']);for(const o of c.items)if(o.L&&o.z<1)list.push([o,o.face[o.down],o.r,'beef']);
+  for(const [o,v,R,k] of list){const st=underState(v),key='_us'+o.down,prev=o[key]||0;
+    if(st>prev){if(st===2){for(let i=0;i<16;i++){const a=rand(0,TAU);spawn({k:'spark',x:c.x+o.x+Math.cos(a)*R,y:c.y+o.y+Math.sin(a)*R,vx:Math.cos(a)*50,vy:Math.sin(a)*50-25,max:rand(.5,.9),r:rand(2.5,4.5)});}
+        floatText(k==='egg'?'바닥이 노릇해요':'노릇노릇! 뒤집을 때',c.x+o.x,c.y+o.y-R-24,'#ffe39a',24);AU.tone({f:1568,d:.25,v:.05});AU.tone({f:2093,d:.3,v:.04,delay:.07});}
+      else if(st===3){floatText('타요! 뒤집거나 불을 줄여요',c.x+o.x,c.y+o.y-R-24,'#ff8a6a',24);AU.tone({f:440,f2:300,d:.25,v:.06});}}
+    o[key]=st;}}
 /* ---------- stove & cookware ---------- */
 function drawFlame(b){if(!b.lit||b.level<=0)return;const g=ctx,L2=b.level,n=b.rb>50?30:22;g.save();g.globalCompositeOperation='lighter';
   const gr=g.createRadialGradient(b.x,b.y,b.rb-6,b.x,b.y,b.rb+10+L2*48);gr.addColorStop(0,'rgba(90,160,255,.95)');gr.addColorStop(.55,'rgba(70,110,255,.6)');gr.addColorStop(.85,L2>.75?'rgba(255,150,70,.35)':'rgba(110,90,255,.25)');gr.addColorStop(1,'rgba(90,60,255,0)');g.fillStyle=gr;g.beginPath();
@@ -1175,12 +1262,16 @@ function drawCW(c){const g=ctx;let x=c.x,y=c.y;if(c.tossT>0){const pr=1-c.tossT/
   drawHandle(g,c,x,y,lift);g.drawImage(c.sprite,x-R,y-R,R*2,R*2);g.save();g.translate(x,y);
   for(const r of c.residue){g.fillStyle=`rgba(30,16,8,${r.a})`;g.beginPath();g.arc(r.x,r.y,r.r,0,TAU);g.fill();}
   const liquid=c.liq&&c.liq.vol>15;
+  if(c.kind==='pot'||c.kind==='sauce'){const cap=c.kind==='sauce'?700:1600;g.font='600 9px "IBM Plex Mono", monospace';g.textAlign='center';for(const ml of (c.kind==='sauce'?[200,400,600]:[250,500,1000,1500])){const r=c.r*(.5+.5*Math.sqrt(ml/cap));g.strokeStyle='rgba(40,50,60,.35)';g.lineWidth=1;g.beginPath();g.arc(0,0,r,-PI*.62,-PI*.38);g.stroke();g.fillStyle='rgba(40,50,60,.55)';g.fillText(ml>=1000?(ml/1000)+'L':ml,0,-r+10);}}
   if(liquid){drawLiquid(g,c,c.liq,0,0,c.r,.75);for(const n of c.noodles)drawNoodle(g,n,0,0);if(c.noodles.length)drawSheen(g,c,c.liq,c.r);for(const b of c.beggs)drawBegg(g,b,b.x,b.y);const gr=[],pc=[];for(const o of c.items){if(o.kind==='grain'){o.dx=o.x;o.dy=o.y;gr.push(o);}else pc.push(o);}drawGrains(g,gr,0,0);for(const o of pc)drawPiece(g,o,o.x,o.y);for(const e of c.eggs)drawEgg(g,e,e.x,e.y);drawFoam(g,c,0,0);}
   else{drawFluid(g,c,0,0);if(c.liq)drawLiquid(g,c,c.liq,0,0,c.r*.6);for(const q of c.seeds){g.globalAlpha=Math.max(0,q.a||1);drawSeed(g,q,q.x,q.y);}g.globalAlpha=1;
     const gr=[],pc=[],air=[];for(const o of c.items){if(o.z>2)air.push(o);else if(o.kind==='grain'){o.dx=o.x;o.dy=o.y;gr.push(o);}else pc.push(o);}
     drawGrains(g,gr,0,0);for(const n of c.noodles)drawNoodle(g,n,0,0);for(const o of pc)drawPiece(g,o,o.x,o.y);for(const j of c.jeons)drawJeon(g,j,j.x,j.y);for(const e of c.eggs)drawEgg(g,e,e.x,e.y);
+    if(!lift){for(const j of c.jeons)if(j.pour>.6)drawUnder(g,j.x,j.y,avgRad(j),j.fb[j.down],true);for(const e of c.eggs)if(!e.poach&&e.pour>.8)drawUnder(g,e.x,e.y,avgRad(e),e.fb[e.down],false);for(const o of c.items)if(o.L&&o.z<1)drawUnder(g,o.x,o.y,o.r*1.05,o.face[o.down],true);}
     for(const o of air){const sc=1+o.z/320;g.fillStyle='rgba(0,0,0,.2)';g.beginPath();g.arc(o.x+o.z*.15,o.y+o.z*.25,Math.min(o.r,14)*.8,0,TAU);g.fill();if(o.kind==='grain'){g.fillStyle=o.col||'#fff';g.beginPath();g.ellipse(o.x,o.y-o.z*.35,5*sc,2.6*sc,o.rot,0,TAU);g.fill();}else drawPiece(g,o,o.x,o.y-o.z*.35,sc);}}
   g.strokeStyle='rgba(255,255,255,.05)';g.lineWidth=10;g.beginPath();g.arc(0,0,c.r-12,PI*1.05,PI*1.45);g.stroke();g.restore();
+  if(!lift&&c.liq&&c.liq.addT!==undefined&&G.t-c.liq.addT<1.4&&c.kind!=='bowl'){const al=Math.min(1,(1.4-(G.t-c.liq.addT))*2),tx=Math.round(c.liq.vol)+' ml';g.globalAlpha=al;g.font='700 18px "IBM Plex Mono", monospace';const w=g.measureText(tx).width+20;rr(g,x-w/2,y-c.r*.18-15,w,28,14);g.fillStyle='rgba(14,40,64,.82)';g.fill();g.fillStyle='#bfe6ff';g.textAlign='center';g.fillText(tx,x,y-c.r*.18+5);g.globalAlpha=1;}
+  if(c.foam>.42&&!lift){const p=.5+.5*Math.sin(G.t*10);g.font='15px "Black Han Sans", sans-serif';const tx='넘치기 직전! 찬물 · 불 줄이기',w=g.measureText(tx).width+22;g.fillStyle=`rgba(200,40,20,${.75+.2*p})`;rr(g,x-w/2,y-c.r-44,w,28,14);g.fill();g.fillStyle='#fff';g.textAlign='center';g.fillText(tx,x,y-c.r-25);}
   if(!lift){const la=c.kind==='pan'?(c.id===2?2.2:2.5):c.id===0?PI/2:2.4,lx2=x+Math.cos(la)*(c.r+(c.id===0?20:14)),ly2=y+Math.sin(la)*(c.r+(c.id===0?20:14));g.font='600 12px "Gowun Dodum", sans-serif';const nm=c.name,tw=g.measureText(nm).width+14;g.fillStyle='rgba(8,9,10,.7)';rr(g,lx2-tw/2,ly2-10,tw,20,10);g.fill();g.fillStyle='rgba(240,228,210,.9)';g.textAlign='center';g.fillText(nm,lx2,ly2+4);}
   if(!lift){const T=c.liq&&c.liq.vol>15?c.liq.T:c.T,tx=x+Math.cos(-.8)*(c.r+6),ty=y+Math.sin(-.8)*(c.r+6);rr(g,tx-4,ty-12,58,22,6);g.fillStyle='rgba(8,9,10,.85)';g.fill();g.fillStyle=(T>=235&&(G.t%.5)<.25)?'#7a2a1a':tempCol(T);g.font='600 13px "IBM Plex Mono", monospace';g.textAlign='left';g.fillText(Math.round(T)+'°C',tx+2,ty+4);
     if(c.liq&&c.liq.vol>15){g.fillStyle='rgba(180,210,240,.8)';g.font='500 10px "IBM Plex Mono", monospace';g.fillText(Math.round(c.liq.vol)+'ml',tx+2,ty+20);}}}
@@ -1206,7 +1297,7 @@ function drawMix(g,c,x,y){g.save();g.translate(x,y);const R=c.r;const vol=batter
   if(c.flour>0||c.water>0){const fr=Math.min(R-4,Math.sqrt(vol*30)+10);
     if(c.water<5){g.fillStyle='#f7f4ec';g.beginPath();g.arc(0,0,Math.min(R-6,Math.sqrt(c.flour)*5+8),0,TAU);g.fill();g.fillStyle='rgba(220,214,200,.6)';for(let i=0;i<30;i++){g.beginPath();g.arc(rand(-1,1)*fr*.5,rand(-1,1)*fr*.5,1.2,0,TAU);g.fill();}}
     else{const col=mix([248,244,232],batterColor(c,c.items),.35+c.mixv*.65);const ratio=c.flour?c.water/c.flour:9;g.fillStyle=rgba(ratio>2?mix(col,[220,220,210],.3):col,1);g.beginPath();g.arc(0,0,fr,0,TAU);g.fill();
-      for(const o of c.items)drawPiece(g,o,o.x,o.y,.9);g.fillStyle=rgba(col,.45*c.mixv+.1);g.beginPath();g.arc(0,0,fr,0,TAU);g.fill();
+      for(const o of c.items)drawPiece(g,o,o.x,o.y,.9,true);g.fillStyle=rgba(col,.45*c.mixv+.1);g.beginPath();g.arc(0,0,fr,0,TAU);g.fill();
       const lump=c.flour>0?1-c.mixv:0;if(lump>.15&&c.flour>5){g.fillStyle='rgba(255,255,250,.9)';const R2=mulberry(7);for(let i=0;i<lump*40;i++){g.beginPath();g.arc((R2()-.5)*fr*1.5,(R2()-.5)*fr*1.5,R2()*3+1,0,TAU);g.fill();}}
       if(c.egg>=1&&c.mixv<.3){g.fillStyle='#f5a21b';for(let i=0;i<Math.round(c.egg);i++){g.beginPath();g.arc(-10+i*18,-6,9,0,TAU);g.fill();}}
       g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=2;g.beginPath();g.arc(0,0,fr*.7,3.6,4.4);g.stroke();}}
@@ -1244,6 +1335,18 @@ function drawHeld(){const h=G.held;if(!h)return;const g=ctx,x=M.x,y=M.y;
   else if(h.kind==='butter'){g.fillStyle='rgba(0,0,0,.2)';rr(g,x-12,y-5,30,20,4);g.fill();g.fillStyle='#f6de8a';rr(g,x-16,y-10,30,20,4);g.fill();g.fillStyle='rgba(255,255,255,.4)';g.fillRect(x-13,y-8,12,3);}}
 let PREVN={};function newNoodlePreview(t){if(!PREVN[t]){const n=newNoodle(t,0,0);for(const s of n.strands)for(const p of s.pts){p.x*=.35;p.y*=.35;}PREVN[t]=n;}return PREVN[t];}
 function tag(g,x,y,t){g.font='600 13px "IBM Plex Mono", monospace';const w=g.measureText(t).width+16;g.fillStyle='rgba(20,14,10,.8)';rr(g,x,y,w,24,5);g.fill();g.fillStyle='#ffe9c2';g.textAlign='left';g.fillText(t,x+8,y+17);}
+function donName(T){return T<49?'레어 미만':T<54?'레어':T<59?'미디엄 레어':T<65?'미디엄':T<70?'미디엄 웰':'웰던';}
+const pct=v=>Math.round(clamp(v,0,1.5)*100)+'%';
+function probeInfo(x,y){const bp=boardPieceAt(x,y);if(bp){if(bp.L)return[Math.max(bp.Lm[5],bp.Lm[6]),[`심부 최고 ${Math.round(Math.max(bp.Lm[5],bp.Lm[6]))}°C`,donName(Math.max(bp.Lm[5],bp.Lm[6]))]];return[bp.T,[`${ING[bp.type].n} ${Math.round(bp.T)}°C`,`익힘 ${pct(bp.cook)}`]];}
+  const c=contAt(x,y);if(!c)return[null,[]];const lx=x-c.x,ly=y-c.y;
+  for(const j of c.jeons)if(dist(j.x,j.y,lx,ly)<avgRad(j))return[lerp(j.T||c.T,100,Math.min(1,j.set)*.7),[`전 속 익힘 ${pct(j.set)}`,`아랫면 노릇 ${pct(j.fb[j.down]/.7)}`,`윗면(뒤집은 쪽) ${pct(j.fb[1-j.down]/.7)}`]];
+  for(const e of c.eggs)if(dist(e.x,e.y,lx,ly)<avgRad(e))return[e.T||c.T,[`흰자 ${pct(e.set)}`,`노른자 ${e.yolk<.35?'주르륵 반숙':e.yolk<.75?'쫀득 반숙':'완숙'}`]];
+  let best=null,bd=1e9;for(const o of c.items){if(o.kind!=='piece')continue;const d=dist(o.x,o.y,lx,ly);if(d<Math.max(12,o.r)&&d<bd){bd=d;best=o;}}
+  if(best){if(best.L)return[best.T,[`심부 ${Math.round(best.T)}°C`,donName(best.T),`아랫면 크러스트 ${pct(best.face[best.down])}`]];return[best.T,[`${ING[best.type].n} 익힘 ${pct(best.cook)}`,`아랫면 ${pct(best.face[best.down])}`]];}
+  for(const n of c.noodles)return[n.T,[`${NT[n.type].n} 익힘 ${pct(n.done)}`,n.done>1.12?'퍼지는 중!':n.done>.9?'딱 좋아요':'덜 익음']];
+  for(const b of c.beggs)if(dist(b.x,b.y,lx,ly)<24)return[b.T,[`삶은 계란 노른자 ${b.yolk<.35?'주르륵':b.yolk<.75?'쫀득 반숙':'완숙'}`]];
+  if(c.liq&&c.liq.vol>5)return[c.liq.T,[`국물 ${Math.round(c.liq.T)}°C`,`간 ${saltPct(c.liq).toFixed(2)}% · ${Math.round(c.liq.vol)}ml`]];
+  return[c.T,[`${c.name||''} ${Math.round(c.T)}°C`]];}
 function probeRead(x,y){for(const p of G.board.pieces)if(pointInPiece(p,x,y))return p.L?p.T:p.T;const c=contAt(x,y);if(!c)return null;
   const lx=x-c.x,ly=y-c.y;for(const o of c.items)if(o.kind==='piece'&&dist(o.x,o.y,lx,ly)<Math.max(10,o.r))return o.T;for(const n of c.noodles)return n.T;if(c.liq&&c.liq.vol>5)return c.liq.T;for(const j of c.jeons)return lerp(j.T||c.T,100,Math.min(1,j.set)*.7);return c.T;}
 
@@ -1277,15 +1380,16 @@ function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
     case'juice':g.fillStyle=rgba(q.col,.8);g.beginPath();g.arc(q.x,q.y-q.z,1.6,0,TAU);g.fill();break;
     case'flake':if(q.type==='flour'){g.fillStyle='rgba(255,255,250,.8)';g.beginPath();g.arc(q.x,q.y-q.z,2,0,TAU);g.fill();}else drawSeed(g,q,q.x,q.y-q.z);break;
     case'bub':{const a=q.life/q.max;g.strokeStyle=(q.col||'rgba(255,255,255,')+((1-a)*.7)+')';g.lineWidth=1;g.beginPath();g.arc(q.x,q.y,q.r*(.6+a*.6),0,TAU);g.stroke();break;}
+    case'spark':{const a=q.life/q.max,r=q.r*(1-a*.5);g.save();g.translate(q.x,q.y);g.rotate(q.life*4);g.fillStyle=`rgba(255,226,120,${1-a})`;g.beginPath();for(let i=0;i<8;i++){const rr3=i%2?r*.35:r;g.lineTo(Math.cos(i*PI/4)*rr3,Math.sin(i*PI/4)*rr3);}g.closePath();g.fill();g.restore();break;}
     case'ring':{const a=q.life/q.max;g.strokeStyle=`rgba(235,245,255,${(1-a)*.5})`;g.lineWidth=1;g.beginPath();g.ellipse(q.x,q.y,q.r+a*10,(q.r+a*10)*.8,0,0,TAU);g.stroke();break;}
     case'pd':{const t=q.life/q.max,x=lerp(q.x0,q.x1,t),y=lerp(q.y0,q.y1,t*t),col=LQ[q.key].col;g.fillStyle=rgba(col,q.key==='water'?.55:.9);g.beginPath();g.arc(x,y,1.6+q.m*1.5,0,TAU);g.fill();break;}}}
   if(dragC)drawDragged(dragC);if(bd)drawBoard(G.board.ox,G.board.oy,true);
   for(const q of G.parts){if(q.k==='steam'||q.k==='smoke'){const a=q.life/q.max;g.globalAlpha=q.a*(1-a)*Math.min(1,q.life/.2);g.drawImage(q.k==='steam'?SP.steam:SP.smoke,q.x-q.r,q.y-q.r,q.r*2,q.r*2);}}
   g.globalAlpha=1;g.save();g.globalCompositeOperation='lighter';for(const q of G.parts){if(q.k==='fire'){const a=q.life/q.max;g.globalAlpha=(1-a)*.85;g.drawImage(SP.flame,q.x-q.r,q.y-q.r,q.r*2,q.r*2);}}g.restore();g.globalAlpha=1;
-  if(G.smoke>1){g.fillStyle=`rgba(125,120,115,${Math.min(.32,(G.smoke-1)*.035)})`;g.fillRect(0,0,W,H);}
+  if(G.smoke>1){g.fillStyle=`rgba(125,120,115,${Math.min(UPG.fan?.18:.32,(G.smoke-1)*(UPG.fan?.018:.035))})`;g.fillRect(0,0,W,H);}
   drawTutHL(g);
   if(G.drag&&G.drag.kind==='handful'){for(const p of G.drag.pieces)pieceShadow(g,p,M.x+p.ox*.8,M.y+p.oy*.8,12,.22);for(const p of G.drag.pieces)drawPiece(g,p,M.x+p.ox*.8,M.y+p.oy*.8);}
-  if(!G.hideCursor&&G.started){drawHeld();
+  if(!G.hideCursor&&G.started){drawHeld();if(G.held||G.ladle){const h=G.held,nm=!h?'국자에 담음':h.kind==='ing'?ING[h.piece.type].n:h.kind==='bottle'?BOT[h.id].label:h.kind==='shaker'?SHK[h.id].n:h.kind==='powder'?'부침가루':h.kind==='noodle'?NT[h.nt].n:h.kind==='noodleObj'?'면':({rice:'찬밥',egg:'계란',begg:'삶은 계란',packet:'라면 스프',ice:'얼음',nori:'김',butter:'버터'})[h.kind]||'';const t2=`${nm} · 우클릭=${h&&h.kind!=='packet'?'제자리':'내려놓기'}`;g.font='600 12px "Gowun Dodum", sans-serif';const w=g.measureText(t2).width+14;g.fillStyle='rgba(20,14,10,.72)';rr(g,M.x-w/2,M.y+40,w,20,9);g.fill();g.fillStyle='#fff1d6';g.textAlign='center';g.fillText(t2,M.x,M.y+54);}
     const overUI=knobAt(M.x,M.y)||shelfAt(M.x,M.y)||rackAt(M.x,M.y)||handleAt(M.x,M.y)||inFridge(M.x,M.y);
     if(!G.held&&!(G.drag&&G.drag.kind!=='spat')&&!overUI&&M.inside){const s=G.spat;
       if(G.tool==='knife'){if(inBoard(M.x,M.y)&&G.knife.down<.2){g.save();g.translate(M.x,M.y);g.rotate(G.knife.ang);g.strokeStyle='rgba(255,255,255,.45)';g.setLineDash([4,6]);g.lineWidth=1;g.beginPath();g.moveTo(0,-KN_UP-40);g.lineTo(0,KN_DN+10);g.stroke();g.setLineDash([]);g.restore();}drawKnifeTop(g,M.x,M.y,G.knife.ang,G.knife.down);
@@ -1293,7 +1397,7 @@ function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
       else if(G.tool==='spatula')drawSpatula(g,s.x,s.y,s.ang,s.down);
       else if(G.tool==='chop')drawChop(g,M.x,M.y,s.down,-.45);
       else if(G.tool==='ladle')drawLadle(g,M.x,M.y,s.down,G.ladle);
-      else if(G.tool==='probe')drawProbe(g,M.x,M.y,probeRead(M.x,M.y));}}
+      else if(G.tool==='probe'){const [pv,lines]=probeInfo(M.x,M.y);drawProbe(g,M.x,M.y,pv);if(lines.length){g.font='600 13px "Gowun Dodum", sans-serif';const w=Math.max(...lines.map(l=>g.measureText(l).width))+18;g.fillStyle='rgba(12,20,14,.9)';rr(g,M.x+22,M.y+62,w,lines.length*19+10,7);g.fill();g.fillStyle='#bff5c8';g.textAlign='left';lines.forEach((l,i)=>g.fillText(l,M.x+31,M.y+80+i*19));}}}}
   for(const t of G.texts){const a=t.life/t.max;g.save();g.translate(t.x,t.y-a*34);g.rotate(t.rot);g.globalAlpha=a<.7?1:1-(a-.7)/.3;g.font=`${t.size}px "Black Han Sans", sans-serif`;g.textAlign='center';g.lineWidth=6;g.strokeStyle='rgba(30,15,8,.65)';g.lineJoin='round';g.strokeText(t.text,0,0);g.fillStyle=t.col;g.fillText(t.text,0,0);g.restore();}}
 
 /* ---------- state queries for recipe steps ---------- */
@@ -1323,11 +1427,11 @@ const REC=[
   steps:[['애호박 채썰기',()=>cutN('zucchini',900)>=6],['냄비에 물 끓이기 (100°C)',()=>G.cw.some(c=>c.liq&&c.liq.T>=99)],['편수냄비에 멸치육수 데우고 간장으로 간',()=>liqWith(q=>q.umami>80&&q.T>70)],
     ['소면 삶기 — 끓어 넘치면 찬물 한 컵',()=>anyN('somyeon',n=>n.done>.9)],['체에 붓고 찬물로 헹구기 (수도 클릭)',()=>anyN('somyeon',n=>n.rinse>.5)],['그릇에 면 → 뜨거운 육수 → 고명(애호박·김가루·파)',()=>G.bowl.noodles.length>0&&G.bowl.liq&&G.bowl.liq.vol>150]],
   spec:{knife:{zucchini:['jul',.6,3,8],scallion:['disc',.15,.9]},cook:{zucchini:.5},noodle:{type:'somyeon',done:[.92,1.12],rinse:1},broth:{umami:.5,salt:[.7,1.25],T:'hot',vol:[280,650]},garn:{gim:.3,scallion:1,zucchini:1},req:[['noodle','면이 없어요!'],['broth','국물이 없어요']],w:{knife:.1,noodle:.3,broth:.3,finish:.3}}},
- {id:'kmari',n:'김치말이국수',dlc:'noodle',price:9000,vessel:'bowl',time:200,sub:'살얼음 동동 시원하게',
+ {id:'kmari',n:'김치말이국수',dlc:'noodle',price:9000,vessel:'bowl',time:200,sub:'살얼음 동동 · 식초·설탕 약간',
   steps:[['김치 잘게 썰고 오이 채썰기',()=>cutN('kimchi',700)>=6&&cutN('cucumber',900)>=4],['소면 삶기',()=>anyN('somyeon',n=>n.done>.9)],['찬물에 박박 헹궈 차갑게',()=>anyN('somyeon',n=>n.rinse>.6&&n.T<18)],
     ['그릇에 면 + 김치말이 육수 + 얼음',()=>G.bowl.liq&&G.bowl.liq.vol>150&&G.bowl.ice.length>0],['김치·오이·깨·참기름 올리기',()=>G.bowl.items.length>4]],
   spec:{knife:{kimchi:['dice',.3,3],cucumber:['jul',.5,3,8]},noodle:{type:'somyeon',done:[.92,1.12],rinse:1,cold:1},broth:{kb:1,salt:[.9,1.6],T:'cold',vol:[250,600]},garn:{sesame:.3,sesoil:1,kimchi:1,cucumber:1},req:[['noodle','면이 없어요!'],['broth','육수가 없어요']],w:{knife:.12,noodle:.3,broth:.3,finish:.28}}},
- {id:'bibim',n:'비빔국수',dlc:'noodle',price:9000,vessel:'bowl',time:190,sub:'새콤달콤 매콤하게',
+ {id:'bibim',n:'비빔국수',dlc:'noodle',price:9000,vessel:'bowl',time:190,sub:'새콤달콤 매콤하게 · 설탕·식초 약간',
   steps:[['오이 채썰기, 김치 잘게 썰기',()=>cutN('cucumber',900)>=4],['계란 삶기 (껍질째 냄비 가운데에)',()=>ALLC().some(c=>c.beggs.length)||allItems().some(o=>o.type==='begg')],['소면 삶아 찬물에 헹구기',()=>anyN('somyeon',n=>n.rinse>.6)],
     ['그릇에 면 + 비빔장 (40ml 안팎)',()=>G.bowl.noodles.length&&(G.bowl.fluid.some(q=>q.k==='bibim')||G.bowl.noodles.some(n=>n.coat.sauce>5))],['젓가락으로 골고루 비비기',()=>G.bowl.noodles.some(n=>n.mixEven>.6)],['오이·김치·삶은 계란 반쪽·깨 올리기',()=>G.bowl.items.length>3]],
   spec:{knife:{cucumber:['jul',.5,3,8],kimchi:['dice',.3,3]},noodle:{type:'somyeon',done:[.92,1.12],rinse:1,cold:1,sauce:[.25,.7],mixEven:.6},begg:[.6,1.2],garn:{sesame:.3,sesoil:1,cucumber:1},req:[['noodle','면이 없어요!']],w:{knife:.12,noodle:.34,egg:.14,finish:.4}}},
@@ -1456,6 +1560,7 @@ function evaluate(R,v,order){const sp=R.spec,D=snapDish(v),N=[],note=(t,s)=>N.pu
     const fl=sp.fl||{},fire=D.pcs.reduce((s,o)=>s+(o.fire||0)*o.mass,0)+D.grs.reduce((s,o)=>s+o.fire*o.mass,0)+v.noodles.reduce((s,n)=>s+(n.fire||0),0)+(v.flav.fire||0);
     if(fl.fire&&fire>.8){sc+=18;note('good','불향이 확 올라와요!');}if(fl.scal&&(v.flav.scal||0)>5){sc+=15;note('good','파기름 덕분에 향이 깊어요.');}
     const bitter=(v.flav.bitter||0)+D.pcs.reduce((s,o)=>s+(o.bitter||0)*o.mass,0);if(bitter>.4){pen+=Math.min(20,bitter*8);note('bad','쓴맛이 나요. 양념이 탔어요.');}
+    if(R.id==='bibim'||R.id==='kmari'){const sw=v.flav.sweet||0,so=v.flav.sour||0;if(sw>=1&&sw<=9&&so>=3&&so<=26){sc+=12;note('good','설탕·식초로 새콤달콤 밸런스가 딱 좋아요.');}else if(sw>=1||so>=3)sc+=5;if(sw>12){pen+=6;note('meh','너무 달아요.');}if(so>36){pen+=6;note('meh','너무 셔요.');}}
     const cold=R.id==='kmari'||R.id==='bibim';if(!cold&&D.T<45&&R.vessel==='plate'){pen+=8;note('meh','음식이 식어서 아쉬워요.');}
     cats.push(['마무리',clamp(sc,0,100),W.finish||.2]);}
   if(G.stats.alarm)note('meh','연기 경보가 울렸어요… 환기 필수!');
@@ -1475,23 +1580,26 @@ const NAMES=['김 대리','이 선생님','박 사장님','최 학생','정 할�
 const RENT=22000,SEASON=5000,DAYLEN=600;
 let SAVE=null;
 function starterStock(){const s={};for(const f of FRIDGE)s[f[0]]=f[3]==='bottle'?1500:f[0]==='beef'?2:f[0]==='egg'?10:f[0]==='rice'?4:4;for(const p of PANTRY_STOCK)s[p[0]]=5;return s;}
-function loadSave(){try{const r=localStorage.getItem('sizzle-kitchen-v2');if(r){SAVE=JSON.parse(r);}}catch(e){}if(!SAVE||!SAVE.stock)SAVE={day:1,money:60000,rep:3,stock:starterStock(),dlc:{base:true,noodle:true,jeon:true,jp:true,west:true},best:{},served:0};for(const k in starterStock())if(SAVE.stock[k]===undefined)SAVE.stock[k]=0;}
+function loadSave(){try{const r=localStorage.getItem('sizzle-kitchen-v2');if(r){SAVE=JSON.parse(r);}}catch(e){}if(!SAVE||!SAVE.stock)SAVE={day:1,money:60000,rep:3,stock:starterStock(),dlc:{base:true,noodle:true,jeon:true,jp:true,west:true},best:{},served:0};for(const k in starterStock())if(SAVE.stock[k]===undefined)SAVE.stock[k]=0;SAVE.up=SAVE.up||{};SAVE.ach=SAVE.ach||{};UPG=SAVE.up;syncLots();}
 function writeSave(){try{localStorage.setItem('sizzle-kitchen-v2',JSON.stringify(SAVE));}catch(e){}}
 
 /* ---------- sessions ---------- */
-function resetKitchen(mode){G=makeState(mode);G.stock=mode==='practice'?new Proxy({},{get:()=>999,set:()=>true}):SAVE.stock;MX.clearRect(0,0,L.board.w,L.board.h);STX.clearRect(0,0,W,H);}
-function startCareer(){tutStop();resetKitchen('career');G.day={n:SAVE.day,t:0,rev:0,tips:0,spend:0,served:0,fail:0,scores:[],gasStart:0};G.started=true;G.nextOrder=6;hideAll();$('#top').hidden=false;renderTickets();hudTick();AU.door();if(!SAVE.toured)tourStart();}
+function resetKitchen(mode){G=makeState(mode);if(UPG.burner)for(const b of G.burners)b.P*=1.2;G.stock=mode==='practice'?new Proxy({},{get:()=>999,set:()=>true}):SAVE.stock;MX.clearRect(0,0,L.board.w,L.board.h);STX.clearRect(0,0,W,H);}
+function startCareer(){tutStop();resetKitchen('career');const m=SAVE.mid&&SAVE.mid.day===SAVE.day?SAVE.mid:null;G.day={n:SAVE.day,t:0,rev:0,tips:0,spend:0,served:0,fail:0,scores:[],gasStart:0};G.started=true;G.nextOrder=6;
+  if(m){Object.assign(G.day,{t:m.t,rev:m.rev,tips:m.tips,spend:m.spend,served:m.served,fail:m.fail,scores:m.scores||[],special:m.special});G.gas=m.gas||0;G.combo=m.combo||0;G.closeCap=m.closeCap;G.orders=(m.orders||[]).map(o=>Object.assign({},o,{id:G.oid++,t0:G.t,steps:{}}));G.sel=G.orders[0]?G.orders[0].id:null;G.nextOrder=8;}
+  else{G.day.special=pickSpecial();midSave();}
+  hideAll();$('#top').hidden=false;renderTickets();hudTick();AU.door();if(!SAVE.toured)tourStart();else dayBanner(!!m);}
 function startPractice(rid,guide){tutStop();resetKitchen('practice');G.started=true;hideAll();$('#top').hidden=false;const R=RID[rid];G.orders=[{id:G.oid++,rid,t0:0,pat:Infinity,left:Infinity,opt:R.opts?pick(R.opts):null,name:'연습',table:0,steps:{}}];G.sel=G.orders[0].id;renderTickets();hudTick();
   if(guide){if(!SAVE.toured){G.pendingGuide=rid;tourStart();}else tutStart(rid);}else{$('#recipePop').hidden=false;renderSteps();}}
 function hideAll(){for(const id of ['title','dlcPanel','practice','fridge','market','result','settle','menu'])$('#'+id).hidden=true;}
-function toTitle(){tutStop();if(G)G.started=false;hideAll();$('#top').hidden=true;$('#recipePop').hidden=true;$('#served').hidden=true;renderTitle();$('#title').hidden=false;}
+function toTitle(){midSave();tutStop();if(G)G.started=false;hideAll();$('#top').hidden=true;$('#recipePop').hidden=true;$('#served').hidden=true;renderTitle();$('#title').hidden=false;}
 
 /* ---------- orders ---------- */
 const selOrder=()=>G.orders.find(o=>o.id===G.sel)||null;
-function spawnOrder(){const pool=REC.filter(r=>SAVE.dlc[r.dlc]!==false);if(!pool.length)return;const R=pick(pool),pat=R.time*1.9+70;
-  const o={id:G.oid++,rid:R.id,t0:G.t,pat,left:pat,opt:R.opts?pick(R.opts):null,name:pick(NAMES),table:1+((Math.random()*8)|0),steps:{}};G.orders.push(o);if(!selOrder())G.sel=o.id;
+function spawnOrder(){const pool=menuPool();if(!pool.length)return;let R=pick(pool);if(G.day&&G.day.special&&RID[G.day.special]&&Math.random()<.22)R=RID[G.day.special];const pat=R.time*1.9+70;
+  const o={id:G.oid++,rid:R.id,t0:G.t,pat,left:pat,opt:R.opts?pick(R.opts):null,name:pick(NAMES),table:1+((Math.random()*8)|0),steps:{},special:!!(G.day&&G.day.special===R.id),req:pickReq(R)};G.orders.push(o);if(!selOrder())G.sel=o.id;
   AU.bell();floatText('새 주문!',1420,120,'#ffe9a0',30);renderTickets();}
-function gameTick(dt){if(G.mode!=='career')return;const D=G.day;D.t+=dt;const open=D.t<DAYLEN;
+function gameTick(dt){if(G.mode!=='career')return;const D=G.day;D.t+=dt;G.midT=(G.midT||0)+dt;if(G.midT>10){G.midT=0;midSave();}const open=D.t<DAYLEN;
   if(open){G.nextOrder-=dt;const maxO=SAVE.rep>=4?4:3;if(G.nextOrder<=0&&G.orders.length<maxO){spawnOrder();G.nextOrder=rand(50,85)/(.75+SAVE.rep*.1);}if(!G.orders.length&&G.nextOrder>12)G.nextOrder=Math.min(G.nextOrder,12);}
   if(!open&&!G.closeCap){G.closeCap=true;for(const o of G.orders)o.left=Math.min(o.left,150);}
   for(let i=G.orders.length-1;i>=0;i--){const o=G.orders[i];o.left-=dt;if(o.left<=0){G.orders.splice(i,1);D.fail++;SAVE.rep=clamp(SAVE.rep-.15,0,5);floatText(`${o.name} 손님이 기다리다 떠났어요`,1420,150,'#ffb38a',22);AU.door();if(G.sel===o.id)G.sel=G.orders[0]?G.orders[0].id:null;renderTickets();}}
@@ -1499,22 +1607,25 @@ function gameTick(dt){if(G.mode!=='career')return;const D=G.day;D.t+=dt;const op
 function renderTickets(){const rail=$('#rail');rail.innerHTML='';
   if(!G.orders.length){const d=document.createElement('div');d.className='tk-empty';d.textContent=G.mode==='career'&&G.day.t>=DAYLEN?'영업 종료 — 마지막 손님까지 끝났어요':'주문을 기다리는 중…';rail.appendChild(d);return;}
   for(const o of G.orders){const R=RID[o.rid],b=document.createElement('button');b.type='button';b.className='tk'+(o.id===G.sel?' sel':'');b.dataset.id=o.id;
-    b.innerHTML=`<span class="tk-no">#${String(o.id).padStart(3,'0')}${o.table?' · '+o.table+'번':''}</span><b>${R.n}</b>${o.opt?`<em>${o.opt[0]}</em>`:''}<span class="tk-p">${won(R.price)}</span><span class="tk-bar"><i></i></span><span class="tk-who">${o.name}</span>`;
+    b.innerHTML=`<span class="tk-no">#${String(o.id).padStart(3,'0')}${o.table?' · '+o.table+'번':''}</span><b>${R.n}</b>${o.special?'<i class="tk-sp">특선</i>':''}${o.opt?`<em>${o.opt[0]}</em>`:''}${o.req?`<em class="tk-rq">${REQS[o.req].t}</em>`:''}<span class="tk-p">${won(orderPrice(o))}</span><span class="tk-bar"><i></i></span><span class="tk-who">${o.name}</span>`;
     b.addEventListener('click',()=>{if(G.sel===o.id){$('#recipePop').hidden=!$('#recipePop').hidden;}else{G.sel=o.id;renderTickets();}renderSteps();hudTick();});rail.appendChild(b);}updateTicketBars();}
 function updateTicketBars(){for(const el of $$('#rail .tk')){const o=G.orders.find(q=>q.id==el.dataset.id);if(!o)continue;const f=o.pat===Infinity?1:clamp(o.left/o.pat,0,1),i=el.querySelector('.tk-bar i');i.style.width=(f*100).toFixed(1)+'%';i.style.background=f>.5?'#6fbf73':f>.25?'#f0ae3a':'#e0412a';el.classList.toggle('late',f<.25);}}
-function renderSteps(){const o=selOrder(),pop=$('#recipePop');if(!o){pop.hidden=true;return;}const R=RID[o.rid];$('#rpTitle').textContent=R.n;$('#rpSub').textContent=(o.opt?o.opt[0]+' · ':'')+R.sub;
+function renderSteps(){const o=selOrder(),pop=$('#recipePop');if(!o){pop.hidden=true;return;}const R=RID[o.rid];$('#rpTitle').textContent=R.n;$('#rpSub').textContent=(o.req?'요청: '+REQS[o.req].t+' · ':'')+(o.opt?o.opt[0]+' · ':'')+R.sub;
   const ol=$('#steps');ol.innerHTML='';let cur=false;R.steps.forEach((s,i)=>{const li=document.createElement('li');li.textContent=s[0];const d=!!o.steps[i];li.className=d?'done':!cur?'cur':'';if(!d&&!cur)cur=true;ol.appendChild(li);});}
 function checkSteps(){const o=selOrder();if(!o)return;const R=RID[o.rid];let ch=false;R.steps.forEach((s,i)=>{if(!o.steps[i]){let ok=false;try{ok=s[1]();}catch(e){}if(ok){o.steps[i]=true;ch=true;AU.ding();}}});if(ch)renderSteps();}
 
 /* ---------- serving ---------- */
-function captureVessel(v){const c=$('#dish'),g=c.getContext('2d'),R=v.kind==='bowl'?L.bowl.r+12:L.plate.r+12;g.fillStyle='#2e231c';g.fillRect(0,0,c.width,c.height);g.drawImage(cv,(v.x-R)*PX,(v.y-R)*PX,R*2*PX,R*2*PX,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.85);}
+function captureVessel(v){const c=$('#dish'),g=c.getContext('2d'),R=(v.kind==='bowl'?L.bowl.r:L.plate.r)+18,s=c.width/(R*2);g.setTransform(1,0,0,1,0,0);
+  const bg=g.createRadialGradient(c.width/2,c.height/2,c.width*.2,c.width/2,c.height/2,c.width*.75);bg.addColorStop(0,'#4a3526');bg.addColorStop(1,'#241a14');g.fillStyle=bg;g.fillRect(0,0,c.width,c.height);
+  const old=ctx;try{ctx=g;g.setTransform(s,0,0,s,-(v.x-R)*s,-(v.y-R)*s);g.save();if(dist(v.x,v.y,v.hx,v.hy)<=1){g.translate(v.x-v.hx,v.y-v.hy);drawPlateBowl(g);}g.restore();drawVessel(v);}catch(e){g.setTransform(1,0,0,1,0,0);g.drawImage(cv,(v.x-R)*PX,(v.y-R)*PX,R*2*PX,R*2*PX,0,0,c.width,c.height);}finally{ctx=old;g.setTransform(1,0,0,1,0,0);}
+  return c.toDataURL('image/jpeg',.9);}
 function serve(){const o=selOrder();if(!o){floatText('먼저 주문표를 선택하세요',1420,860,'#ffd0b0',22);return;}const R=RID[o.rid];let v=vesselOf(R),other=v===G.plate?G.bowl:G.plate,wrong=false;
   if(contEmpty(v)&&!contEmpty(other)){v=other;wrong=true;}if(contEmpty(v)){floatText('그릇이 비어 있어요',v.x,v.y,'#ffd0b0',24);return;}
   G.hideCursor=true;render();G.hideCursor=false;const img=captureVessel(v);const res=evaluate(R,v,o);if(wrong){res.total=Math.max(0,res.total-5);res.notes.push({t:'meh',s:R.vessel==='bowl'?'그릇이 아니라 접시에 나왔네요.':'접시가 아니라 그릇에 나왔네요.'});}
-  const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(R.price*q/100)*100,tip=0;
+  applyExtras(o,v,res);const sc=res.total,q=clamp(sc/85,.25,1.15);let pay=Math.round(orderPrice(o)*q/100)*100,tip=0;
   if(G.mode==='career'){const speed=o.pat===Infinity?0:clamp(o.left/o.pat,0,1);if(sc>=70)tip=Math.round(R.price*(.06+.14*speed)*(sc/100)/100)*100;G.combo=sc>=80?G.combo+1:0;if(G.combo>1)tip+=Math.round(R.price*Math.min(.25,G.combo*.05)/100)*100;
     SAVE.money+=pay+tip;G.day.rev+=pay;G.day.tips+=tip;G.day.served++;G.day.scores.push(sc);SAVE.rep=clamp(SAVE.rep+(sc-65)/350,0,5);SAVE.served++;}
-  SAVE.best[R.id]=Math.max(SAVE.best[R.id]||0,sc);writeSave();
+  SAVE.best[R.id]=Math.max(SAVE.best[R.id]||0,sc);writeSave();if(G.mode==='career')midSave();checkAch(sc);
   clearCont(v);AU.cash();G.orders=G.orders.filter(q=>q!==o);G.sel=G.orders[0]?G.orders[0].id:null;renderTickets();renderSteps();
   const pack={R,res,img,pay,tip,o};G.lastServe=pack;if(G.mode==='practice')showResult(pack);else showToast(pack);hudTick();}
 function stars(s){const st=Math.round(s/20*2)/2;let h='';for(let i=1;i<=5;i++)h+=`<span class="${st>=i?'f':st>=i-.5?'h':'e'}">★</span>`;return h;}
@@ -1532,11 +1643,11 @@ $('#resAgain').addEventListener('click',()=>{$('#result').hidden=true;G.paused=f
 
 /* ---------- end of day ---------- */
 function endDay(){if(G.mode!=='career')return;const D=G.day,gas=Math.round(G.gas/10)*10,avg=D.scores.length?Math.round(D.scores.reduce((a,b)=>a+b,0)/D.scores.length):0;
-  SAVE.money-=RENT+SEASON+gas;const profit=D.rev+D.tips-D.spend-RENT-SEASON-gas;SAVE.day++;writeSave();G.started=false;
+  SAVE.money-=RENT+SEASON+gas;const profit=D.rev+D.tips-D.spend-RENT-SEASON-gas;SAVE.day++;SAVE.mid=null;const spoiled=spoilLots();writeSave();G.started=false;setTimeout(()=>checkAch(0),600);
   $('#settleBody').innerHTML=`<div class="st-row"><span>매출</span><b>${won(D.rev)}</b></div><div class="st-row"><span>팁</span><b>${won(D.tips)}</b></div><div class="st-row neg"><span>재료 구입</span><b>−${won(D.spend)}</b></div>
     <div class="st-row neg"><span>가스비</span><b>−${won(gas)}</b></div><div class="st-row neg"><span>임대료</span><b>−${won(RENT)}</b></div><div class="st-row neg"><span>양념·소모품</span><b>−${won(SEASON)}</b></div>
     <div class="st-row tot ${profit<0?'neg':''}"><span>오늘 순이익</span><b>${profit<0?'−':''}${won(Math.abs(profit))}</b></div>
-    <div class="st-meta"><span>서빙 ${D.served}건 · 놓친 주문 ${D.fail}건 · 평균 ${avg}점</span><span>평판 <span class="stars">${stars(SAVE.rep*20)}</span></span><span>잔고 ${won(SAVE.money)}</span></div>`;
+    <div class="st-meta"><span>서빙 ${D.served}건 · 놓친 주문 ${D.fail}건 · 평균 ${avg}점</span><span>평판 <span class="stars">${stars(SAVE.rep*20)}</span></span><span>잔고 ${won(SAVE.money)}</span></div>${spoiled.length?`<div class="st-spoil">버린 재료 (유통기한 지남): ${spoiled.map(([id,n])=>ING[id].n+' '+n).join(', ')}</div>`:''}${REC.some(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===SAVE.day)?`<div class="st-new">내일 새 메뉴: ${REC.filter(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===SAVE.day).map(r=>r.n).join(' · ')}</div>`:''}`;
   $('#settleDay').textContent=`DAY ${D.n} 마감`;$('#settle').hidden=false;$('#top').hidden=true;$('#recipePop').hidden=true;}
 $('#stNext').addEventListener('click',()=>{hideAll();startCareer();});$('#stMarket').addEventListener('click',()=>openMarket());$('#stTitle').addEventListener('click',()=>toTitle());
 
@@ -1553,20 +1664,20 @@ function itemIcon(id){if(ICON[id])return ICON[id];const c=mk(144,144),g=c.getCon
   return ICON[id]=c.toDataURL();}
 
 /* ---------- fridge ---------- */
-function openFridge(){if(!G.started)return;AU.door();const grid=$('#fridgeGrid');grid.innerHTML='';
+function openFridge(){if(!G.started)return;AU.door();if(G.mode!=='practice')syncLots();const grid=$('#fridgeGrid');grid.innerHTML='';
   for(const [id,n,,kind] of FRIDGE){const stock=G.mode==='practice'?'∞':kind==='bottle'?(G.stock[id]||0)+'ml':(G.stock[id]||0);const out=G.mode!=='practice'&&(G.stock[id]||0)<=0;
-    const b=document.createElement('button');b.type='button';b.className='fr-it'+(out?' out':'');b.innerHTML=`<img alt="" src="${itemIcon(id)}"><span>${n}</span><em>${out?'품절':stock}</em>`;b.disabled=out;b.onclick=()=>{takeFridge(id,kind);$('#fridge').hidden=true;};grid.appendChild(b);}
+    const b=document.createElement('button');b.type='button';b.className='fr-it'+(out?' out':'');b.innerHTML=`<img alt="" src="${itemIcon(id)}"><span>${n}</span><em>${out?'품절':stock}</em>${out?'':freshTag(id)}`;b.disabled=out;b.onclick=()=>{takeFridge(id,kind);$('#fridge').hidden=true;};grid.appendChild(b);}
   $('#frMarket').hidden=G.mode==='practice';$('#fridge').hidden=false;}
-function takeFridge(id,kind){if(G.held)returnHeld();setTool('hand');if(G.mode!=='practice'&&kind!=='bottle')G.stock[id]--;
+function takeFridge(id,kind){if(G.held)returnHeld();setTool('hand');let lotD=null;if(G.mode!=='practice'&&kind!=='bottle'){if(tracked(id))lotD=takeLot(id);G.stock[id]--;}
   if(kind==='ing')G.held={kind:'ing',id,piece:newPiece(id,M.x,M.y),src:'fridge'};else if(kind==='bottle')G.held={kind:'bottle',id,stock:true,tilt:0,active:false,poured:0,flow:0};
-  else if(kind==='noodle')G.held={kind:'noodle',id,nt:id,src:'fridge'};else G.held={kind,id,src:'fridge'};AU.pick();}
+  else if(kind==='noodle')G.held={kind:'noodle',id,nt:id,src:'fridge'};else G.held={kind,id,src:'fridge'};if(lotD!==null){G.held.lotD=lotD;if(G.held.piece&&SAVE.day-lotD>SHELF[id]){G.held.piece.stale=true;floatText('시든 재료예요…',M.x,M.y-50,'#d8c890',20);}}AU.pick();}
 $('#frClose').addEventListener('click',()=>{$('#fridge').hidden=true;AU.door();});$('#frMarket').addEventListener('click',()=>{$('#fridge').hidden=true;openMarket();});
 
 /* ---------- market ---------- */
 let CART={};
-function openMarket(){CART={};const list=$('#mkList');list.innerHTML='';
+function openMarket(){CART={};const list=$('#mkList');list.innerHTML='';renderUpgrades(list);
   for(const [id,n,price] of [...FRIDGE,...PANTRY_STOCK]){const unit=UNIT(id),row=document.createElement('div');row.className='mk-row';
-    row.innerHTML=`<img alt="" src="${itemIcon(id)}"><span class="mk-n">${n}${unit>1?' <small>500ml</small>':''}</span><span class="mk-s">재고 ${unit>1?(SAVE.stock[id]||0)+'ml':(SAVE.stock[id]||0)}</span><span class="mk-p">${won(price)}</span><span class="mk-q"><button type="button" data-d="-1">−</button><b>0</b><button type="button" data-d="1">+</button><button type="button" data-d="5">+5</button></span>`;
+    row.innerHTML=`<img alt="" src="${itemIcon(id)}"><span class="mk-n">${n}${SHELF[id]!==undefined?` <small>유통 ${SHELF[id]}일</small>`:''}${unit>1?' <small>500ml</small>':''}</span><span class="mk-s">재고 ${unit>1?(SAVE.stock[id]||0)+'ml':(SAVE.stock[id]||0)}</span><span class="mk-p">${won(price)}</span><span class="mk-q"><button type="button" data-d="-1">−</button><b>0</b><button type="button" data-d="1">+</button><button type="button" data-d="5">+5</button></span>`;
     row.querySelectorAll('button').forEach(b=>b.onclick=()=>{CART[id]=Math.max(0,(CART[id]||0)+Number(b.dataset.d));row.querySelector('b').textContent=CART[id];mkTotal();});list.appendChild(row);}
   mkTotal();$('#market').hidden=false;}
 function mkTotal(){let t=0;for(const id in CART)t+=CART[id]*PRICE[id];$('#mkTotal').textContent=won(t);$('#mkMoney').textContent=won(SAVE.money);$('#mkBuy').disabled=t<=0||t>SAVE.money;}
@@ -1575,7 +1686,7 @@ $('#mkClose').addEventListener('click',()=>{$('#market').hidden=true;});
 
 /* ---------- hints & hud ---------- */
 function hintText(){const h=G.held;if(G.alarmOn)return['warn','삐— 삐— 연기 경보! 불을 줄이고 재료를 뒤집거나 팬을 들어 올려요.'];
-  for(const c of G.cw){if(c.foam>.6)return['warn',`${c.name}에 거품이 차올라요! 찬물을 조금 붓거나 불을 줄이세요.`];if(c.smokeRate>2.5)return['warn',`${c.name}에서 연기가 나요. 바닥이 타고 있어요.`];
+  for(const c of G.cw){if(c.foam>.42)return['warn',`${c.name}에 거품이 차올라요! 찬물을 조금 붓거나 불을 줄이세요.`];if(c.smokeRate>2.5)return['warn',`${c.name}에서 연기가 나요. 바닥이 타고 있어요.`];
     const n=c.items.filter(o=>o.kind==='piece'&&o.face[o.down]>.85&&o.face[o.down]>o.face[1-o.down]).length;if(n>3)return['warn','보이지 않는 아랫면이 타기 직전이에요. 뒤집개로 젓거나 손잡이를 탁 쳐서 뒤집어요.'];
     for(const nd of c.noodles)if(c.liq&&nd.done<.35&&nd.stick>.7&&nd.T>60)return['warn','면이 서로 달라붙고 있어요! 긴 젓가락으로 저어 풀어 주세요.'];
     for(const j of c.jeons)if(j.fb[j.down]>1)return['warn','전 아랫면이 타기 직전! 뒤집개로 짧게 클릭해 뒤집어요.'];}
@@ -1592,26 +1703,93 @@ function hudTick(){if(!G)return;
   if(G.mode==='career'){const t=G.day.t,mins=11*60+Math.floor(Math.min(t,DAYLEN)/DAYLEN*600);$('#clock').textContent=`DAY ${G.day.n} · ${String(Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}${t>=DAYLEN?' 마감':''}`;$('#money').textContent=won(SAVE.money);$('#rep').innerHTML=stars(SAVE.rep*20);$('#btnMarket').hidden=false;}
   else{$('#clock').textContent='연습 모드';$('#money').textContent='재료 무제한';$('#rep').innerHTML='';$('#btnMarket').hidden=true;}
   checkSteps();tutTick();updateTicketBars();let [cls,txt]=hintText();if(TUT.on&&TUT.kind==='recipe'&&TUT.steps[TUT.i]&&cls!=='warn')txt=`가이드 ${TUT.i+1}. ${TUT.steps[TUT.i].t}`;if(txt!==lastHint){lastHint=txt;const el=$('#hint');el.textContent=txt;el.className=cls;}
-  const o=selOrder(),R=o&&RID[o.rid];$('#serve').disabled=!o;$('#serve').innerHTML=o?`서빙 <small>#${String(o.id).padStart(3,'0')} ${R.n}</small>`:'서빙';$('#alarm').hidden=!G.alarmOn;}
+  const o=selOrder(),R=o&&RID[o.rid];$('#serve').disabled=!o;$('#serve').innerHTML=o?`서빙 <small>#${String(o.id).padStart(3,'0')} ${R.n}</small>`:'서빙';$('#alarm').hidden=!G.alarmOn;$('#btnDrop').hidden=!(G.held||G.ladle);}
 
 /* ---------- title, DLC, practice ---------- */
-function renderTitle(){loadSave();$('#tlSave').innerHTML=`<span>DAY ${SAVE.day}</span><span>${won(SAVE.money)}</span><span class="stars">${stars(SAVE.rep*20)}</span><span>누적 서빙 ${SAVE.served}그릇</span>`;$('#tlStart').innerHTML=`영업 시작 <small>DAY ${SAVE.day}</small>`;}
+function renderTitle(){loadSave();$('#tlSave').innerHTML=`<span>DAY ${SAVE.day}</span><span>${won(SAVE.money)}</span><span class="stars">${stars(SAVE.rep*20)}</span><span>누적 서빙 ${SAVE.served}그릇</span><span title="${ACH.map(a=>(SAVE.ach[a[0]]?'✓ ':'· ')+a[1]+' — '+a[2]).join('&#10;')}">업적 ${ACH.filter(a=>SAVE.ach[a[0]]).length}/${ACH.length}</span>`;const m=SAVE.mid&&SAVE.mid.day===SAVE.day?SAVE.mid:null;$('#tlStart').innerHTML=m?`이어하기 <small>DAY ${SAVE.day} · ${String(11+Math.floor(m.t/DAYLEN*10)).padStart(2,'0')}:${String(Math.floor(m.t/DAYLEN*600)%60).padStart(2,'0')}</small>`:`영업 시작 <small>DAY ${SAVE.day}</small>`;}
 function openDlc(){const box=$('#dlcList');box.innerHTML='';for(const k in DLC){const d=DLC[k],recs=REC.filter(r=>r.dlc===k),on=SAVE.dlc[k]!==false;const el=document.createElement('label');el.className='dlc'+(on?' on':'');
     el.innerHTML=`<input type="checkbox" id="dlc-${k}" ${on?'checked':''} ${k==='base'?'disabled':''}><div><b>${d.n}</b><span>${d.d}</span><em>${recs.map(r=>r.n).join(' · ')}</em></div><i>${k==='base'?'기본':on?'설치됨':'꺼짐'}</i>`;
     el.querySelector('input').onchange=e=>{SAVE.dlc[k]=e.target.checked;writeSave();openDlc();};box.appendChild(el);}$('#dlcPanel').hidden=false;}
 function openPractice(){const box=$('#prList');box.innerHTML='';for(const k in DLC){if(SAVE.dlc[k]===false)continue;const h=document.createElement('h4');h.textContent=DLC[k].n;box.appendChild(h);const row=document.createElement('div');row.className='pr-row';
-    for(const r of REC.filter(r=>r.dlc===k)){const b=document.createElement('button');b.type='button';b.className='pr';b.innerHTML=`<b>${r.n}</b><span>${r.sub}</span><em>${SAVE.best[r.id]?'최고 '+SAVE.best[r.id]+'점':'도전 전'}</em>`;b.onclick=()=>{AU.init();startPractice(r.id,$('#prGuide').checked);};row.appendChild(b);}box.appendChild(row);}
+    for(const r of REC.filter(r=>r.dlc===k)){const b=document.createElement('button');b.type='button';b.className='pr';b.innerHTML=`<b>${r.n}</b><span>${r.sub}</span><em>${SAVE.best[r.id]?`<span class="stars">${stars(SAVE.best[r.id])}</span> 최고 ${SAVE.best[r.id]}점`:'도전 전'}${unlocked(r)?'':` · 영업 DAY ${UNLOCK[r.id]} 메뉴`}</em>`;b.onclick=()=>{AU.init();startPractice(r.id,$('#prGuide').checked);};row.appendChild(b);}box.appendChild(row);}
   hideAll();$('#practice').hidden=false;}
 $('#tlStart').addEventListener('click',()=>{AU.init();startCareer();});$('#tlTour').addEventListener('click',()=>{AU.init();tourStart();});$('#menuTour').addEventListener('click',()=>{$('#menu').hidden=true;tourStart();});$('#menuGuide').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;const o=selOrder();if(o)tutStart(o.rid);});$('#tlPractice').addEventListener('click',()=>{AU.init();openPractice();});$('#tlDlc').addEventListener('click',openDlc);
 $('#dlcClose').addEventListener('click',()=>{$('#dlcPanel').hidden=true;renderTitle();});$('#prBack').addEventListener('click',()=>toTitle());
 let resetArm=0;$('#tlReset').addEventListener('click',e=>{const b=e.currentTarget;if(performance.now()-resetArm<2500){try{localStorage.removeItem('sizzle-kitchen-v2');}catch(_){}SAVE=null;loadSave();renderTitle();b.textContent='새 게임';resetArm=0;}else{resetArm=performance.now();b.textContent='한 번 더 누르면 초기화';setTimeout(()=>b.textContent='새 게임',2500);}});
 $('#btnRecipe').addEventListener('click',()=>{const p=$('#recipePop');p.hidden=!p.hidden;renderSteps();});
-$('#btnMarket').addEventListener('click',()=>openMarket());$('#btnFridge').addEventListener('click',()=>openFridge());
+$('#btnMarket').addEventListener('click',()=>openMarket());const muteLbl=()=>{$('#btnMute').firstChild.textContent=AU.muted?'소리 켜기':'소리 끄기';};muteLbl();$('#btnMute').addEventListener('click',()=>{AU.setMute(!AU.muted);muteLbl();});addEventListener('keydown',e=>{if(e.code==='KeyM'){AU.setMute(!AU.muted);muteLbl();}});$('#btnRot').addEventListener('click',()=>rotateBoard());$('#btnDrop').addEventListener('click',()=>{returnHeld();G.ladle=null;});$('#btnFridge').addEventListener('click',()=>openFridge());
 $('#btnMenu').addEventListener('click',()=>{G.paused=true;$('#menuEnd').textContent=G.mode==='career'?'오늘 영업 마감하기':'연습 끝내기';$('#menu').hidden=false;});
 $('#menuResume').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;});
 $('#menuEnd').addEventListener('click',()=>{$('#menu').hidden=true;G.paused=false;if(G.mode==='career'){G.orders=[];G.day.t=DAYLEN;G.dayEnded=true;endDay();}else toTitle();});
 $('#serve').addEventListener('click',()=>{AU.init();serve();});
 $('#rpClose').addEventListener('click',()=>{$('#recipePop').hidden=true;});
+
+/* ---------- meta: unlocks · specials · requests · freshness · upgrades · achievements · mid-day save ---------- */
+let UPG={};
+const UNLOCK={kfr:1,efr:1,ramyeon:1,kjeon:2,janchi:2,pajeon:3,bibim:3,udon:3,kmari:4,buchu:4,yaki:4,shoyu:5,steak:5,aglio:5,pomo:5};
+const unlocked=r=>SAVE.day>=(UNLOCK[r.id]||1);
+function menuPool(){const on=REC.filter(r=>SAVE.dlc[r.dlc]!==false),p=on.filter(unlocked);return p.length?p:on;}
+const SPECIAL_MUL=1.3;
+function orderPrice(o){return Math.round(RID[o.rid].price*(o.special?SPECIAL_MUL:1)/100)*100;}
+function pickSpecial(){const p=menuPool();return p.length?pick(p).id:null;}
+
+/* customer requests */
+const vPieces=v=>[...v.items.filter(o=>o.kind==='piece'),...v.jeons.flatMap(j=>j.lens||[])];
+const gv=(v,k)=>(v.garn&&v.garn[k])||0;
+const REQS={
+  noscal:{t:'파 빼주세요',for:['janchi','ramyeon','udon','shoyu'],ok:v=>!vPieces(v).some(o=>o.type==='scallion'||o.type==='jjokpa'),good:'요청대로 파를 뺐어요.',bad:'파 빼달라고 했는데 파가 들어 있어요!'},
+  sesame:{t:'깨 듬뿍',for:['kfr','efr','kmari','bibim'],ok:v=>gv(v,'sesame')>=1,good:'깨를 듬뿍 뿌려 고소해요.',bad:'깨 듬뿍 부탁했는데 조금밖에 없어요.'},
+  sweet:{t:'새콤달콤하게',for:['bibim','kmari'],ok:v=>(v.flav.sweet||0)>=1.2&&(v.flav.sour||0)>=4,good:'설탕·식초로 새콤달콤하게 맞췄어요!',bad:'새콤달콤하게 해달랬는데 밋밋해요. (설탕 + 식초)'},
+  pepper:{t:'후추 넉넉히',for:['steak'],ok:v=>gv(v,'pepper')>=.35,good:'후추를 넉넉히 갈아 향이 좋아요.',bad:'후추 넉넉히 부탁했는데 부족해요.'},
+  cheese:{t:'치즈 듬뿍',for:['aglio','pomo'],ok:v=>gv(v,'parm')>=.9,good:'파마산 치즈가 듬뿍!',bad:'치즈 듬뿍 부탁했는데 조금이에요.'},
+  nochili:{t:'안 맵게',for:['aglio'],ok:v=>gv(v,'chili')<=0,good:'요청대로 맵지 않게 만들었어요.',bad:'안 맵게 해달랬는데 고춧가루가 보여요.'},
+  noao:{t:'아오노리 빼주세요',for:['yaki'],ok:v=>gv(v,'aonori')<=0,good:'요청대로 아오노리를 뺐어요.',bad:'아오노리 빼달라고 했는데…'},
+};
+function pickReq(R){const c=Object.keys(REQS).filter(k=>REQS[k].for.includes(R.id));return c.length&&Math.random()<.38?pick(c):null;}
+
+/* freshness (FIFO lots per fridge ingredient) */
+const SHELF={kimchi:30,onion:6,ham:20,scallion:3,jjokpa:3,buchu:2,zucchini:3,carrot:6,cucumber:3,cabbage:4,pork:2,chashu:3,naruto:4,squid:1,garlic:8,beef:3};
+const tracked=id=>SHELF[id]!==undefined;
+function syncLots(){SAVE.lots=SAVE.lots||{};for(const id in SHELF){const L2=SAVE.lots[id]=SAVE.lots[id]||[],st=Math.max(0,Math.round(SAVE.stock[id]||0));let sum=L2.reduce((s,l)=>s+l.n,0);
+    if(sum<st)L2.push({d:SAVE.day,n:st-sum});while(sum>st&&L2.length){const x=Math.min(L2[0].n,sum-st);L2[0].n-=x;sum-=x;if(L2[0].n<=0)L2.shift();}}}
+function oldestAge(id){const L2=SAVE.lots&&SAVE.lots[id];return L2&&L2.length?SAVE.day-L2[0].d:null;}
+function takeLot(id){syncLots();const L2=SAVE.lots[id];if(!L2||!L2.length)return SAVE.day;const d=L2[0].d;L2[0].n--;if(L2[0].n<=0)L2.shift();return d;}
+function putLot(id,d){SAVE.lots=SAVE.lots||{};const L2=SAVE.lots[id]=SAVE.lots[id]||[];if(L2.length&&L2[0].d===d)L2[0].n++;else L2.unshift({d,n:1});}
+function spoilLots(){syncLots();const out=[];for(const id in SHELF){const L2=SAVE.lots[id];let n=0;while(L2.length&&SAVE.day-L2[0].d>SHELF[id]+2){n+=L2[0].n;L2.shift();}if(n){SAVE.stock[id]=Math.max(0,(SAVE.stock[id]||0)-n);out.push([id,n]);}}return out;}
+function freshTag(id){if(!tracked(id)||G.mode==='practice')return'';const a=oldestAge(id);if(a===null||!(G.stock[id]>0))return'';const sh=SHELF[id];
+  return a>sh?`<i class="fr-f bad">시들었어요 D+${a}</i>`:a===sh?`<i class="fr-f warn">오늘까지</i>`:a===0?`<i class="fr-f ok">오늘 입고</i>`:`<i class="fr-f">D+${a}</i>`;}
+
+/* extras applied to a served dish */
+function applyExtras(o,v,res){const R=RID[o.rid];
+  if(o.req){const q=REQS[o.req];if(q.ok(v)){if(res.total>=35)res.total=Math.min(100,res.total+6);res.notes.unshift({t:'good',s:q.good});if(G.mode==='career'){SAVE.reqOk=(SAVE.reqOk||0)+1;}}else{res.total=Math.max(0,res.total-15);res.notes.unshift({t:'bad',s:q.bad});}}
+  const ps=vPieces(v),tm=ps.reduce((s,p)=>s+(p.mass||1),0),sm=ps.filter(p=>p.stale).reduce((s,p)=>s+(p.mass||1),0);
+  if(sm>0&&tm>0){const pen=Math.round(4+sm/tm*16);res.total=Math.max(0,res.total-pen);res.notes.unshift({t:'bad',s:'신선하지 않은 재료 맛이 나요. 냉장고 재고 날짜를 확인하세요.'});}}
+
+/* upgrades */
+const UPGS=[['burner','고화력 버너','모든 화구 화력 +20%. 물이 빨리 끓어요.',40000],['nonstick','코팅 프라이팬','기름이 적어도 덜 눌어붙고, 타는 속도가 느려져요.',25000],['fan','업소용 후드','연기가 금방 빠져서 경보가 잘 안 울려요.',30000],['knife','장인 식칼','칼질이 더 빠르고 손떨림이 적어요.',20000]];
+function renderUpgrades(list){const h=document.createElement('div');h.className='up-box';h.innerHTML='<h4>주방 업그레이드 <small>한 번 사면 계속 적용돼요</small></h4>';
+  for(const [id,n,d,price] of UPGS){const own=!!SAVE.up[id],row=document.createElement('div');row.className='up-row'+(own?' own':'');
+    row.innerHTML=`<b>${n}</b><span>${d}</span><em>${own?'보유 중':won(price)}</em><button type="button" ${own||SAVE.money<price?'disabled':''}>${own?'✓':'구매'}</button>`;
+    row.querySelector('button').onclick=()=>{if(own||SAVE.money<price)return;SAVE.money-=price;SAVE.up[id]=true;if(G&&G.day)G.day.spend+=price;if(id==='burner'&&G)for(const b of G.burners)b.P=BURN[b.i].P*1.2;writeSave();AU.cash();toast('🔧',`${n} 설치 완료!`,d);openMarket();hudTick();};h.appendChild(row);}
+  list.appendChild(h);}
+
+/* achievements & toasts */
+const ACH=[['first','첫 손님','첫 요리를 서빙했어요'],['s90','셰프의 한 접시','90점 이상 받기'],['combo5','단골 제조기','5연속 호평'],['srv50','바쁜 주방','누적 50그릇 서빙'],['req5','세심한 사장님','손님 요청 5번 들어주기'],['all','메뉴 마스터','모든 메뉴 70점 이상'],['rich','부자 사장님','잔고 200,000원 달성'],['day7','일주일 개근','DAY 7 도달']];
+function toast(ic,t,s,cls){let box=$('#toasts');if(!box){box=document.createElement('div');box.id='toasts';$('#served').parentNode.appendChild(box);}
+  const d=document.createElement('div');d.className='toast '+(cls||'');d.innerHTML=`<i>${ic}</i><div><b>${t}</b>${s?`<span>${s}</span>`:''}</div>`;box.appendChild(d);setTimeout(()=>d.classList.add('out'),cls==='long'?6500:4200);setTimeout(()=>d.remove(),cls==='long'?7000:4700);}
+function checkAch(lastScore){SAVE.ach=SAVE.ach||{};const A=SAVE.ach,got=[];const on=(k,c)=>{if(!A[k]&&c){A[k]=SAVE.day;got.push(k);}};
+  on('first',SAVE.served>=1);on('s90',lastScore>=90);on('combo5',G&&G.combo>=5);on('srv50',SAVE.served>=50);on('req5',(SAVE.reqOk||0)>=5);on('all',REC.every(r=>(SAVE.best[r.id]||0)>=70));on('rich',SAVE.money>=200000);on('day7',SAVE.day>=7);
+  if(got.length){writeSave();for(const k of got){const a=ACH.find(x=>x[0]===k);toast('🏆','업적 달성 · '+a[1],a[2],'ach');}if(AU.ding)AU.ding();}}
+function dayBanner(resumed){const n=SAVE.day,news=REC.filter(r=>SAVE.dlc[r.dlc]!==false&&(UNLOCK[r.id]||1)===n&&n>1);
+  if(resumed)toast('↺',`DAY ${n} 이어서 영업`,'조리 중이던 음식은 정리해 두었어요.','long');
+  if(news.length&&!resumed)toast('🍽️','새 메뉴 해금!',news.map(r=>r.n).join(' · '),'long');
+  if(G.day.special){const R=RID[G.day.special];toast('★',`오늘의 특선: ${R.n}`,`주문이 더 자주 들어오고 가격 +30%`,'long');}}
+
+/* mid-day save */
+function midSave(){if(!G||G.mode!=='career'||!G.started||G.dayEnded||!G.day)return;const D=G.day;
+  SAVE.mid={day:SAVE.day,t:D.t,rev:D.rev,tips:D.tips,spend:D.spend,served:D.served,fail:D.fail,scores:D.scores,special:D.special,gas:G.gas,combo:G.combo,closeCap:!!G.closeCap,
+    orders:G.orders.map(o=>({rid:o.rid,left:o.left,pat:o.pat,opt:o.opt,name:o.name,table:o.table,special:o.special,req:o.req}))};writeSave();}
+addEventListener('visibilitychange',()=>{if(document.hidden)midSave();});addEventListener('pagehide',midSave);
 
 /* ---------- tutorial & kitchen tour ---------- */
 const CWN=['냄비','편수냄비','큰 팬','작은 팬'];
@@ -1643,6 +1821,7 @@ const cwHas=(i,t)=>G.cw[i].items.some(o=>o.type===t);
 const vHas=(v,t)=>v.items.some(o=>o.type===t);
 const liq=i=>G.cw[i].liq;
 const St=(t,d,hl,ok,tag)=>({t,d,hl,ok,tag});
+const OPT=(c,sec)=>{const f=()=>{try{if(c())return true;}catch(e){}return G.t-(TUT.t0||0)>(sec||10);};f.opt=1;return f;};
 const T_=(w,a,b)=>josa(w,a,b);
 const tFridge=(id,name)=>St(`냉장고에서 ${T_(name,'을','를')} 꺼내요`,'왼쪽 위 냉장고를 클릭하면 문이 열려요. 칸을 누르면 손에 들려요.',[{k:'fridge'}],()=>(G.held&&G.held.id===id)||any(id)||ALLC().some(c=>c.noodles.some(n=>n.type===id)),'냉장고');
 const tBoard=(id,name)=>St(`${T_(name,'을','를')} 도마에 올려요`,'도마 위 아무 곳이나 클릭하면 내려놓아요.',[{k:'board'}],()=>any(id)&&!(G.held&&G.held.id===id),'여기에 클릭');
@@ -1686,7 +1865,7 @@ const TUTS={
     tFridge('egg','계란'),St('계란을 팬에 깨 넣어요','큰 팬 위를 클릭해요.',[{k:'cw',i:2}],()=>G.cw[2].eggs.length>0||any('curd'),'클릭'),
     ...tSpatStir(2,'뒤집개로 휘저어 스크램블',()=>any('curd')),tHand(),tFridge('rice','찬밥'),St('밥을 팬에 부어요','큰 팬 위를 클릭해요.',[{k:'cw',i:2}],()=>G.cw[2].items.filter(o=>o.kind==='grain').length>100,'클릭'),
     ...tSpatStir(2,'밥을 풀어가며 볶아요',()=>{const g=G.cw[2].items.filter(o=>o.kind==='grain');return g.length&&g.reduce((s,o)=>s+o.stick,0)/g.length<.35;}),tHand(),
-    tShake('salt',[{k:'cw',i:2}],'소금으로 간해요',()=>G.cw[2].items.some(o=>o.kind==='grain'&&o.coat.salt>.003)),...tSpatStir(2,'한 번 더 골고루 볶아요',()=>true),tHand(),
+    tShake('salt',[{k:'cw',i:2}],'소금으로 간해요',()=>G.cw[2].items.some(o=>o.kind==='grain'&&o.coat.salt>.003)),...tSpatStir(2,'한 번 더 골고루 볶아요',OPT(()=>false,5)),tHand(),
     tPanTo(2,'plate','접시에 담아요',()=>G.plate.items.some(o=>o.kind==='grain')),tServe()],
   janchi:()=>[tWater(0,900),tFire(0,true),tFridge('zucchini','애호박'),tBoard('zucchini','애호박'),tKnife(),tSlice('zucchini','애호박',6,900,'애호박을 도마에서 오른쪽 클릭으로 세로로 돌린 뒤 길게 얇게(채) 썰어요.'),tHand(),
     tFridge('anchovy','멸치육수'),St('멸치육수를 편수냄비에 부어요','편수냄비(손잡이 긴 작은 냄비) 위에서 누르고 있어요. 다 부었으면 오른쪽 클릭으로 냉장고에 넣어요.',[{k:'cw',i:1}],()=>liq(1)&&liq(1).vol>=300,'편수냄비'),
@@ -1697,14 +1876,14 @@ const TUTS={
     tBoil(0),...tNoodlePantry('somyeon','소면',0),...tStirNoodle(0),tHand(),tNoodleDone(0,.93),...tDrain(0),St('면이 차가워질 때까지 헹궈요','찬물을 계속 틀어 두면 면 온도가 뚝 떨어져요.',[{k:'strainer'}],()=>G.strainer.noodles.some(n=>n.T<16),'차갑게'),
     tStrainerTo('bowl','면을 그릇에 담아요'),tFridge('kbroth','김치말이 육수'),St('육수를 그릇에 부어요','그릇 위에서 누르고 있어요.',[{k:'bowl'}],()=>G.bowl.liq&&G.bowl.liq.vol>=200,'그릇'),
     tFridge('ice','얼음'),St('얼음을 넣어요','그릇을 클릭해요. 살얼음처럼 시원해야 해요.',[{k:'bowl'}],()=>G.bowl.ice.length>0,'얼음'),tDump([{k:'bowl'}],'김치와 오이를 올려요',()=>vHas(G.bowl,'kimchi')),
-    tPour('ses',[{k:'bowl'}],'참기름 한 방울 (선택)',()=>true),tServe()],
+    tPour('ses',[{k:'bowl'}],'참기름 한 방울 (선택)',OPT(()=>G.bowl.fluid.some(q=>q.k==='ses'))),tShake('sugar',[{k:'bowl'}],'설탕 한 꼬집 (선택)',OPT(()=>(G.bowl.flav.sweet||0)>.8)),tPour('vinegar',[{k:'bowl'}],'식초 조금 — 새콤하게 (선택)',OPT(()=>(G.bowl.flav.sour||0)>3)),tServe()],
   bibim:()=>[tWater(0,900),tFire(0,true),tFridge('cucumber','오이'),tBoard('cucumber','오이'),tKnife(),tSlice('cucumber','오이',4,900,'오른쪽 클릭으로 도마를 돌려 오이를 길게 채 썰어요.'),tHand(),
     tBoil(0),tFridge('egg','계란'),St('계란을 껍질째 냄비 가운데에','냄비 가운데를 클릭하면 껍질째 퐁당. (가장자리를 클릭하면 깨져 들어가요)',[{k:'cw',i:0}],()=>G.cw[0].beggs.length>0,'가운데'),
     ...tNoodlePantry('somyeon','소면',0),...tStirNoodle(0),tHand(),tNoodleDone(0,.93),...tDrain(0),
     St('체에서 계란을 집어 도마에','빈손으로 체 안의 계란을 클릭하면 집혀요. 도마를 클릭하면 껍질이 까져서 올라가요.',[{k:'strainer'},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='begg'),'계란'),tKnife(),St('계란을 반으로 잘라요','칼로 계란 가운데를 한 번 클릭.',[{k:'board'}],()=>allItems().some(o=>o.type==='begg'&&o.area<o.orig*.8),'반으로'),tHand(),
     tStrainerTo('bowl','면을 그릇에 담아요'),tPour('bibim',[{k:'bowl'}],'비빔장 40ml 정도',()=>G.bowl.fluid.some(q=>q.k==='bibim')||G.bowl.noodles.some(n=>n.coat.sauce>5)),
     tTool('chop','긴 젓가락으로 비벼요.'),St('골고루 비벼요','그릇 안을 누른 채 휘저어요. 면이 빨갛게 고루 물들 때까지!',[{k:'bowl'}],()=>G.bowl.noodles.some(n=>n.mixEven>.6),'비비기'),tHand(),
-    tDump([{k:'bowl'}],'오이와 계란을 올려요',()=>vHas(G.bowl,'cucumber')),tShake('sesame',[{k:'bowl'}],'통깨 솔솔',()=>(G.bowl.garn||{}).sesame>.2),tServe()],
+    tDump([{k:'bowl'}],'오이와 계란을 올려요',()=>vHas(G.bowl,'cucumber')),tShake('sesame',[{k:'bowl'}],'통깨 솔솔',()=>(G.bowl.garn||{}).sesame>.2),tShake('sugar',[{k:'bowl'}],'설탕 한 꼬집 (선택)',OPT(()=>(G.bowl.flav.sweet||0)>.8)),tPour('vinegar',[{k:'bowl'}],'식초 조금 — 새콤달콤하게 (선택)',OPT(()=>(G.bowl.flav.sour||0)>3)),tServe()],
   ramyeon:()=>[tWater(0,550),tFire(0,true),tFridge('scallion','대파'),tBoard('scallion','대파'),tKnife(),tSlice('scallion','대파',5,460),tHand(),tBoil(0),...tNoodlePantry('ramyeon','라면',0),
     St('스프를 넣어요','면을 넣으면 손에 스프 봉지가 들려요. 냄비를 클릭해요.',[{k:'cw',i:0}],()=>liq(0)&&liq(0).spicy>3,'스프'),...tStirNoodle(0),tHand(),
     tFridge('egg','계란'),St('계란을 냄비 가장자리에 톡','냄비 가장자리를 클릭하면 깨져서 들어가요.',[{k:'cw',i:0}],()=>G.cw[0].eggs.length>0,'가장자리'),tDump([{k:'cw',i:0}],'파를 넣어요',()=>cwHas(0,'scallion')),
@@ -1717,7 +1896,7 @@ const TUTS={
     tPour('tsuyu',[{k:'cw',i:1}],'쯔유로 간해요',()=>liq(1)&&saltPct(liq(1))>1),tFire(1),tFridge('scallion','대파'),tBoard('scallion','대파'),tKnife(),tSlice('scallion','대파',4,460),tHand(),
     tFridge('naruto','어묵'),tBoard('naruto','어묵'),tKnife(),tSlice('naruto','어묵',3,400,'어묵을 얇게 썰면 단면에 분홍 소용돌이가 보여요.'),tHand(),tBoil(0),...tNoodleFridge('udon','냉동 우동',0),...tStirNoodle(0),
     tNoodleDone(0,.92,'면이 익을 때까지 (냉동이라 조금 걸려요)'),St('젓가락으로 면을 건져 그릇에','긴 젓가락으로 면을 짧게 클릭하면 집혀요. 그다음 그릇을 클릭해요.',[{k:'cw',i:0},{k:'bowl'}],()=>G.bowl.noodles.length>0,'건지기'),tHand(),
-    tPanTo(1,'bowl','국물을 부어요',()=>G.bowl.liq&&G.bowl.liq.vol>150),tDump([{k:'bowl'}],'파와 어묵을 올려요',()=>vHas(G.bowl,'naruto')),tShake('shichimi',[{k:'bowl'}],'시치미 솔솔 (선택)',()=>true),tServe()],
+    tPanTo(1,'bowl','국물을 부어요',()=>G.bowl.liq&&G.bowl.liq.vol>150),tDump([{k:'bowl'}],'파와 어묵을 올려요',()=>vHas(G.bowl,'naruto')),tShake('shichimi',[{k:'bowl'}],'시치미 솔솔 (선택)',OPT(()=>((G.bowl.garn||{}).shichimi||0)>.05)),tServe()],
   shoyu:()=>[tWater(0,900),tFire(0,true),tBoil(0),tFridge('egg','계란'),St('계란을 껍질째 냄비 가운데에','냄비 가운데를 클릭해요.',[{k:'cw',i:0}],()=>G.cw[0].beggs.length>0,'가운데'),
     tFridge('rstock','라멘 육수'),St('라멘 육수를 편수냄비에','편수냄비 위에서 누르고 있어요.',[{k:'cw',i:1}],()=>liq(1)&&liq(1).vol>=300,'편수냄비'),tPour('shoyu',[{k:'cw',i:1}],'쇼유 타레로 간해요',()=>liq(1)&&saltPct(liq(1))>1.1),tFire(1),
     tFridge('chashu','차슈'),tBoard('chashu','차슈'),tKnife(),tSlice('chashu','차슈',2,2000,'차슈를 1cm 두께로 도톰하게.'),tHand(),
@@ -1731,7 +1910,7 @@ const TUTS={
     tPour('water',[{k:'cw',i:2}],'물을 조금 부어 면을 풀어요',()=>G.cw[2].noodles.some(n=>n.stick<.6),'물 주전자로 1~2초만.'),...tSpatStir(2,'면을 풀어가며 볶아요',()=>G.cw[2].noodles.every(n=>n.stick<.3)),tHand(),
     tPour('ysauce',[{k:'cw',i:2}],'야키소바 소스를 둘러요',()=>G.cw[2].noodles.some(n=>n.coat.sauce>8)),...tSpatStir(2,'소스가 고루 묻게 볶아요',()=>G.cw[2].noodles.some(n=>n.coat.sauce>20)),tHand(),
     tPanTo(2,'plate','접시에 담아요',()=>G.plate.noodles.length>0),tShake('aonori',[{k:'plate'}],'아오노리 솔솔',()=>(G.plate.garn||{}).aonori>.1),tServe()],
-  steak:()=>[tFridge('beef','소고기 등심'),tBoard('beef','소고기'),tShake('salt',[{k:'board'}],'고기에 소금을 뿌려요',()=>allItems().some(o=>o.type==='beef'&&o.coat.salt>.005)),tShake('pepper',[{k:'board'}],'후추도 솔솔 (선택)',()=>true),
+  steak:()=>[tFridge('beef','소고기 등심'),tBoard('beef','소고기'),tShake('salt',[{k:'board'}],'고기에 소금을 뿌려요',()=>allItems().some(o=>o.type==='beef'&&o.coat.salt>.005)),tShake('pepper',[{k:'board'}],'후추도 솔솔 (선택)',OPT(()=>allItems().some(o=>o.type==='beef'&&o.spice>0))),
     tFire(2,true),tPour('oil',[{k:'cw',i:2}],'큰 팬에 기름',()=>G.cw[2].oilAmt>=2),tWait(2,'팬을 뜨겁게 (200°C)','연기가 살짝 날 만큼 뜨거워야 크러스트가 생겨요.',()=>G.cw[2].T>=200,'200°C'),
     St('고기를 손으로 잡아 팬에','빈손으로 도마 위 고기를 잡고 큰 팬으로 끌어다 놓아요.',[{k:'board'},{k:'cw',i:2}],()=>cwHas(2,'beef'),'끌기'),
     tWait(2,'아랫면에 갈색 크러스트가 생길 때까지','',()=>G.cw[2].items.some(o=>o.type==='beef'&&o.face[o.down]>.6),'크러스트'),tTool('spatula','뒤집개로 뒤집어요.'),
@@ -1751,7 +1930,7 @@ function jeonTut(id,name,cut,press){return[tFridge(id,name),tBoard(id,name),tKni
   ...(press?[tTool('spatula','뒤집개로 꾹 눌러요.'),St('뒤집개로 꾹 눌러 얇게','전 위를 누른 채 가만히 있으면 얇게 펴져요.',[{k:'cw',i:2}],()=>G.cw[2].jeons.some(j=>j.thick<j.thick0*.9),'꾹')]:[tTool('spatula','뒤집개로 전을 뒤집어요.')]),
   tWait(2,'아랫면이 노릇해질 때까지','윗면 반죽이 굳어 가고 가장자리가 갈색이 되면 뒤집을 때예요. 너무 일찍 뒤집으면 찢어져요.',()=>G.cw[2].jeons.some(j=>j.fb[0]>.5&&j.set>.5),'노릇'),
   St('뒤집어요','전을 짧게 클릭하면 뒤집혀요. (팬 손잡이를 탁 클릭하는 공중 뒤집기도 가능!)',[{k:'cw',i:2}],()=>G.cw[2].jeons.some(j=>j.down===1),'뒤집기'),tHand(),
-  tPour('oil',[{k:'cw',i:2}],'가장자리에 기름을 한 번 더 (선택)',()=>true),tWait(2,'반대쪽도 노릇하게','',()=>G.cw[2].jeons.some(j=>j.fb[1]>.5),'노릇'),tPanTo(2,'plate','접시에 담아요',()=>G.plate.jeons.length>0),tServe()];}
+  tPour('oil',[{k:'cw',i:2}],'가장자리에 기름을 한 번 더 (선택)',OPT(()=>false,8)),tWait(2,'반대쪽도 노릇하게','',()=>G.cw[2].jeons.some(j=>j.fb[1]>.5),'노릇'),tPanTo(2,'plate','접시에 담아요',()=>G.plate.jeons.length>0),tServe()];}
 function pastaTut(tom){return[tWater(0,900),tShake('salt',[{k:'cw',i:0}],'물에 소금을 넉넉히 (약 1%)',()=>liq(0)&&saltPct(liq(0))>.6),tFire(0,true),tFridge('garlic','마늘'),tBoard('garlic','마늘'),tKnife(),tSlice('garlic','마늘',5,400,'마늘을 얇게 편 썰기.'),tHand(),
   ...(tom?[tFridge('onion','양파'),tBoard('onion','양파'),tKnife(),tDice('onion','양파',6,700),tHand()]:[]),
   tBoil(0),...tNoodlePantry('spaghetti','스파게티',0),...tStirNoodle(0),tHand(),tFire(2),tPour('olive',[{k:'cw',i:2}],'큰 팬에 올리브유',()=>G.cw[2].oilAmt>=4),
@@ -1760,14 +1939,14 @@ function pastaTut(tom){return[tWater(0,900),tShake('salt',[{k:'cw',i:0}],'물에
   tNoodleDone(0,.85,'면이 알 덴테가 될 때까지 (약 50초)'),tTool('ladle','국자로 면수를 떠요.'),St('면수를 한 국자 팬에','국자로 냄비를 짧게 클릭하면 떠지고, 팬을 클릭하면 부어요.',[{k:'cw',i:0},{k:'cw',i:2}],()=>G.cw[2].fluid.some(q=>q.k==='pastaw'||q.k==='emul')||G.cw[2].liq,'국자'),
   tTool('chop','긴 젓가락으로 면을 옮겨요.'),St('면을 건져 팬으로','면을 짧게 클릭해 집고 큰 팬을 클릭해요.',[{k:'cw',i:0},{k:'cw',i:2}],()=>G.cw[2].noodles.length>0,'건지기'),tHand(),
   St('팬 손잡이를 탁탁 쳐서 버무려요','손잡이를 여러 번 짧게 클릭하면 팬이 튀겨지며 면수와 기름이 섞여 소스가 돼요.',[{k:'handle',i:2}],()=>G.cw[2].noodles.some(n=>n.coat.sauce>(tom?15:5)),'탁탁'),
-  tPanTo(2,'plate','접시에 담아요',()=>G.plate.noodles.length>0),tShake(tom?'parm':'parsley',[{k:'plate'}],tom?'파마산 솔솔':'파슬리 솔솔',()=>true),tServe()];}
+  tPanTo(2,'plate','접시에 담아요',()=>G.plate.noodles.length>0),tShake(tom?'parm':'parsley',[{k:'plate'}],tom?'파마산 솔솔':'파슬리 솔솔',OPT(()=>((G.plate.garn||{})[tom?'parm':'parsley']||0)>.05)),tServe()];}
 function tutStart(rid){const f=TUTS[rid];if(!f)return;TUT.on=true;TUT.kind='recipe';TUT.steps=f();TUT.i=0;$('#rail').hidden=true;$('#recipePop').hidden=true;renderTut();}
 function tutStop(){TUT.on=false;$('#tut').hidden=true;$('#tour').hidden=true;$('#rail').hidden=false;}
-function tutTick(){if(!TUT.on||TUT.kind!=='recipe')return;const s=TUT.steps[TUT.i];if(!s)return;let ok=false;try{ok=s.ok();}catch(e){}
+function tutTick(){if(!TUT.on||TUT.kind!=='recipe')return;const s=TUT.steps[TUT.i];if(!s)return;if(TUT.ti!==TUT.i){TUT.ti=TUT.i;TUT.t0=G.t;}let ok=false;try{ok=s.ok();}catch(e){}
   if(ok){const q=s.hl&&s.hl.length?tgtOf(s.hl[s.hl.length-1]):null;TUT.i++;AU.ding();if(q)floatText(pick(['좋아요!','잘했어요!','완벽해요!','그렇죠!']),q.x,q.y-40,'#ffe9a0',26);renderTut();}}
 function renderTut(){const el=$('#tut');if(!TUT.on||TUT.kind!=='recipe'){el.hidden=true;return;}const s=TUT.steps[TUT.i],n=TUT.steps.length;
   el.innerHTML=`<div class="tt-h"><span>가이드 ${Math.min(TUT.i+1,n)} / ${n}</span><span class="tt-b"><button type="button" id="ttPrev">이전</button><button type="button" id="ttNext">건너뛰기</button><button type="button" id="ttOff">끄기</button></span></div>
-    <div class="tt-bar"><i style="width:${(TUT.i/n*100).toFixed(0)}%"></i></div><b>${s?s.t:'완성!'}</b><p>${s?s.d:''}</p>`;el.hidden=false;
+    <div class="tt-bar"><i style="width:${(TUT.i/n*100).toFixed(0)}%"></i></div><b>${s?s.t:'완성!'}</b><p>${s?s.d:''}${s&&s.ok&&s.ok.opt?'<br><small style="opacity:.7">해도 되고 안 해도 돼요 — 잠시 뒤 자동으로 넘어가요.</small>':''}</p>`;el.hidden=false;
   $('#ttPrev').onclick=()=>{TUT.i=Math.max(0,TUT.i-1);renderTut();};$('#ttNext').onclick=()=>{TUT.i=Math.min(n-1,TUT.i+1);renderTut();};$('#ttOff').onclick=()=>{tutStop();$('#recipePop').hidden=false;renderSteps();};}
 
 /* kitchen tour */
@@ -1803,9 +1982,9 @@ function renderTour(){const el=$('#tour'),s=TUT.steps[TUT.i],n=TUT.steps.length,
 function tourEnd(){TUT.on=false;$('#tour').hidden=true;if(TUT.fromTitle){TUT.fromTitle=false;$('#title').hidden=false;}SAVE.toured=true;writeSave();if(G)G.paused=false;if(G&&G.pendingGuide){const r=G.pendingGuide;G.pendingGuide=null;tutStart(r);}}
 
 /* ---------- tools & held ---------- */
-function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
+function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
   if(t==='knife')AU.nz({f:5000,f2:9000,type:'highpass',a:.02,d:.22,v:.18});else if(t!=='hand')AU.tone({f:300,f2:220,d:.06,v:.12});else if(prev==='knife'){AU.tone({f:1900,d:.25,v:.05});AU.nz({f:3500,d:.03,v:.12});}else AU.place();updateCursor();}
-function returnHeld(){const h=G.held;if(!h)return;if(G.mode!=='practice'){if(h.src==='fridge'||h.src==='pantry')G.stock[h.id]=(G.stock[h.id]||0)+1;}G.held=null;AU.pick();}
+function returnHeld(){const h=G.held;if(!h)return;if(G.mode!=='practice'){if(h.src==='fridge'||h.src==='pantry'){G.stock[h.id]=(G.stock[h.id]||0)+1;if(h.lotD!==undefined&&h.lotD!==null)putLot(h.id,h.lotD);}}G.held=null;AU.pick();}
 function pickPantry(p){if(G.held)returnHeld();setTool('hand');
   if(p.kind==='noodle'){if(G.mode!=='practice'&&(G.stock[p.id]||0)<=0){floatText('재고가 없어요 — 장보기',p.x,120,'#ffd0b0',20);return;}if(G.mode!=='practice')G.stock[p.id]--;G.held={kind:'noodle',id:p.id,nt:p.nt,src:'pantry'};}
   else if(p.kind==='bottle')G.held={kind:'bottle',id:p.id,tilt:0,active:false,poured:0,flow:0};
@@ -1851,6 +2030,7 @@ function toLocal(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.lef
 cv.addEventListener('pointerdown',e=>{if(!G||!G.started||G.paused)return;AU.init();try{cv.setPointerCapture(e.pointerId);}catch(_){}
   const q=toLocal(e),x=q.x,y=q.y;M.x=M.px=x;M.y=M.py=y;M.down=true;M.inside=true;e.preventDefault();G.spat.x=x;G.spat.y=y;
   if(e.button===2){if(G.held)returnHeld();else if(G.ladle)G.ladle=null;else rotateBoard();return;}
+  if(e.button===1){e.preventDefault();if(G.tool==='hand')setTool(G.lastTool||'knife');else setTool('hand');return;}
   const kb=knobAt(x,y);if(kb){G.drag={kind:'knob',b:kb,sy:y,sl:kb.level,moved:false};return;}
   if(!G.held&&inFridge(x,y)){openFridge();return;}
   const rk=!G.held?rackAt(x,y):null;if(rk){if(rk==='rack'||rk===G.tool)setTool('hand');else setTool(rk);return;}
@@ -1861,17 +2041,22 @@ cv.addEventListener('pointerdown',e=>{if(!G||!G.started||G.paused)return;AU.init
   const t=G.tool,c=contAt(x,y);
   if(t==='hand'){const rc=rimAt(x,y);if(rc){G.drag={kind:'cont',c:rc,ox:rc.x-x,oy:rc.y-y,sx:x,sy:y,t0:G.t,moved:false};return;}
     if(x>L.board.x&&x<L.board.x+L.board.w&&y>L.board.y&&y<L.board.y+L.board.h){if(boardGrabbable(x,y)&&G.board.pieces.length){G.drag={kind:'board',sx:x,sy:y};AU.slide();return;}const got=grabBoard(x,y);if(got){G.drag={kind:'handful',pieces:got};AU.pick();}return;}
+    if(!c&&!inSink(x,y)&&y>230){G.drag={kind:'wipe'};wipeAt(x,y);return;}
     if(c){const hot=c.cook&&(c.T>55||(c.liq&&c.liq.T>55));const be=c.beggs.find(b=>dist(b.x,b.y,x-c.x,y-c.y)<24);if(be&&!hot){c.beggs.splice(c.beggs.indexOf(be),1);G.held={kind:'begg',egg:be};AU.pick();return;}
       if(hot){floatText('앗, 뜨거!',x,y-24,'#ffb38a',26);AU.hot();return;}
       const got=c.items.filter(o=>o.kind==='piece'&&dist(o.x,o.y,x-c.x,y-c.y)<40);if(got.length&&(c.kind==='prep'||c.kind==='strainer'||c.kind==='plate'||c.kind==='bowl'||c.cook)){c.items=c.items.filter(o=>!got.includes(o));for(const o of got){o.x+=c.x;o.y+=c.y;o.ox=o.x-x;o.oy=o.y-y;}G.drag={kind:'handful',pieces:got};AU.pick();}}}
-  else if(t==='knife'){if(inBoard(x,y))chop(x,y);}
+  else if(t==='knife'){if(inBoard(x,y)){chop(x,y);G.knife.lx=x;}}
   else if(t==='spatula'||t==='chop'||t==='ladle'){if(c){const s=G.spat;s.down=true;s.c=c;s.pressT=G.t;s.moved=0;G.drag={kind:'spat'};}
     else if(t==='ladle'&&G.ladle&&G.ladle.begg&&inBoard(x,y)){const p=newPiece('begg',x,y);p.yolk=G.ladle.begg.yolk;p.T=G.ladle.begg.T;G.board.pieces.push(p);G.ladle=null;AU.place();}}});
 cv.addEventListener('pointermove',e=>{const q=toLocal(e);M.x=q.x;M.y=q.y;M.inside=true;if(!G||!G.started)return;const d=G.drag;
   if(d){if(d.kind==='knob'){if(Math.abs(q.y-d.sy)>3)d.moved=true;if(d.moved)setLevel(d.b,d.sl+(d.sy-q.y)/140);}
     else if(d.kind==='cont'){const c=d.c;if(!d.moved&&dist(q.x,q.y,d.sx,d.sy)>7){d.moved=true;c.drag=true;c.ret=false;c.lx=c.x;c.ly=c.y;c.pvx=c.pvy=0;AU.nz({f:2500,d:.05,v:.1});}if(d.moved){c.x=clamp(q.x+d.ox,40,W-40);c.y=clamp(q.y+d.oy,40,H-40);}}
-    else if(d.kind==='board'){G.board.ox=q.x-d.sx;G.board.oy=q.y-d.sy;}}
+    else if(d.kind==='board'){G.board.ox=q.x-d.sx;G.board.oy=q.y-d.sy;}
+    else if(d.kind==='wipe')wipeAt(q.x,q.y);
+    else if(d.kind==='spat'&&G.tool==='knife'){}}
+  if(G.tool==='knife'&&M.down&&!G.drag&&!G.held&&inBoard(q.x,q.y)&&Math.abs(q.x-(G.knife.lx||-99))>=9){const sp=Math.hypot(M.vx,M.vy),jit=(Math.random()-.5)*Math.min(8,sp/220)*((SAVE.up||{}).knife?.4:1);chop(q.x+jit,q.y);G.knife.lx=q.x;}
   updateCursor();});
+function wipeAt(x,y){let n=0;G.counter.fluid=G.counter.fluid.filter(q=>{if(dist(q.x,q.y,x,y)<38){n++;return false;}return true;});STX.save();STX.globalCompositeOperation='destination-out';STX.fillStyle='rgba(0,0,0,.25)';STX.beginPath();STX.arc(x,y,26,0,TAU);STX.fill();STX.restore();if(n&&Math.random()<.3){AU.nz({f:2200,d:.08,v:.06});}if(n&&Math.random()<.08)floatText('뽀득',x,y-20,'#e8f4ff',18);}
 function setLevel(b,v){const was=b.level>.001;b.level=clamp(v,0,1);const now=b.level>.001;if(!was&&now){b.ign=.3;b.lit=false;AU.ignite();}if(was&&!now){b.lit=false;b.ign=0;AU.click();b.level=0;}}
 function dropPieces(L2,x,y,spread,fromBoard){const c=contAt(x,y);
   if(c&&(c.kind==='bowl'||c.kind==='plate'||c.kind==='prep')){const R=Math.min(c.r*.55,14+Math.sqrt(L2.length)*9),cx=c.x+(x-c.x)*.45,cy=c.y+(y-c.y)*.45;for(const o of L2){const a=rand(0,TAU),r=Math.sqrt(Math.random())*R;o.rot=rand(0,TAU);addItem(c,o,cx+Math.cos(a)*r,cy+Math.sin(a)*r);}AU.place();return true;}
@@ -1883,7 +2068,7 @@ function endPointer(){M.down=false;if(!G||!G.started)return;const d=G.drag,x=M.x
   if(d.kind==='knob'){if(!d.moved)setLevel(d.b,d.b.level>0?0:.62);}
   else if(d.kind==='cont'){const c=d.c;if(!d.moved){if(c.kind==='pan'&&G.t-d.t0<.4)toss(c);else if(c.cook&&G.t-d.t0<.4){c.agit=1;for(const n of c.noodles)n.stick=Math.max(0,n.stick-.1);AU.splash(.15,c.x);}return;}
     c.drag=false;if(inTrash(x,y))trashCont(c);else if(inBoard(x,y)&&c.items.some(o=>o.kind==='piece')){const ps=c.items.filter(o=>o.kind==='piece');c.items=c.items.filter(o=>o.kind!=='piece');for(const o of ps){o.x=clamp(x+o.x*.5,L.board.x+30,L.board.x+L.board.w-30);o.y=clamp(y+o.y*.5,L.board.y+30,L.board.y+L.board.h-30);o.flipT=0;o.z=0;if(o.L)o.offT=G.t;G.board.pieces.push(o);}AU.place();}else if(c.kind!=='strainer'&&inSink(x,y)&&!(G.sink.tap&&c.cook&&c.kind!=='pan'&&contEmpty(c))){if(!contEmpty(c))pourAll(c,G.strainer);}
-    else{const t=contAt(x,y,c);if(t&&t!==c){if(c.kind==='mix')pourBatter(c,t);else pourAll(c,t);}}c.ret=true;}
+    else{const t=contAt(x,y,c);if(t&&t!==c){if(c.cook&&t.cook&&(contEmpty(c)||contEmpty(t))){const b=c.burner;c.burner=t.burner;t.burner=b;[c.hx,t.hx]=[t.hx,c.hx];[c.hy,t.hy]=[t.hy,c.hy];t.ret=true;AU.clank();floatText('화구를 바꿨어요',t.hx,t.hy-40,'#ffe9a0',22);}else if(c.kind==='mix')pourBatter(c,t);else pourAll(c,t);}}c.ret=true;}
   else if(d.kind==='board'){const ox=G.board.ox,oy=G.board.oy,B=G.board.pieces;G.board.ox=G.board.oy=0;if(!B.length||Math.hypot(ox,oy)<30)return;
     let cx=0,cy=0;for(const p of B){cx+=p.x;cy+=p.y;}cx/=B.length;cy/=B.length;for(const p of B){p.ox=p.x-cx;p.oy=p.y-cy;}
     if(dropPieces(B,x,y,.3,true)){G.board.pieces=[];AU.slide();floatText('도마째 탈탈!',x,y-50,'#ffe9a0',24);}}
@@ -1908,6 +2093,7 @@ function updateCursor(){if(!G)return;let c='default';const x=M.x,y=M.y;
   else if(G.tool==='hand')c=(inBoard(x,y)&&G.board.pieces.length)?'grab':'default';else c='none';cv.style.cursor=c;}
 addEventListener('keydown',e=>{if(!G||!G.started||G.paused)return;const k=e.code,T=['hand','knife','spatula','chop','ladle','probe'];
   if(/^Digit[1-6]$/.test(k))setTool(T[Number(k[5])-1]);else if(k==='KeyR')rotateBoard();else if(k==='Space'){e.preventDefault();const c=contAt(M.x,M.y);toss(c&&c.kind==='pan'?c:G.cw[2]);}
+  else if(k==='KeyQ'){if(G.tool==='hand')setTool(G.lastTool||'knife');else setTool('hand');}
   else if(k==='Escape'){returnHeld();G.ladle=null;}else if(k==='KeyF')openFridge();else return;updateCursor();});
 
 /* ---------- boot ---------- */
