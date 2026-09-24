@@ -300,4 +300,35 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.menu-grid .btn2{padding:12px 8px;font-size:15px}
 .menu-foot{display:flex;justify-content:space-between;gap:6px;border-top:1px dashed #cdb994;padding-top:10px}.menu-foot .btn2{background:none;border:none;padding:4px 6px;font-size:13.5px;color:#8a5a3a;text-decoration:underline;text-underline-offset:3px}.menu-foot .btn2:hover{color:var(--chili)}
 .btn2{border-radius:10px;font-weight:600;transition:transform .08s,background .12s}.btn2:hover{background:#f1e4c6}.btn2:active{transform:translateY(1px)}
+/* ===== 1.4 screens + hall ===== */
+.screen{position:absolute;left:0;top:44px;width:1600px;height:956px;z-index:4;overflow:hidden;background:#1a120d}
+#stage.off-kitchen #rail,#stage.off-kitchen #recipePop,#stage.off-kitchen #serve,#stage.off-kitchen #served,#stage.off-kitchen #goals,#stage.off-kitchen #bubble,#stage.off-kitchen #alarm,#stage.off-kitchen #tut{visibility:hidden}
+#scrNav{display:flex;gap:2px;background:rgba(0,0,0,.3);border:1px solid #3a2b20;border-radius:10px;padding:3px}#scrNav[hidden]{display:none}
+#scrNav button{position:relative;display:flex;align-items:center;gap:6px;background:none;border:none;border-radius:7px;padding:5px 12px;font-size:13.5px;color:#cdbb9a}
+#scrNav button .ico{width:17px;height:17px;color:#b9a383}#scrNav button.on{background:#f0ae3a;color:#2a1a0c;font-weight:700}#scrNav button.on .ico{color:#2a1a0c}
+#scrNav .nb{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:8px;background:#e0412a;color:#fff;font-style:normal;font-size:10.5px;line-height:16px;text-align:center;padding:0 4px}
+.hall .hl-bg{position:absolute;left:0;top:0;width:1600px;height:895px;background-size:cover;background-position:center}
+.hall .hl-tables{position:absolute;inset:0}
+.ht{position:absolute;width:0;height:0;cursor:default}
+.ht-g{position:absolute;left:-52px;top:-150px;width:104px;height:104px;opacity:0;transform:translateY(16px) scale(.9);transition:opacity .35s,transform .35s;pointer-events:none}
+.ht-g img{position:absolute;inset:7px;width:90px;height:90px;border-radius:50%;background:#f1dcb4;object-fit:cover;object-position:50% 20%;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.ht-g svg{position:absolute;inset:0;width:104px;height:104px;transform:rotate(-90deg)}.ht-g circle{fill:none;stroke-width:6}.ht-g .bg{stroke:rgba(0,0,0,.25)}.ht-g .fg{stroke:#6fbf73;stroke-dasharray:289;stroke-linecap:round;transition:stroke-dashoffset .3s}
+.ht-e{position:absolute;right:-2px;bottom:4px;font-style:normal;font-size:26px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.ht-say{position:absolute;left:58px;top:-146px;white-space:nowrap;background:#fffaf0;color:#2a1d14;border-radius:14px;padding:6px 12px;font-family:'Black Han Sans',sans-serif;font-size:17px;box-shadow:0 8px 18px rgba(0,0,0,.35);opacity:0;transition:opacity .3s}
+.ht-say:empty{display:none}.ht-dish{position:absolute;left:-52px;top:-40px;width:104px;height:78px;object-fit:cover;border-radius:50%;opacity:0;transform:scale(.6);transition:opacity .3s,transform .3s;clip-path:ellipse(46% 40% at 50% 50%)}
+.ht-plate{position:absolute;left:-40px;top:-40px;width:80px;height:52px;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,#fff 0 48%,#e8e1d4 50% 64%,#fff 66%);box-shadow:0 4px 8px rgba(0,0,0,.25);opacity:0;transition:opacity .3s}
+.ht-plate::after{content:'';position:absolute;left:28px;top:18px;width:26px;height:10px;border-radius:50%;background:radial-gradient(circle,#c9853a 0 30%,transparent 32%) 0 0/8px 6px}
+.ht-tag{position:absolute;left:-18px;top:30px;width:36px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,240,220,.7);background:rgba(40,24,12,.55);border-radius:6px}
+.ht-lock{position:absolute;left:50%;top:-40px;transform:translateX(-50%);white-space:nowrap;font-size:13px;color:#fff3dc;background:rgba(20,12,8,.72);border-radius:8px;padding:4px 10px;display:none}
+.ht.locked::before{content:'';position:absolute;left:-150px;top:-80px;width:300px;height:190px;border-radius:30px;background:radial-gradient(ellipse,rgba(20,12,8,.55),rgba(20,12,8,0) 70%)}.ht.locked .ht-lock{display:block}
+.ht.s-wait .ht-g,.ht.s-eat .ht-g,.ht.s-pay .ht-g{opacity:1;transform:none;pointer-events:auto;cursor:pointer}.ht.s-wait .ht-say,.ht.s-eat .ht-say,.ht.s-pay .ht-say,.ht.s-leave .ht-say{opacity:1}
+.ht.s-leave .ht-g{opacity:0;transform:translateY(-10px) scale(.9)}.ht.s-eat .ht-dish{opacity:1;transform:none}.ht.s-dirty .ht-plate{opacity:1}
+.ht.s-dirty{cursor:pointer}.ht.s-dirty::after{content:'눌러서 치우기';position:absolute;left:50%;top:18px;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;color:#fff3dc;background:rgba(194,58,27,.85);border-radius:8px;padding:2px 8px}
+.ht.s-wait .ht-g:hover img{outline:3px solid #ffd07a}
+.hl-bar{position:absolute;left:0;right:0;bottom:0;height:61px;display:flex;align-items:center;gap:18px;padding:0 18px;background:linear-gradient(#2b1e16,#1b130e);border-top:1px solid #4a3627}
+.hl-stat{display:flex;gap:14px;font-size:14px;color:#e8dcc6}.hl-stat b{font-family:'IBM Plex Mono',monospace;color:#ffd07a}.hl-stat .warn{color:#ffb38a;font-weight:700}
+.hl-tip{flex:1;font-size:12.5px;color:#9b8670;text-align:center}.hl-tip kbd{font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:1px solid #4a3a2e;border-radius:4px;padding:0 4px}
+.hl-bar .big-btn{font-size:18px;padding:8px 20px}
+.hl-float{position:absolute;transform:translateX(-50%);font-family:'Black Han Sans',sans-serif;font-size:24px;text-shadow:0 2px 6px rgba(0,0,0,.6);animation:hlUp 1.4s ease-out forwards;pointer-events:none}
+@keyframes hlUp{from{opacity:0;transform:translate(-50%,10px)}20%{opacity:1}to{opacity:0;transform:translate(-50%,-40px)}}
 </style>
