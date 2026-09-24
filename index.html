@@ -368,7 +368,7 @@ function newPiece(type,x,y){const d=ING[type];const p={id:PID++,kind:'piece',typ
   finalize(p);if(!d.shH)d.shH=p.ey;p.orig=p.area;return p;}
 function finalize(p){const P=p.poly;let A=0,cx=0,cy=0;for(let i=0,n=P.length;i<n;i++){const a=P[i],b=P[(i+1)%n];const c=a[0]*b[1]-b[0]*a[1];A+=c;cx+=(a[0]+b[0])*c;cy+=(a[1]+b[1])*c;}A/=2;if(Math.abs(A)<1e-6){cx=P[0][0];cy=P[0][1];}else{cx/=6*A;cy/=6*A;}
   let m=0,x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const q of P){q[0]-=cx;q[1]-=cy;m=Math.max(m,Math.hypot(q[0],q[1]));x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);}
-  p.tx+=cx;p.ty+=cy;const c=Math.cos(p.rot),s=Math.sin(p.rot);p.x+=c*cx-s*cy;p.y+=s*cx+c*cy;p.area=Math.abs(A);p.r=Math.sqrt(p.area/PI);p.mass=p.area/400;p.rb=m;p.ex=x1-x0;p.ey=y1-y0;if(p.L){let bw=1e9,ba=0,bl=0;for(let k=0;k<18;k++){const a=k/18*PI,c=Math.cos(a),s=Math.sin(a);let lo=1e9,hi=-1e9,lo2=1e9,hi2=-1e9;for(const q of p.poly){const u=q[0]*c+q[1]*s,w=-q[0]*s+q[1]*c;if(u<lo)lo=u;if(u>hi)hi=u;if(w<lo2)lo2=w;if(w>hi2)hi2=w;}if(hi-lo<bw){bw=hi-lo;ba=a;bl=hi2-lo2;}}p.minW=bw;p.minA=ba;p.minL=bl;}checkDisc(p);}
+  p.tx+=cx;p.ty+=cy;const c=Math.cos(p.rot),s=Math.sin(p.rot);p.x+=c*cx-s*cy;p.y+=s*cx+c*cy;p.area=Math.abs(A);p.r=Math.sqrt(p.area/PI);p.mass=p.area/400;p.rb=m;p.ex=x1-x0;p.ey=y1-y0;{let bw=1e9,ba=0,bl=0;for(let k=0;k<18;k++){const a=k/18*PI,c=Math.cos(a),s=Math.sin(a);let lo=1e9,hi=-1e9,lo2=1e9,hi2=-1e9;for(const q of p.poly){const u=q[0]*c+q[1]*s,w=-q[0]*s+q[1]*c;if(u<lo)lo=u;if(u>hi)hi=u;if(w<lo2)lo2=w;if(w>hi2)hi2=w;}if(hi-lo<bw){bw=hi-lo;ba=a;bl=hi2-lo2;}}p.minW=bw;p.minA=ba;p.minL=bl;}checkDisc(p);}
 function checkDisc(p){const d=ING[p.type];p.disc=false;if(!d.cyl||!d.shH)return;if(p.ey>=d.shH*.72&&p.ex<=Math.max(11,p.ey*.95)){p.disc=true;p.dr=p.ey/2;if(d.cyl==='ring'){const arr=SCAL[p.type];p.ringCol=arr[clamp(Math.round(p.tx+d.tw/2),0,arr.length-1)];}p.r=Math.max(p.r,p.dr*.8);}}
 function commonIds(a,b){if(!a[2]||!b[2])return null;const r=a[2].filter(x=>b[2].includes(x));return r.length?r:null;}
 function clipPoly(P,nx,ny,d,sgn,lid){const out=[],n=P.length;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];const fa=(nx*a[0]+ny*a[1]-d)*sgn,fb=(nx*b[0]+ny*b[1]-d)*sgn;if(fa>=0)out.push(a[2]?[a[0],a[1],a[2].slice()]:[a[0],a[1]]);if((fa>=0)!==(fb>=0)){const t=fa/(fa-fb),ids=(commonIds(a,b)||[]).concat(lid===undefined?[]:[lid]);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,ids]);}}return out;}
@@ -702,7 +702,7 @@ function pourAll(src,dst){if(dst.kind==='bowl'&&src.liq&&src.liq.vol>60){const n
   if(src.kind==='mix'){pourBatter(src,dst);return;}
   for(const o of src.items){const wx=src.x+o.x,wy=src.y+o.y;o.x=o.x*k+rand(-4,4);o.y=o.y*k+rand(-4,4);const d=Math.hypot(o.x,o.y),lim=dst.r*.9;if(d>lim){o.x*=lim/d;o.y*=lim/d;}o.z=isCook(dst)?rand(5,20):0;o.vz=0;o.vx=o.vy=0;o.flipT=0;if(vessel||dst.kind==='strainer'||dst.kind==='prep')animTo(o,wx,wy,dst);if(isCook(dst))o.cooked=true;dst.items.push(o);n++;}
   if(vessel){const gs=dst.items.filter(o=>o.kind==='grain');if(gs.length>40){const Rg=Math.min(dst.r*.78,Math.sqrt(gs.length*48/PI));for(const o of gs){const a=rand(0,TAU),r=Rg*Math.sqrt(Math.random());o.x=Math.cos(a)*r;o.y=Math.sin(a)*r;if(o.anim){o.anim.fx=o.anim.fx;}}}}
-  for(const nd of src.noodles){if(dst.kind==='bowl'&&nd.type==='udon')udonFill(nd,dst.r*.64,.6);else if(dst.kind==='bowl'&&(nd.type==='ramyeon'||nd.type==='ramen'))udonFill(nd,dst.r*.8,.35);else if(vessel||dst.kind==='strainer')nestNoodle(nd,dst.r*(dst.kind==='plate'?.62:dst.kind==='strainer'?.8:.76),0,0);else moveNoodle(nd,src,dst,k,0,0);dst.noodles.push(nd);n++;}
+  for(const nd of src.noodles){if(dst.kind==='bowl'&&nd.type==='udon')udonFill(nd,dst.r*.64,.6);else if(dst.kind==='bowl'&&(nd.type==='ramyeon'||nd.type==='ramen'))udonFill(nd,dst.r*.8,.35);else if(vessel||dst.kind==='strainer')nestNoodle(nd,dst.r*(dst.kind==='plate'?.72:dst.kind==='strainer'?.8:.76),0,0);else moveNoodle(nd,src,dst,k,0,0);dst.noodles.push(nd);n++;}
   for(const e of src.eggs){const wx=src.x+e.x,wy=src.y+e.y;e.x*=k;e.y*=k;if(vessel)animTo(e,wx,wy,dst);dst.eggs.push(e);n++;}
   for(const j of src.jeons){const wx=src.x+j.x,wy=src.y+j.y;j.x*=k;j.y*=k;if(vessel)animTo(j,wx,wy,dst);const lim=dst.r-avgRad(j)*.7;if(Math.hypot(j.x,j.y)>lim){j.x=j.y=0;}dst.jeons.push(j);n++;}
   for(const b of src.beggs){b.x*=k;b.y*=k;dst.beggs.push(b);n++;}
@@ -951,7 +951,7 @@ function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-
 
 /* ---------- batter & mixing bowl ---------- */
 function batterVol(m){return m.flour*.62+m.water+m.egg*50;}
-function batterColor(m,items){let c=[238,218,168];if(m.egg)c=mix(c,[246,206,110],Math.min(.5,m.egg*50/Math.max(1,batterVol(m))*2));let km=0,tot=0;for(const o of items){tot+=o.mass;if(o.type==='kimchi')km+=o.mass;}if(km)c=mix(c,[226,112,52],Math.min(.82,km/(tot+batterVol(m)*.02)*1.5));return c;}
+function batterColor(m,items){let c=[238,218,168];if(m.egg)c=mix(c,[246,206,110],Math.min(.5,m.egg*50/Math.max(1,batterVol(m))*2));let km=0,tot=0;for(const o of items){tot+=o.mass;if(o.type==='kimchi')km+=o.mass;}if(km)c=mix(c,[230,108,44],Math.min(.85,.42+km/(tot+batterVol(m)*.02)*1.2));return c;}
 function makeJeon(c,lx,ly,b){const vol=batterVol(b);if(vol<40){floatText('반죽이 너무 적어요',c.x+lx,c.y+ly-30,'#ffd0b0',22);return null;}
   const ratio=b.flour>0?b.water/b.flour:9,pm=b.items.reduce((s,o)=>s+o.mass,0),thick=(ratio<1?1.45:ratio>1.9?.7:ratio>1.5?.85:1)*(1+pm/vol*.6);
   const Rt=Math.min(c.r-12,Math.sqrt((vol+pm*3)*26/thick)),N=40,p1=rand(0,TAU);
@@ -1058,7 +1058,7 @@ function tracePoly(g,P){g.beginPath();g.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.
 function overlays(g,p,d){const c=Math.min(1,p.cook);if(c>.02&&d.tint[3]){g.fillStyle=rgba(d.tint,d.tint[3]*c);g.fill();}
   const v=p.face[1-p.down];if(v>.03){g.fillStyle=rgba(d.brown,Math.min(1,v)*.62);g.fill();if(v>1){g.fillStyle=`rgba(28,16,8,${Math.min(.88,(v-1)*1.4)})`;g.fill();}}
   if(p.coat.dark>.004){g.fillStyle=`rgba(92,46,14,${Math.min(.5,p.coat.dark*5)})`;g.fill();}
-  if(p.type!=='kimchi'&&p.coat.chili>.02){g.fillStyle=`rgba(190,45,18,${Math.min(.55,p.coat.chili*.8)})`;g.fill();}
+  if(p.type!=='kimchi'&&p.type!=='garlic'&&p.coat.chili>.02){g.fillStyle=`rgba(190,45,18,${Math.min(.55,p.coat.chili*.8)})`;g.fill();}
   if(p.coat.sauce>.01){g.fillStyle=`rgba(120,50,24,${Math.min(.45,p.coat.sauce*2)})`;g.fill();}}
 const VOL={kimchi:{th:3,cut:[232,130,96],skin:[140,26,12]},onion:{th:9,cut:[246,242,226],skin:[214,200,150],dome:1},ham:{th:11,cut:[238,168,156],skin:[190,104,92]},
   scallion:{th:7,cut:[236,242,222],skin:[82,130,52],cyl:1},jjokpa:{th:4,cut:[230,240,215],skin:[70,120,40],cyl:1},buchu:{th:2.5,cut:[150,190,110],skin:[40,80,24]},
@@ -1106,7 +1106,7 @@ function drawSlab(g,p){const len=p.minL||Math.max(p.ey,p.ex),w=24,L2=p.Lm,n=L2.l
 function drawPiece(g,p,x,y,sc,flat){const d=ING[p.type];g.save();g.translate(x,y);g.rotate(p.rot);const V=volOf(p),k=(sc||1)*V.sc;if(k!==1)g.scale(k,k);if(p.flipT>0)g.scale(Math.max(.12,Math.abs(2*p.flipT-1)),1);
   if(p.disc){drawDisc(g,p,d);g.restore();return;}
   if(p.L&&p.area<p.orig*.75&&(p.minW||Math.min(p.ex,p.ey))<36){if(p.minW!==undefined)g.rotate(p.minA);else if(p.ex>p.ey)g.rotate(PI/2);drawSlab(g,p);g.restore();return;}
-  if(!flat)drawWalls(g,p,Math.min(V.th,Math.min(p.ex,p.ey)*.75)/k,V.v);
+  const mw=p.minW||Math.min(p.ex,p.ey),ml=p.minL||Math.max(p.ex,p.ey),strip=mw<9&&ml>mw*3;if(!flat)drawWalls(g,p,Math.min(V.th,mw*(strip?.35:.75))/k,V.v);
   tracePoly(g,p.poly);
   if(d.custom==='begg'){g.fillStyle='#fbf8f0';g.fill();if(p.area<p.orig*.8){g.save();g.clip();const y2=p.yolk||0,c=y2<.35?[246,150,18]:y2<.8?mix([236,138,30],[240,190,80],(y2-.35)/.45):mix([246,214,120],[200,200,120],clamp(y2-1.1,0,1)*2);
       g.fillStyle=rgba(c,1);g.beginPath();g.arc(-p.tx,-p.ty,13,0,TAU);g.fill();if(y2<.5){g.fillStyle='rgba(255,255,255,.5)';g.beginPath();g.ellipse(-p.tx-4,-p.ty-4,4,2.5,-.5,0,TAU);g.fill();}g.restore();}
@@ -1115,6 +1115,7 @@ function drawPiece(g,p,x,y,sc,flat){const d=ING[p.type];g.save();g.translate(x,y
   const tex=TEX[p.type],pat=PAT[p.type];pat.setTransform(new DOMMatrix([1/TS,0,0,1/TS,-p.tx-tex.lw/2,-p.ty-tex.lh/2]));g.fillStyle=pat;g.fill();
   if(p.L){const vv=p.face[1-p.down];if(vv>.05){g.save();g.clip();g.globalAlpha=Math.min(1,vv*.9);g.fillStyle='rgba(120,62,30,.85)';g.fill();g.drawImage(SPOTS,-128,-128,256,256);if(vv>1.1){g.globalAlpha=Math.min(.85,(vv-1.1)*1.3);g.fillStyle='#1c1008';g.fill();}g.restore();}if(p.baste>0){g.fillStyle='rgba(255,230,160,.25)';g.fill();}}
   else overlays(g,p,d);
+  if(strip&&VOL[p.type]&&VOL[p.type].cyl){g.fillStyle=rgba(VOL[p.type].skin,.5);g.fill();}
   if(p.stale){g.fillStyle='rgba(120,110,80,.22)';g.fill();}
   drawVolumeShade(g,p,V.v);
   g.lineWidth=1;g.strokeStyle=d.edge;g.stroke();const hid=p.face[p.down],vis=p.face[1-p.down];
@@ -1156,8 +1157,8 @@ function drawJeon(g,j,x,y){g.save();g.translate(x,y);if(j.flipA>0)g.scale(1,Math
   g.fillStyle=rgba(top?mix(base,[250,240,215],(1-Math.min(1,j.set))*.25):mix(base,[226,176,96],.3),1);g.fill();
   g.save();g.clip();
   for(const p of j.pieces){drawPiece(g,p,p.x,p.y,.9,true);}
-  if(top){g.fillStyle=rgba(base,.52-Math.min(.25,j.set*.2));g.fillRect(-200,-200,400,400);if(j.lumps>.3){g.fillStyle='rgba(255,255,248,.8)';const R=mulberry(j.pieces.length+7);for(let i=0;i<j.lumps*30;i++){g.beginPath();g.arc((R()-.5)*avgRad(j)*1.6,(R()-.5)*avgRad(j)*1.6,R()*2.5+1,0,TAU);g.fill();}}}
-  if(vis>.05){g.globalAlpha=Math.min(.7,vis*.6);g.fillStyle='rgba(196,124,48,.5)';g.fillRect(-200,-200,400,400);g.globalAlpha=Math.min(.45,vis*.4);g.drawImage(SPOTS,-110,-110,220,220);g.globalAlpha=Math.min(.6,vis*.55);for(const p of j.pieces)drawPiece(g,p,p.x,p.y,.9,true);g.globalAlpha=Math.min(.95,vis*.85);if(vis>1.05){g.globalAlpha=Math.min(.85,(vis-1.05)*1.4);g.fillStyle='#1a0e06';g.fillRect(-200,-200,400,400);}g.globalAlpha=1;}
+  if(top){g.fillStyle=rgba(base,.34-Math.min(.2,j.set*.18));g.fillRect(-200,-200,400,400);if(j.lumps>.3){g.fillStyle='rgba(255,255,248,.8)';const R=mulberry(j.pieces.length+7);for(let i=0;i<j.lumps*30;i++){g.beginPath();g.arc((R()-.5)*avgRad(j)*1.6,(R()-.5)*avgRad(j)*1.6,R()*2.5+1,0,TAU);g.fill();}}}
+  if(vis>.05){g.globalAlpha=Math.min(.7,vis*.6);g.fillStyle=rgba(mix(j.col,[150,78,26],.42),.55);g.fillRect(-200,-200,400,400);g.globalAlpha=Math.min(.45,vis*.4);g.drawImage(SPOTS,-110,-110,220,220);g.globalAlpha=Math.min(.82,vis*.75);for(const p of j.pieces)drawPiece(g,p,p.x,p.y,.9,true);g.globalAlpha=Math.min(.95,vis*.85);if(vis>1.05){g.globalAlpha=Math.min(.85,(vis-1.05)*1.4);g.fillStyle='#1a0e06';g.fillRect(-200,-200,400,400);}g.globalAlpha=1;}
   if(top&&j.set<.9){const gl=g.createRadialGradient(-avgRad(j)*.3,-avgRad(j)*.4,4,0,0,avgRad(j));gl.addColorStop(0,`rgba(255,255,255,${.3*(1-j.set)})`);gl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gl;g.fillRect(-200,-200,400,400);}
   if(j.cuts&&j.cuts.length){const R=avgRad(j)+4;for(const a of j.cuts){const c=Math.cos(a),s=Math.sin(a);g.strokeStyle='rgba(70,36,12,.55)';g.lineWidth=3.2;g.beginPath();g.moveTo(-c*R,-s*R);g.lineTo(c*R,s*R);g.stroke();g.strokeStyle='rgba(255,236,190,.35)';g.lineWidth=1;g.beginPath();g.moveTo(-c*R+s*2,-s*R-c*2);g.lineTo(c*R+s*2,s*R-c*2);g.stroke();}}
   if(j.broken>0){g.strokeStyle='rgba(90,50,20,.7)';g.lineWidth=2.5;const R=mulberry(j.pieces.length+j.broken);for(let k=0;k<j.broken*2;k++){g.beginPath();let px=(R()-.5)*40,py=(R()-.5)*40;g.moveTo(px,py);for(let s=0;s<4;s++){px+=(R()-.5)*40;py+=(R()-.5)*40;g.lineTo(px,py);}g.stroke();}}
@@ -1166,7 +1167,7 @@ function drawJeon(g,j,x,y){g.save();g.translate(x,y);if(j.flipA>0)g.scale(1,Math
   if(j.edge>.05){g.lineWidth=3+Math.min(1.4,j.edge)*6;g.strokeStyle=`rgba(170,100,34,${Math.min(.95,j.edge*.8)})`;g.stroke();if(j.edge>1.3){g.strokeStyle=`rgba(40,22,8,${Math.min(.8,(j.edge-1.3)*1.2)})`;g.lineWidth=3;g.stroke();}
     const N=j.rad.length;g.fillStyle=`rgba(150,86,28,${Math.min(.85,j.edge*.7)})`;for(let i=0;i<N*2;i++){const a=i/(N*2)*TAU,r=j.rad[i>>1]-2-((i*29)%6);g.beginPath();g.arc(Math.cos(a)*r,Math.sin(a)*r,1.4+((i*11)%3)*.7,0,TAU);g.fill();}}
   if(j.oil>.5||top){g.strokeStyle=`rgba(255,248,220,${top?.3:.22})`;g.lineWidth=2.2;g.beginPath();g.arc(0,0,avgRad(j)*.72,3.5,4.7);g.stroke();}g.restore();}
-function noodleCol(n){const d=NT[n.type];let c=d.col;if(n.done>.4)c=mix(c,[252,248,236],Math.min(.25,(n.done-.4)*.4));
+function noodleCol(n){const d=NT[n.type];let c=d.col;const pale=n.type==='somyeon'||n.type==='udon';if(n.done>.4)c=mix(c,[252,248,236],Math.min(pale?.25:.06,(n.done-.4)*.4));if(n.coat.oil>1&&!n.coat.sauce)c=mix(c,[248,204,90],Math.min(.3,n.coat.oil/(n.g*.25)));
   const dk=Math.min(1,n.coat.dark/(n.g*.12));if(dk>.02)c=mix(c,[140,82,40],dk*.7);const ch=Math.min(1,n.coat.chili/(n.g*.12));if(ch>.02)c=mix(c,[206,58,30],ch*.8);
   if(n.coat.sauce>1&&n.sauceCol)c=mix(c,n.sauceCol,Math.min(.85,n.coat.sauce/(n.g*.35)));if(n.brown>.1)c=mix(c,[170,110,50],Math.min(.6,n.brown*.6));return c;}
 function drawNoodle(g,n,ox,oy,mass){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+Math.min(n.mush,1.2)*.22)*(n.T<0?1.1:1);g.lineCap='round';g.lineJoin='round';
@@ -1179,11 +1180,11 @@ function drawNoodle(g,n,ox,oy,mass){const d=NT[n.type],c=noodleCol(n),w=d.w*(1+M
       g.beginPath();addPath(s,-w*.2,-w*.22);g.strokeStyle='rgba(255,255,255,.62)';g.lineWidth=Math.max(1,w*.16);g.stroke();}return;}
   g.beginPath();for(const s of n.strands)addPath(s,.8,1.4);g.strokeStyle='rgba(0,0,0,.24)';g.lineWidth=w+1.4;g.stroke();
   g.beginPath();for(const s of n.strands)addPath(s,0,0);g.strokeStyle=rgba(mix(c,[0,0,0],.12),1);g.lineWidth=w;g.stroke();g.strokeStyle=rgba(c,1);g.lineWidth=w*.72;g.stroke();
-  g.beginPath();for(let i=0;i<n.strands.length;i+=2)addPath(n.strands[i],-w*.18,-w*.2);g.strokeStyle=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.42:.26})`;g.lineWidth=Math.max(.7,w*.26);g.stroke();}
-function drawLiquid(g,c,q,x,y,R,am){const vol=q.vol,cap=c.kind==='bowl'?520:c.kind==='pan'?160:c.kind==='sauce'?700:1600,d=Math.min(1,vol/cap),a=clamp(.2+d*.42+liqDark(q)*.45+Math.min(.45,q.spicy/Math.max(1,q.vol)*30),.2,.92)*(am||1),QC=mix(liqCol(q),[70,120,150],clamp(1-(q.umami+q.dark*3+q.spicy+q.fat+q.sour)/Math.max(1,q.vol)*4,0,1)*(1-liqDark(q))*d*.45);const rr2=R*(.5+.5*Math.sqrt(d));
+  g.beginPath();for(let i=0;i<n.strands.length;i+=2)addPath(n.strands[i],-w*.18,-w*.2);g.strokeStyle=`rgba(255,255,255,${n.coat.oil>2||n.coat.sauce>2?.55:.3})`;g.lineWidth=Math.max(.8,w*.28);g.stroke();}
+function drawLiquid(g,c,q,x,y,R,am){const vol=q.vol,cap=c.kind==='bowl'?520:c.kind==='pan'?160:c.kind==='sauce'?700:1600,d=Math.min(1,vol/cap);let a=clamp(.2+d*.42+liqDark(q)*.45+Math.min(.45,q.spicy/Math.max(1,q.vol)*30),.2,.92)*(am||1),QC=mix(liqCol(q),[70,120,150],clamp(1-(q.umami+q.dark*3+q.spicy+q.fat+q.sour)/Math.max(1,q.vol)*4,0,1)*(1-liqDark(q))*d*.45);const rr2=R*(.5+.5*Math.sqrt(d));
   if(c.kind!=='pan'&&c.kind!=='bowl'){g.save();g.beginPath();g.arc(x,y,R,0,TAU);g.arc(x,y,rr2,0,TAU,true);g.fillStyle='rgba(20,24,30,.16)';g.fill('evenodd');g.restore();}
   const tt0=(typeof G!=='undefined'&&G)?G.t:0;
-  const sp=q.spicy/Math.max(1,q.vol);const gr=g.createRadialGradient(x-rr2*.3,y-rr2*.3,rr2*.1,x,y,rr2);if(c.kind==='bowl'&&sp>.004){const RC=mix(QC,[228,98,34],Math.min(.85,sp*60));gr.addColorStop(0,rgba(mix(RC,[255,190,120],.25),.92));gr.addColorStop(1,rgba(mix(RC,[140,40,10],.25),.96));}else if(c.kind==='bowl'&&q.umami>q.vol*.2){const GC=mix(QC,[232,176,82],.35*(1-Math.min(1,liqDark(q)*2.5)));gr.addColorStop(0,rgba(mix(GC,[255,236,170],.3),a*.7));gr.addColorStop(1,rgba(mix(GC,[150,90,30],.25),Math.min(.92,a*1.05)));}else{gr.addColorStop(0,rgba(mix(QC,[255,255,255],.15),a*.85));gr.addColorStop(1,rgba(mix(QC,[0,0,0],.2),Math.min(.95,a*1.15)));}g.fillStyle=gr;g.beginPath();g.arc(x,y,rr2,0,TAU);g.fill();
+  const sp=q.spicy/Math.max(1,q.vol);if(c.kind==='bowl'&&q.umami>q.vol*.2)a=Math.max(a,.8+Math.min(.15,liqDark(q)));const gr=g.createRadialGradient(x-rr2*.3,y-rr2*.3,rr2*.1,x,y,rr2);if(c.kind==='bowl'&&sp>.004){const RC=mix(QC,[228,98,34],Math.min(.85,sp*60));gr.addColorStop(0,rgba(mix(RC,[255,190,120],.25),.92));gr.addColorStop(1,rgba(mix(RC,[140,40,10],.25),.96));}else if(c.kind==='bowl'&&q.umami>q.vol*.2){const dk=Math.min(1,liqDark(q)*2.5),am2=Math.min(.6,q.dark/Math.max(1,q.vol)*8),GC=mix(mix(QC,[232,176,82],.35*(1-dk)*(1-am2)),[184,106,38],am2);gr.addColorStop(0,rgba(mix(GC,[255,236,170],.3*(1-dk*.7)),a*(.7+dk*.25)));gr.addColorStop(1,rgba(mix(GC,[150,90,30],.25),Math.min(.92,a*1.05)));}else{gr.addColorStop(0,rgba(mix(QC,[255,255,255],.15),a*.85));gr.addColorStop(1,rgba(mix(QC,[0,0,0],.2),Math.min(.95,a*1.15)));}g.fillStyle=gr;g.beginPath();g.arc(x,y,rr2,0,TAU);g.fill();
   if(q.fat>5){const R2=mulberry(c.id||3);g.fillStyle='rgba(255,220,140,.35)';for(let i=0;i<Math.min(40,q.fat/2);i++){const a2=R2()*TAU,r=Math.sqrt(R2())*rr2*.85,s=R2()*4+1.5;g.beginPath();g.arc(x+Math.cos(a2+G.t*.05)*r,y+Math.sin(a2+G.t*.05)*r,s,0,TAU);g.fill();}}
   const b=c.boil||0;if(b>.05){g.strokeStyle=`rgba(255,255,255,${.2+b*.4})`;g.lineWidth=1;const n=(b*30)|0;for(let i=0;i<n;i++){const a2=rand(0,TAU),r=Math.sqrt(Math.random())*rr2*.9;g.beginPath();g.arc(x+Math.cos(a2)*r,y+Math.sin(a2)*r,rand(1.5,4+b*5),0,TAU);g.stroke();}}
   else if(q.T>70){g.fillStyle='rgba(255,255,255,.3)';for(let i=0;i<(q.T-70)/4;i++){g.beginPath();g.arc(x+rand(-.7,.7)*rr2,y+rand(-.7,.7)*rr2,rand(.8,1.8),0,TAU);g.fill();}}
@@ -1196,12 +1197,13 @@ function drawFoam(g,c,x,y){if(c.foam<.12)return;const R=c.r,f=c.foam;g.fillStyle
   for(let i=0;i<f*140;i++){const a=R2()*TAU+G.t*.3,r=R*(1-Math.pow(R2(),.6)*f*.95);g.beginPath();g.arc(x+Math.cos(a)*r,y+Math.sin(a)*r,R2()*6+2+f*3,0,TAU);g.fill();}}
 function drawIce(g,ic,x,y){const s=Math.cbrt(ic.m)*6.5;g.save();g.translate(x,y);g.rotate(ic.rot||0);rr(g,-s/2,-s/2,s,s,s*.25);g.fillStyle='rgba(230,245,255,.55)';g.fill();g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=1.2;g.stroke();g.fillStyle='rgba(255,255,255,.7)';g.fillRect(-s*.3,-s*.3,s*.25,s*.12);g.restore();}
 function drawSeed(g,q,x,y){switch(q.type){
-  case'chili':g.fillStyle='#b8261a';g.fillRect(x-1,y-.8,2.2,1.6);break;
+  case'chili':g.fillStyle='#c42a18';g.save();g.translate(x,y);g.rotate(q.rot);g.fillRect(-1.6,-1,3.2,2);g.restore();break;
   case'pepper':g.fillStyle='#2a2420';g.fillRect(x-.8,y-.8,1.6,1.6);break;
   case'sesame':g.save();g.translate(x,y);g.rotate(q.rot);g.fillStyle='#efdcaa';g.beginPath();g.ellipse(0,0,2.4,1.4,0,0,TAU);g.fill();g.restore();break;
   case'gim':g.save();g.translate(x,y);g.rotate(q.rot);g.fillStyle='#1c2a1a';g.fillRect(-3.5,-1,7,2);g.restore();break;
-  case'aonori':case'parsley':g.fillStyle=q.type==='aonori'?'#3f7a2c':'#2f7a26';g.beginPath();g.arc(x,y,1.3,0,TAU);g.fill();break;
-  case'parm':g.fillStyle='#f4eac0';g.fillRect(x-1.5,y-1,3,2);break;
+  case'aonori':g.fillStyle='#3f7a2c';g.beginPath();g.arc(x,y,1.3,0,TAU);g.fill();break;
+  case'parsley':{g.save();g.translate(x,y);g.rotate(q.rot);g.fillStyle='#2f8a2a';for(let k=0;k<3;k++){g.beginPath();g.ellipse(Math.cos(k*2.1)*1.6,Math.sin(k*2.1)*1.6,1.9,1.3,k*2.1,0,TAU);g.fill();}g.restore();break;}
+  case'parm':g.fillStyle='#f6eec8';g.save();g.translate(x,y);g.rotate(q.rot);g.fillRect(-2.2,-1,4.4,2);g.restore();break;
   case'shichimi':g.fillStyle=pick(['#c0501c','#e07a20','#2a2a2a','#a02810']);g.fillRect(x-.9,y-.9,1.8,1.8);break;
   case'nori':g.save();g.translate(x,y);g.rotate(q.rot);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(-26,-34,56,72);g.fillStyle=q.soak?'#243322':'#1e2a1c';rr(g,-28,-36,56,72,3);g.fill();g.fillStyle='rgba(120,160,110,.18)';for(let i=0;i<20;i++)g.fillRect(-24+((i*37)%48),-30+((i*53)%60),1.6,1.6);g.restore();break;
   case'butterpat':g.fillStyle='#f6de8a';rr(g,x-9,y-6,18,12,3);g.fill();break;}}
@@ -1844,7 +1846,7 @@ function combNoodles(v,lx,ly,moved){let hit=0;for(const n of v.noodles)for(const
 /* broth film over noodles: makes them sit IN the soup, with tops catching light */
 function drawBrothFilm(g,c,q,R){const vol=q.vol,cap=520,d=Math.min(1,vol/cap),rr2=R*(.5+.5*Math.sqrt(d)),col=liqCol(q),t=G?G.t:0;
   g.save();g.beginPath();g.arc(0,0,rr2,0,TAU);g.clip();
-  const thick=c.noodles.some(n=>n.type==='udon');if(!thick){g.fillStyle=rgba(col,.1+Math.min(.1,liqDark(q)*.15));g.fillRect(-rr2,-rr2,rr2*2,rr2*2);}
+  const thick=c.noodles.some(n=>n.type==='udon'||n.type==='ramen'||n.type==='ramyeon');if(!thick){g.fillStyle=rgba(col,.1+Math.min(.1,liqDark(q)*.15));g.fillRect(-rr2,-rr2,rr2*2,rr2*2);}
   const R2=mulberry((c.id||7)*31+3),nd=thick?0:q.fat>2?26:10;for(let i=0;i<nd;i++){const a=R2()*TAU+t*.02,r=Math.sqrt(R2())*rr2*.9,s=R2()*(q.fat>2?3.2:1.8)+.8,x=Math.cos(a)*r,y=Math.sin(a)*r;
     g.fillStyle='rgba(255,214,120,.28)';g.beginPath();g.arc(x,y,s,0,TAU);g.fill();g.strokeStyle='rgba(255,246,210,.5)';g.lineWidth=.7;g.beginPath();g.arc(x,y,s,PI*1.1,PI*1.7);g.stroke();}
   const sp=g.createRadialGradient(-rr2*.42,-rr2*.46,2,-rr2*.42,-rr2*.46,rr2*.55);sp.addColorStop(0,'rgba(255,255,255,.2)');sp.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=sp;g.fillRect(-rr2,-rr2,rr2*2,rr2*2);
@@ -1888,7 +1890,7 @@ function platingEval(R,v){const checks=[],add=(ok,t,hint)=>checks.push({ok:!!ok,
   const n=mainNoodle(v),nc=n?noodleCoil(n):null,ncx=nc?nc.cx:0,ncy=nc?nc.cy:0;
   const noodleCentered=(sp,label)=>add(nc&&Math.hypot(nc.cx,nc.cy)<r*.2&&nc.spread<r*sp,label||'면이 가운데 소복이 모였어요','젓가락으로 면을 가운데로 모아요');
   const topCenter=(types,label,hint)=>add(compactAt(groupOf(v,types),ncx,ncy,r*.35,r*.34),label,hint);
-  const side=(types,label,hint)=>{const L3=groupOf(v,types),cs=circSpread(L3);add(L3.length>=2&&cs.R>.78&&cs.r>r*.32,label,hint);};
+  const side=(types,label,hint)=>{const L3=groupOf(v,types);let ok=false;if(L3.length>=2){const [cx,cy]=centroid(L3),ca=Math.atan2(cy,cx),inSide=L3.filter(o=>{let d=Math.abs(Math.atan2(o.y,o.x)-ca);if(d>PI)d=TAU-d;return d<1.15&&Math.hypot(o.x,o.y)>r*.2;}).length/L3.length;ok=Math.hypot(cx,cy)>r*.3&&inSide>=.8;}add(ok,label,hint);};
   if(id==='udon'){
     noodleCentered(.4);
     let tot=0,cov=0;for(const nd of v.noodles)for(const s2 of nd.strands)for(let j=0;j<s2.pts.length;j+=2){const p=s2.pts[j];tot++;if(pcs.some(o=>Math.hypot(o.x-p.x,o.y-p.y)<o.r*.9))cov++;}
@@ -1903,7 +1905,7 @@ function platingEval(R,v){const checks=[],add=(ok,t,hint)=>checks.push({ok:!!ok,
     add(gv2('sesame')>.05||groupOf(v,['scallion','jjokpa']).length>2,'깨·파로 마무리했어요','통깨를 뿌리거나 송송 썬 파를 올려요');}
   else if(id==='janchi'){noodleCentered(.45);topCenter(['zucchini'],'애호박 고명을 면 위 가운데','채 썬 애호박을 면 한가운데에 모아 올려요');add(gv2('gim')>.05,'김가루를 솔솔','김가루를 뿌려요');}
   else if(id==='kmari'){noodleCentered(.45);topCenter(['kimchi','cucumber'],'김치·오이를 면 위 가운데','김치와 오이를 면 한가운데에 모아 올려요');add(v.ice.length>0,'얼음이 동동','얼음을 넣어요');}
-  else if(id==='bibim'){noodleCentered(.45);topCenter(['cucumber'],'오이채를 면 위 가운데','오이채를 면 한가운데에 모아 올려요');add(pcs.some(o=>o.type==='begg'&&Math.hypot(o.x-ncx,o.y-ncy)<r*.4),'삶은 계란 반쪽을 위에','계란 반쪽을 면 위에 올려요');}
+  else if(id==='bibim'){noodleCentered(.56);topCenter(['cucumber'],'오이채를 면 위 가운데','오이채를 면 한가운데에 모아 올려요');add(pcs.some(o=>o.type==='begg'&&Math.hypot(o.x-ncx,o.y-ncy)<r*.4),'삶은 계란 반쪽을 위에','계란 반쪽을 면 위에 올려요');}
   else if(id==='ramyeon'){noodleCentered(.62,'면이 그릇에 고루 담겼어요');const e=v.eggs[0];add(e&&!pcs.some(o=>Math.hypot(o.x-e.x,o.y-e.y)<14),'계란이 잘 보여요','계란 위를 덮은 재료를 옆으로 옮겨요');add(groupOf(v,['scallion']).length>2,'파를 올렸어요','송송 썬 파를 올려요');}
   else if(id==='shoyu'){noodleCentered(.62,'면이 그릇에 고루 담겼어요');side(['chashu'],'차슈를 한쪽에 가지런히','차슈를 그릇 한쪽에 겹쳐 놓아요');add(pcs.some(o=>o.type==='begg'),'반숙 계란 반쪽','계란 반쪽을 올려요');add(v.seeds.some(q=>q.type==='nori'&&Math.hypot(q.x,q.y)>r*.45),'김을 가장자리에 세웠어요','김을 그릇 가장자리에 꽂아요');}
   else if(id==='kjeon'||id==='pajeon'||id==='buchu'){const j=v.jeons[0];add(j&&Math.hypot(j.x,j.y)<r*.15,'전이 접시 가운데','핀셋으로 전을 접시 가운데로 옮겨요');add(j&&j.cuts&&j.cuts.length>=3,'먹기 좋게 6조각으로 썰었어요','칼 도구로 전을 가로질러 세 번 그어요');}
@@ -2286,7 +2288,10 @@ cv.addEventListener('pointermove',e=>{const q=toLocal(e);M.x=q.x;M.y=q.y;M.insid
 function wipeAt(x,y){let n=0;G.counter.fluid=G.counter.fluid.filter(q=>{if(dist(q.x,q.y,x,y)<38){n++;return false;}return true;});STX.save();STX.globalCompositeOperation='destination-out';STX.fillStyle='rgba(0,0,0,.25)';STX.beginPath();STX.arc(x,y,26,0,TAU);STX.fill();STX.restore();if(n&&Math.random()<.3){AU.nz({f:2200,d:.08,v:.06});}if(n&&Math.random()<.08)floatText('뽀득',x,y-20,'#e8f4ff',18);}
 function setLevel(b,v){const was=b.level>.001;b.level=clamp(v,0,1);const now=b.level>.001;if(!was&&now){b.ign=.3;b.lit=false;AU.ignite();}if(was&&!now){b.lit=false;b.ign=0;AU.click();b.level=0;}}
 const KEEPLAY={beef:1,chashu:1,ham:1};
-function dropPieces(L2,x,y,spread,fromBoard){const c=contAt(x,y);
+function splitLong(o,maxL){if(o.kind!=='piece'||o.L||o.disc)return[o];let bw=1e9,ba=0,bl=0,blo=0;for(let k=0;k<18;k++){const a=k/18*PI,c=Math.cos(a),s=Math.sin(a);let lo=1e9,hi=-1e9,lo2=1e9,hi2=-1e9;for(const q of o.poly){const u=q[0]*c+q[1]*s,w=-q[0]*s+q[1]*c;if(u<lo)lo=u;if(u>hi)hi=u;if(w<lo2)lo2=w;if(w>hi2)hi2=w;}if(hi-lo<bw){bw=hi-lo;ba=a;bl=hi2-lo2;blo=lo2;}}
+  if(bl<=maxL||bw>30||bl<bw*2.5)return[o];const n=Math.ceil(bl/maxL),step=bl/n,nx=-Math.sin(ba),ny=Math.cos(ba),out=[];let rest=o.poly;
+  for(let i=1;i<n;i++){const cut=blo+step*i,lid=CUTID++,A=clipPoly(rest,nx,ny,cut,-1,lid),B=clipPoly(rest,nx,ny,cut,1,lid);if(A.length<3||B.length<3)break;const p=clonePiece(o,A);finalize(p);out.push(p);rest=B;}const last=clonePiece(o,rest);finalize(last);out.push(last);return out;}
+function dropPieces(L2,x,y,spread,fromBoard){const c=contAt(x,y);if(c&&(c.kind==='bowl'||c.kind==='plate'))L2=L2.flatMap(o=>splitLong(o,c.r*.5));
   if(c&&(c.kind==='bowl'||c.kind==='plate')&&L2.length>1&&L2.every(o=>o.type===L2[0].type&&KEEPLAY[o.type])){const cx=c.x+(x-c.x)*.3,cy=c.y+(y-c.y)*.3;for(const o of L2)addItem(c,o,cx+(o.ox||0),cy+(o.oy||0));AU.place();return true;}
   if(c&&(c.kind==='bowl'||c.kind==='plate'||c.kind==='prep')){const R=Math.min(c.r*.55,14+Math.sqrt(L2.length)*9),cx=c.x+(x-c.x)*.45,cy=c.y+(y-c.y)*.45;for(const o of L2){const a=rand(0,TAU),r=Math.sqrt(Math.random())*R;o.rot=rand(0,TAU);addItem(c,o,cx+Math.cos(a)*r,cy+Math.sin(a)*r);}AU.place();return true;}
   if(c){let wet=0;for(const o of L2){const px=x+(o.ox||0)*spread,py=y+(o.oy||0)*spread;if(c.kind==='mix'){addItem(c,o,px,py);}else addItem(c,o,px,py,true);wet+=o.mass*o.moist;}dropFx(c,wet,x,y);return true;}
