@@ -1,8 +1,8 @@
 
 /* ---------- 1.6 staff: part-timers who take small jobs off your hands; they get a little better every few days ---------- */
-const STAFF={hall:{n:'지우',role:'홀 알바',wage:8000,lv:1,desc:'다 먹은 자리를 바로 치우고, 손님을 반갑게 맞아서 조금 더 느긋하게 기다려 줘요.'},
-  dish:{n:'민호',role:'정리 알바',wage:6000,lv:2,desc:'조리대 얼룩과 그릇 테두리 국물을 틈틈이 닦아 줘요.'},
-  prep:{n:'수아',role:'주방 보조',wage:12000,lv:4,desc:'영업을 시작할 때 오늘 메뉴 재료를 썰어서 작은 그릇에 담아 둬요.'}};
+const STAFF={hall:{n:'지우',role:'홀 알바',wage:7000,lv:1,desc:'다 먹은 자리를 바로 치우고, 손님을 반갑게 맞아서 조금 더 느긋하게 기다려 줘요.'},
+  dish:{n:'민호',role:'정리 알바',wage:5000,lv:2,desc:'조리대 얼룩과 그릇 테두리 국물을 틈틈이 닦아 줘요.'},
+  prep:{n:'수아',role:'주방 보조',wage:10000,lv:4,desc:'영업을 시작할 때 오늘 메뉴 재료를 썰어서 작은 그릇에 담아 둬요.'}};
 const staffSt=k=>{SAVE.staff=SAVE.staff||{};return SAVE.staff[k]=SAVE.staff[k]||{hired:false,days:0};};
 function staffOn(k){return !!(G&&G.mode==='career'&&SAVE&&SAVE.staff&&SAVE.staff[k]&&SAVE.staff[k].hired);}
 const staffLv=k=>1+Math.min(2,Math.floor(staffSt(k).days/5));
