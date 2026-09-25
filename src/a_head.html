@@ -416,4 +416,25 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 #recipePop.compact #rpArt,#recipePop.compact #rpImg,#recipePop.compact #steps li:not(.cur){display:none}
 #recipePop.compact{padding:10px 14px 8px}#recipePop.compact h3{font-size:21px;padding-right:56px}#recipePop.compact #rpSub{margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #rpMore{display:block;width:100%;margin-top:6px;background:none;border:none;border-top:1px dashed #d8c7a4;padding:6px 0 2px;font-size:13px;color:#8a5a3a;text-align:left}#rpMore small{float:right;color:#8a755a;font-family:'IBM Plex Mono',monospace}#rpMore:hover{color:var(--chili)}
+/* 2.0 themes + expansion */
+.th{flex:1;display:flex;flex-direction:column;gap:14px;overflow:auto;min-height:0}
+.th-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.th-card{display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border-radius:12px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.35);border:3px solid transparent}
+.th-card.on{border-color:#3f8a4a}.th-card.lock{opacity:.6}
+.th-img{position:relative;aspect-ratio:16/9;background-size:cover;background-position:center}
+.th-img span{position:absolute;left:10px;top:10px;background:#3f8a4a;color:#fff;font-size:13px;border-radius:999px;padding:3px 10px}
+.th-b{padding:12px 16px 4px;flex:1}
+.th-b b{display:block;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:24px;color:var(--chili-d)}
+.th-b p{margin:6px 0 0;font-size:14px;line-height:1.5;color:#4a3a2e}
+.th-b .th-d{font-size:12.5px;color:#8a755a}
+.th-card button{margin:10px 16px 16px;font-size:16px;padding:8px 14px}
+.th-h{margin:6px 0 0;color:#f3ead8;font-size:18px}.th-h small{font-size:13px;color:#cdbb9c;margin-left:8px;font-weight:400}
+.th-xs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.th-x{display:flex;align-items:center;gap:14px;background:var(--paper);color:var(--ink);border-radius:12px;padding:14px 18px;box-shadow:0 10px 24px rgba(0,0,0,.3);border:3px solid transparent}
+.th-x.on{border-color:#3f8a4a}.th-x b{font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:20px;color:var(--chili-d);white-space:nowrap}
+.th-x p{flex:1;margin:0;font-size:14px;color:#4a3a2e}.th-x button{font-size:15px;padding:8px 14px;white-space:nowrap}
+.mb-card .mb-th{position:absolute;right:6px;top:6px;background:#e0412a;color:#fff;font-style:normal;font-size:11px;border-radius:999px;padding:2px 7px}
+.mb-card{position:relative}
+.mb-n em.th{background:#3f6fa8}
+.hl-sign{position:absolute;left:24px;top:18px;background:rgba(20,12,8,.72);color:#ffe6b0;font-family:'Black Han Sans',sans-serif;font-size:22px;padding:6px 16px;border-radius:10px;pointer-events:none}
 </style>
