@@ -57,8 +57,8 @@ function figure(key,coat,hat,x,y,o){o=o||{};const bob=o.walk?-Math.abs(Math.sin(
   if(o.wave!==undefined)put(piece('arm'+key,24,74,L=>L(Pp.rect(0,0,24,74),coat),boil()),x+42,y-122+bob,{ax:.5,ay:.08,rot:-2.4+Math.sin(o.wave*9)*.45,d:2});
   put(pFigure(key,coat,hat),x,y+bob,{ay:1,d:3,rot:o.walk?Math.sin(OPN.t*8)*.05:0,sx:o.flip?-1:1,sy:1});}
 function caption(text,lt,dur){if(!text)return;const g=OPN.g,n=Math.floor(clamp((lt-.3)/1.6,0,1)*text.length),a=clamp((lt-.2)*3,0,1)*clamp((dur-lt-.2)*3,0,1);if(a<=0)return;
-  const w=Math.min(1240,text.length*40+140);put(piece('cap'+w,w,90,L=>L(Pp.rect(0,0,w,90),PAL.cream,3),boil()),800,904,{a,d:3,rot:-.008});
-  g.save();g.globalAlpha=a;g.font='54px "Nanum Pen Script", "Gowun Dodum", sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle=PAL.ink;g.fillText(text.slice(0,n),800,906);g.restore();}
+  g.save();g.font='40px "Jua", "Gowun Dodum", sans-serif';const w=Math.min(1500,Math.round((g.measureText(text).width+110)/20)*20);g.restore();put(piece('cap'+w,w,90,L=>L(Pp.rect(0,0,w,90),PAL.cream,3),boil()),800,904,{a,d:3,rot:-.008});
+  g.save();g.globalAlpha=a;g.font='40px "Jua", "Gowun Dodum", sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle=PAL.ink;g.fillText(text.slice(0,n),800,906);g.restore();}
 function street(night,lt,drift){const z=1+lt*.01;put(pSky(night?'n':'d',night?PAL.navy:'#f6cf8e'),800,390,{d:0,sx:z});return z;}
 function lampGlow(x,y,r,a){const g=OPN.g;g.save();g.globalCompositeOperation='lighter';const gr=g.createRadialGradient(x,y,4,x,y,r);gr.addColorStop(0,`rgba(255,200,110,${a})`);gr.addColorStop(1,'rgba(255,200,110,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);g.restore();}
 function shopFront(shut,night){put(pShop(),800,565,{d:4});put(pInterior(),800,642,{d:0});
@@ -118,24 +118,28 @@ const OSC=[
    if(lt>.2){const s=1+(1-back((lt-.2)/.45))*.9;put(sticker('logo1','지글지글',170,'#ffcf5a','#7a2410'),760,400,{rot:-.05,sx:s,d:6});cue('stamp1',()=>AU.chop&&AU.chop('kimchi',600));}
    if(lt>.6){const s=1+(1-back((lt-.6)/.45))*.9;put(sticker('logo2','키친',170,'#fff3dc','#7a2410'),880,590,{rot:-.05,sx:s,d:6});cue('stamp2',()=>AU.chop&&AU.chop('kimchi',1000));}
    if(lt>1.1){const s=back((lt-1.1)/.4);put(sticker('season','2nd SEASON',40,'#ffffff','#c23a1b','"IBM Plex Mono"'),960,720,{rot:-.05,sx:s,d:3});}
-   if(lt>1.6){g.save();g.globalAlpha=clamp((lt-1.6)*2,0,1);g.font='56px "Nanum Pen Script", "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle=PAL.ink;g.fillText('사장님, 영업 준비되셨나요?',800,860);g.restore();}}},
+   if(lt>1.6){g.save();g.globalAlpha=clamp((lt-1.6)*2,0,1);g.font='42px "Jua", "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle=PAL.ink;g.fillText('사장님, 영업 준비되셨나요?',800,860);g.restore();}}},
 ];
 const OTOT=OSC.reduce((s,c)=>s+c.d,0);
-function opScene(t){let a=0;for(let i=0;i<OSC.length;i++){if(t<a+OSC[i].d)return[i,t-a,a];a+=OSC[i].d;}return[OSC.length-1,OSC[OSC.length-1].d,a];}
+function opScene(t){let a=0;for(let i=0;i<OPN.sc.length;i++){if(t<a+OPN.sc[i].d)return[i,t-a,a];a+=OPN.sc[i].d;}return[OPN.sc.length-1,OPN.sc[OPN.sc.length-1].d,a];}
 function opDraw(){const g=OPN.g,S=OPN.S,t=OPN.t;g.setTransform(S,0,0,S,0,0);g.fillStyle='#f1e4ca';g.fillRect(0,0,1600,1000);
-  const [i,lt]=opScene(t);OSC[i].draw(lt);caption(OSC[i].cap,lt,OSC[i].d);
+  const [i,lt]=opScene(t);OPN.sc[i].draw(lt);caption(OPN.sc[i].cap,lt,OPN.sc[i].d);
   // paper sweep between scenes
-  let a=0;for(let k=0;k<OSC.length-1;k++){a+=OSC[k].d;const p=(t-(a-.5))/1;if(p>0&&p<1){put(piece('wipe',1900,1160,L=>L(Pp.rect(0,0,1900,1160),'#e7d7b8',6),boil()),2600-p*3600,500,{d:8,rot:-.03});}}
+  let a=0;for(let k=0;k<OPN.sc.length-1;k++){a+=OPN.sc[k].d;const p=(t-(a-.5))/1;if(p>0&&p<1){put(piece('wipe',1900,1160,L=>L(Pp.rect(0,0,1900,1160),'#e7d7b8',6),boil()),2600-p*3600,500,{d:8,rot:-.03});}}
   // film: grain + vignette + fade in/out
   g.save();g.globalAlpha=.35;g.fillStyle=g.createPattern(paperGrain(),'repeat');g.fillRect(0,0,1600,1000);g.restore();
   const vg=g.createRadialGradient(800,500,420,800,500,980);vg.addColorStop(0,'rgba(40,20,5,0)');vg.addColorStop(1,'rgba(40,20,5,.38)');g.fillStyle=vg;g.fillRect(0,0,1600,1000);
-  const f=Math.max(clamp(1-t/.6,0,1),clamp((t-(OTOT-.7))/.7,0,1));if(f>0){g.fillStyle=`rgba(20,12,8,${f})`;g.fillRect(0,0,1600,1000);}}
-function opLoop(now){if(!OPN.on)return;const dt=Math.min(.05,(now-(OPN.last||now))/1000);OPN.last=now;OPN.t+=dt;if(OPN.t>=OTOT){opEnd();return;}opDraw();OPN.raf=requestAnimationFrame(opLoop);}
-function playOpening(done){let d=$('#opening');if(!d){d=document.createElement('div');d.id='opening';d.innerHTML='<canvas id="opCv"></canvas><button type="button" id="opSkip">건너뛰기 ▸▸</button><span class="op-hint">클릭하면 다음 장면</span>';$('#stage').appendChild(d);
-    $('#opSkip').onclick=e=>{e.stopPropagation();opEnd();};d.addEventListener('click',()=>{if(!OPN.on)return;let a=0;for(const c of OSC){a+=c.d;if(OPN.t<a-.5){OPN.t=a-.5;break;}}});}
+  const f=Math.max(clamp(1-t/.6,0,1),clamp((t-(OPN.tot-.7))/.7,0,1));if(f>0){g.fillStyle=`rgba(20,12,8,${f})`;g.fillRect(0,0,1600,1000);}}
+function opLoop(now){if(!OPN.on)return;const dt=Math.min(.05,(now-(OPN.last||now))/1000);OPN.last=now;OPN.t+=dt;if(OPN.t>=OPN.tot){opEnd();return;}opDraw();OPN.raf=requestAnimationFrame(opLoop);}
+/* any list of scenes can play through this paper engine (opening, chapter ending) */
+function playOpening(done,scenes){let d=$('#opening');if(!d){d=document.createElement('div');d.id='opening';d.innerHTML='<canvas id="opCv"></canvas><button type="button" id="opSkip">건너뛰기 ▸▸</button><span class="op-hint">클릭하면 다음 장면</span>';$('#stage').appendChild(d);
+    $('#opSkip').onclick=e=>{e.stopPropagation();opEnd();};d.addEventListener('click',()=>{if(!OPN.on)return;let a=0;for(const c of OPN.sc){a+=c.d;if(OPN.t<a-.5){OPN.t=a-.5;break;}}});}
   OPN.S=Math.min(2,Math.max(1,devicePixelRatio||1));const cv=$('#opCv');cv.width=1600*OPN.S;cv.height=1000*OPN.S;OPN.g=cv.getContext('2d');
-  OPN.on=true;OPN.t=0;OPN.last=0;OPN.cues={};OPN.done=done;d.hidden=false;if(G&&G.started)G.paused=true;
-  try{document.fonts&&document.fonts.load('54px "Nanum Pen Script"');}catch(e){}cancelAnimationFrame(OPN.raf);OPN.raf=requestAnimationFrame(opLoop);}
+  OPN.sc=scenes||OSC;OPN.tot=OPN.sc.reduce((s,c)=>s+c.d,0);OPN.on=true;OPN.t=0;OPN.last=0;OPN.cues={};OPN.done=done;d.hidden=false;if(G&&G.started)G.paused=true;
+  /* web fonts arrive in per-character slices: fetch every glyph this film uses before the first frame, or captions mix fonts */
+  cancelAnimationFrame(OPN.raf);const txt=OPN.sc.map(c=>c.cap||'').join('')+OP_GLYPHS+(OPN.sc.glyphs||''),go=()=>{if(OPN.on&&!OPN.raf0){OPN.raf0=1;OPN.raf=requestAnimationFrame(opLoop);}};OPN.raf0=0;
+  try{Promise.all([document.fonts.load('40px "Jua"',txt),document.fonts.load('64px "Black Han Sans"',txt)]).then(go,go);}catch(e){go();}setTimeout(go,2000);}
+const OP_GLYPHS='지글지글 키친 치익! 휙! 준비 중 영업 임대 2nd SEASON 사장님, 영업 준비되셨나요? 0123456789·—…';
 function opEnd(){if(!OPN.on)return;OPN.on=false;cancelAnimationFrame(OPN.raf);const d=$('#opening');if(d)d.hidden=true;if(G&&G.started)G.paused=false;SAVE.openingSeen=true;writeSave();const f=OPN.done;OPN.done=null;f&&f();}
 addEventListener('keydown',e=>{if(!OPN.on)return;if(e.code==='Escape'||e.code==='Enter'||e.code==='Space'){e.preventDefault();e.stopImmediatePropagation();opEnd();}},true);
 /* first ever shift: play the opening, then open the kitchen */

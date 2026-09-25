@@ -123,7 +123,7 @@ const TUTS={
     St('고기를 손으로 잡아 팬에','빈손으로 도마 위 고기를 잡고 큰 팬으로 끌어다 놓아요.',[{k:'board'},{k:'cw',i:2}],()=>cwHas(2,'beef'),'끌기'),
     tWait(2,'아랫면에 갈색 크러스트가 생길 때까지','',()=>G.cw[2].items.some(o=>o.type==='beef'&&o.face[o.down]>.6),'크러스트'),tTool('spatula','뒤집개로 뒤집어요.'),
     St('고기를 뒤집어요','고기를 짧게 클릭하면 뒤집혀요. 30초마다 뒤집어 주세요.',[{k:'cw',i:2}],()=>G.cw[2].items.some(o=>o.type==='beef'&&o.face[0]>.6&&o.face[1]>.3),'클릭'),
-    tTool('probe','온도계를 고기 위에 대면 속 온도가 보여요.'),St('주문 굽기보다 5°C 낮을 때까지','주문표의 굽기를 확인하세요. 레스팅하는 동안 속 온도가 몇 도 더 올라가요. 중간중간 뒤집개로 뒤집어요.',[{k:'cw',i:2},{k:'rail'}],()=>{const o=selOrder(),lo=o&&o.opt?o.opt[1][0]:54;return G.cw[2].items.some(b=>b.type==='beef'&&b.T>=lo-5);},'온도 확인'),
+    tTool('probe','온도계를 고기 위에 대면 속 온도가 보여요.'),St('주문 굽기보다 5°C 낮을 때까지','크러스트가 생겼으면 불을 중불로 줄여요. 레스팅하는 동안 속 온도가 5°C쯤 더 올라가요. 중간중간 뒤집개로 뒤집어요.',[{k:'cw',i:2},{k:'rail'}],()=>{const o=selOrder(),lo=o&&o.opt?o.opt[1][0]:54;return G.cw[2].items.some(b=>b.type==='beef'&&b.T>=lo-5);},'온도 확인'),
     tTool('chop','긴 젓가락(집게)으로 고기를 옮겨요.'),St('고기를 집어 도마로','젓가락으로 고기를 짧게 클릭해 집고 도마를 클릭해요.',[{k:'cw',i:2},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='beef'),'도마'),
     St('25초 레스팅','바로 썰면 육즙이 흘러나와요. 잠깐 기다려요.',[{k:'board'}],()=>G.board.pieces.some(p=>p.type==='beef'&&G.t-(p.offT||0)>25),'기다려요'),tKnife(),tSlice('beef','고기',4,99999,'1.5cm 간격으로 썰면 단면의 익은 정도가 보여요.'),tHand(),
     tDump([{k:'plate'}],'접시에 담아요',()=>vHas(G.plate,'beef')),tServe()],
