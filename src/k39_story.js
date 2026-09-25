@@ -49,7 +49,7 @@ PREP_RENDER.story=body=>{const st=storySt();body.innerHTML=`<div class="sy-tab">
   ${st.ended?'<p class="sf-lead">🌟 미식 가이드의 별을 받았어요. 지금은 자유 영업 중! <button type="button" class="btn2" id="syEnd">🎬 엔딩 다시 보기</button></p>':''}</div>`;
   const b=$('#syEnd');if(b)b.onclick=()=>playOpening(()=>setScreen('prep'),endScenes());};
 /* ---- the ending, cut paper like the opening ---- */
-function endScenes(){const days=SAVE.day||1,guests=SAVE.served||0;return[
+function endScenes(){const days=SAVE.day||1,guests=SAVE.served||0,S=[
  {d:6.6,cap:`처음 셔터를 올린 날로부터 ${days}일.`,draw:lt=>{street(false,lt);put(piece('esun',190,190,L=>L(Pp.ell(95,95,90,90),'#f08a3a'),boil()),1250,330+lt*14,{d:1});
    for(let i=0;i<4;i++){const B=[[80,420,260,340],[330,470,200,290],[1080,440,230,320],[1320,390,300,370]][i];put(pBld(i,false),B[0]+B[2]/2,B[1]+B[3]/2,{d:2});}
    put(piece('roadD',1640,260,L=>L(Pp.rect(0,20,1640,240),'#8a6a52'),boil()),800,880,{d:3});shopFront(0,false);
@@ -67,9 +67,9 @@ function endScenes(){const days=SAVE.day||1,guests=SAVE.served||0;return[
  {d:7.4,cap:'그리고 오늘, 미식 가이드에 작은 별 하나가 실렸어요.',draw:lt=>{const g=OPN.g;
    put(piece('ekraft',1640,1040,L=>L(Pp.rect(0,0,1640,1040),'#d9b889',0)),800,500,{d:0});
    const op=eio(lt/1.4);put(piece('ebook',980,640,L=>{L(Pp.rect(0,0,980,640),'#7a2410',1.6);L(Pp.rect(24,20,456,600),PAL.white,1.4);L(Pp.rect(500,20,456,600),PAL.white,1.4);},boil()),800,500,{d:6,sy:1,sx:.35+op*.65});
-   if(op>.95){g.save();g.fillStyle=PAL.ink;g.textAlign='center';g.font='46px "Black Han Sans"';g.fillText('미식 가이드',555,330);g.font='34px "Nanum Pen Script", sans-serif';g.fillText('올해 새로 별을 받은 집',555,390);
-     g.font='30px "Nanum Pen Script", sans-serif';g.fillStyle='#8a755a';['“소박하지만 정성이 가득한 한 그릇”','“다시 찾고 싶은 골목 식당”'].forEach((t,i)=>g.fillText(t,555,500+i*50));
-     g.font='54px "Black Han Sans"';g.fillStyle=PAL.red;g.fillText('지글지글 키친',1045,330);g.font='32px "Nanum Pen Script", sans-serif';g.fillStyle=PAL.ink;g.fillText(`${days}일째 영업 중 · 골목 끝`,1045,390);g.restore();}
+   if(op>.95){g.save();g.fillStyle=PAL.ink;g.textAlign='center';g.font='46px "Black Han Sans"';g.fillText('미식 가이드',555,330);g.font='26px "Jua", sans-serif';g.fillText('올해 새로 별을 받은 집',555,390);
+     g.font='23px "Jua", sans-serif';g.fillStyle='#8a755a';['“소박하지만 정성이 가득한 한 그릇”','“다시 찾고 싶은 골목 식당”'].forEach((t,i)=>g.fillText(t,555,500+i*50));
+     g.font='54px "Black Han Sans"';g.fillStyle=PAL.red;g.fillText('지글지글 키친',1045,330);g.font='25px "Jua", sans-serif';g.fillStyle=PAL.ink;g.fillText(`${days}일째 영업 중 · 골목 끝`,1045,390);g.restore();}
    if(lt>2.4){const s=1+(1-back((lt-2.4)/.45))*1.2;put(piece('estar',220,220,L=>{L(Pp.star(110,110,104),'#f0b64a',1.6);L(Pp.star(110,110,70),'#ffd66b',1.2);},boil()),1045,560,{sx:s,rot:-.1,d:6});cue('star',()=>{AU.ding&&AU.ding();AU.chop&&AU.chop('kimchi',800);});}
    if(lt>3.2){for(let i=0;i<40;i++){const R=mulberry(i+300),tt=lt-3.2,vx=(R()-.5)*1000,vy=-260-R()*500,x=1045+vx*tt,y=520+vy*tt+520*tt*tt;if(y>1050)continue;
      put(piece('conf'+(i%5),22,14,L=>L(Pp.rect(0,0,22,14),['#e0412a','#f0ae3a','#4f8a4a','#35578f','#fff3dc'][i%5],1),0),x,y,{rot:tt*(R()*14-7),sx:Math.cos(tt*(5+R()*6)),sy:1,d:1});}}}},
@@ -85,4 +85,5 @@ function endScenes(){const days=SAVE.day||1,guests=SAVE.served||0;return[
    for(let i=0;i<14;i++){const R=mulberry(i+200),x=R()*1600,y=((R()*1000+lt*(40+R()*50))%1100)-50;put(piece('conf'+(i%5),22,14,L=>L(Pp.rect(0,0,22,14),['#e0412a','#f0ae3a','#4f8a4a','#35578f','#fff3dc'][i%5],1),0),x,y,{rot:lt*(R()*4-2),a:.7,d:1});}
    if(lt>.2){const s=1+(1-back((lt-.2)/.45))*.9;put(sticker('ethx','고마워요, 사장님!',120,'#ffcf5a','#7a2410'),800,430,{rot:-.04,sx:s,d:6});cue('st1',()=>AU.chop&&AU.chop('kimchi',700));}
    if(lt>1){const s=back((lt-1)/.4);put(sticker('eend','THE END',44,'#ffffff','#c23a1b','"IBM Plex Mono"'),800,600,{rot:-.03,sx:s,d:3});}
-   if(lt>1.6){g.save();g.globalAlpha=clamp((lt-1.6)*2,0,1);g.font='52px "Nanum Pen Script", "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle=PAL.ink;g.fillText('…그리고 영업은 계속됩니다',800,760);g.restore();}}}];}
+   if(lt>1.6){g.save();g.globalAlpha=clamp((lt-1.6)*2,0,1);g.font='40px "Jua", "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle=PAL.ink;g.fillText('…그리고 영업은 계속됩니다',800,760);g.restore();}}}];
+  S.glyphs='오늘도 줄 서는 집 미식 가이드 올해 새로 별을 받은 집 “소박하지만 정성이 가득한 한 그릇” “다시 찾고 싶은 골목 식당” 일째 영업 중 · 골목 끝 고마워요, 사장님! THE END …그리고 영업은 계속됩니다';return S;}
