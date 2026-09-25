@@ -408,4 +408,12 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 #opSkip{position:absolute;right:28px;top:24px;background:rgba(30,18,10,.55);border:1px solid rgba(255,240,220,.35);border-radius:20px;padding:8px 18px;color:#fff3dc;font-size:14px;letter-spacing:.04em}#opSkip:hover{background:rgba(194,58,27,.85)}
 .op-hint{position:absolute;left:28px;top:30px;font-size:12.5px;color:rgba(255,240,220,.55)}
 #setOpening{margin-top:14px;width:100%}
+/* ===== 1.6.1: no button may leave the screen ===== */
+.stl{max-height:950px;display:flex;flex-direction:column}.stl h2{flex:none}#settleBody{flex:1;min-height:0;overflow:auto;padding-right:6px}.st-btns{flex:none;padding-top:12px;border-top:1px dashed #d8c7a4}
+.res{max-height:950px}.res>div:last-child{display:flex;flex-direction:column;min-height:0;max-height:880px}#notes{flex:1;min-height:0;overflow:auto;padding-right:4px}.res-foot{flex:none}
+.set{max-height:950px}.set-body{overflow:auto;min-height:0}.rv{max-height:950px;overflow:auto}
+/* compact recipe card */
+#recipePop.compact #rpArt,#recipePop.compact #rpImg,#recipePop.compact #steps li:not(.cur){display:none}
+#recipePop.compact{padding:10px 14px 8px}#recipePop.compact h3{font-size:21px;padding-right:56px}#recipePop.compact #rpSub{margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rpMore{display:block;width:100%;margin-top:6px;background:none;border:none;border-top:1px dashed #d8c7a4;padding:6px 0 2px;font-size:13px;color:#8a5a3a;text-align:left}#rpMore small{float:right;color:#8a755a;font-family:'IBM Plex Mono',monospace}#rpMore:hover{color:var(--chili)}
 </style>

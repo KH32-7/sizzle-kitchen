@@ -413,6 +413,14 @@ body.calm *,body.calm *::before,body.calm *::after{animation-duration:.001s!impo
 #opSkip{position:absolute;right:28px;top:24px;background:rgba(30,18,10,.55);border:1px solid rgba(255,240,220,.35);border-radius:20px;padding:8px 18px;color:#fff3dc;font-size:14px;letter-spacing:.04em}#opSkip:hover{background:rgba(194,58,27,.85)}
 .op-hint{position:absolute;left:28px;top:30px;font-size:12.5px;color:rgba(255,240,220,.55)}
 #setOpening{margin-top:14px;width:100%}
+/* ===== 1.6.1: no button may leave the screen ===== */
+.stl{max-height:950px;display:flex;flex-direction:column}.stl h2{flex:none}#settleBody{flex:1;min-height:0;overflow:auto;padding-right:6px}.st-btns{flex:none;padding-top:12px;border-top:1px dashed #d8c7a4}
+.res{max-height:950px}.res>div:last-child{display:flex;flex-direction:column;min-height:0;max-height:880px}#notes{flex:1;min-height:0;overflow:auto;padding-right:4px}.res-foot{flex:none}
+.set{max-height:950px}.set-body{overflow:auto;min-height:0}.rv{max-height:950px;overflow:auto}
+/* compact recipe card */
+#recipePop.compact #rpArt,#recipePop.compact #rpImg,#recipePop.compact #steps li:not(.cur){display:none}
+#recipePop.compact{padding:10px 14px 8px}#recipePop.compact h3{font-size:21px;padding-right:56px}#recipePop.compact #rpSub{margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rpMore{display:block;width:100%;margin-top:6px;background:none;border:none;border-top:1px dashed #d8c7a4;padding:6px 0 2px;font-size:13px;color:#8a5a3a;text-align:left}#rpMore small{float:right;color:#8a755a;font-family:'IBM Plex Mono',monospace}#rpMore:hover{color:var(--chili)}
 </style>
 </head>
 <body>
@@ -3529,6 +3537,20 @@ addEventListener('keydown',e=>{if(!OPN.on)return;if(e.code==='Escape'||e.code===
 startCareer=(orig=>function(){if(SAVE&&!SAVE.openingSeen&&!(SAVE.served>0)&&SAVE.day===1&&!SAVE.mid&&!OPN.on){hideAll();$('#title').hidden=true;playOpening(()=>orig());return;}orig();})(startCareer);
 /* and it can be watched again from settings */
 openSettings=(orig=>function(){orig();const s=$('#setPanel .set-body section:last-child');if(s&&!s.querySelector('#setOpening')){const b=document.createElement('button');b.type='button';b.id='setOpening';b.className='btn2';b.textContent='🎬 오프닝 다시 보기';b.onclick=()=>{closeSettings();playOpening(null);};s.appendChild(b);}})(openSettings);
+
+/* ---------- 1.6.1 hotfix: nothing may push a "next" button off screen · compact recipe card · "싱겁게" really means less salt ---------- */
+/* settlement: Enter always moves on, even if something odd happens to the layout */
+addEventListener('keydown',e=>{const s=$('#settle');if(!s||s.hidden||e.repeat)return;if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();$('#stNext').click();}});
+/* recipe card: compact by default (title + current step); expand for the whole list */
+function rpCompact(){return SET.rpFull!==true;}
+renderSteps=(orig=>function(){orig();const p=$('#recipePop');if(!p)return;p.classList.toggle('compact',rpCompact());let b=$('#rpMore');
+  if(!b){b=document.createElement('button');b.type='button';b.id='rpMore';b.onclick=e=>{e.stopPropagation();SET.rpFull=!rpCompact()?false:true;saveOpt();renderSteps();};p.appendChild(b);}
+  const lis=$$('#steps li'),cur=lis.findIndex(li=>li.classList.contains('cur')),done=lis.filter(li=>li.classList.contains('done')).length;
+  b.innerHTML=rpCompact()?`전체 ${lis.length}단계 보기 ▾ <small>${done}/${lis.length} 완료</small>`:'간단히 ▴';if(cur<0&&rpCompact()&&lis.length){const li=lis[lis.length-1];li.classList.add('cur');}})(renderSteps);
+/* "싱겁게 해줘" orders: the salt target drops, so a lighter dish is right, not "싱거워요" */
+evaluate=(orig=>function(R,v,o){if(!o||o.pref!=='mild'||!R.spec)return orig(R,v,o);const sp=R.spec,s2=Object.assign({},sp),low=r=>[r[0]*.45,r[1]*.8];
+  if(sp.salt)s2.salt=low(sp.salt);if(sp.broth&&sp.broth.salt)s2.broth=Object.assign({},sp.broth,{salt:low(sp.broth.salt)});if(sp.noodle&&sp.noodle.salted)s2.noodle=Object.assign({},sp.noodle,{salted:[sp.noodle.salted[0]*.3,sp.noodle.salted[1]]});
+  const res=orig(Object.assign({},R,{spec:s2}),v,o);res.notes=res.notes.filter(n=>!/싱거/.test(n.s));return res;})(evaluate);
 
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
