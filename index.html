@@ -1028,17 +1028,17 @@ function stepFluid(c,dt){const F=c.fluid;if(!F.length){c.oilAmt=0;return;}const 
   // evaporation / searing / burning
   for(let i=F.length-1;i>=0;i--){const q=F[i],d=LQ[q.k];
     if(c.kind==='counter'){q.m-=dt*.004;if(q.age>50){q.m-=dt*.05;}if(q.m<=.02){STX.fillStyle=rgba(d.col,.06);STX.beginPath();STX.arc(q.x,q.y,q.r||4,0,TAU);STX.fill();F.splice(i,1);}continue;}
-    if(q.w>0&&T>100){const e=Math.min(q.w,dt*(T-100)/(d.oil?300:90));q.w-=e;const m=e*q.m*(d.wat||1);if(q.m>0)q.m-=m;c.evapNow+=m*.9;if(T>170){q.sear=Math.min(1,q.sear+e*1.6);}}
+    if(q.w>0&&T>100){/* sauces and starchy pasta water reduce slowly (a ladleful simmers ~30s), splashes of plain water flash off */const e=Math.min(q.w,dt*(T-100)/(d.oil?300:90)/(d.sauce||d.starch?12:1));q.w-=e;const m=e*q.m*(d.wat||1);if(q.m>0)q.m-=m;c.evapNow+=m*.9;if(T>170){q.sear=Math.min(1,q.sear+e*1.6);}}
     if(q.w<=.02&&T>200&&!d.oil){q.burn+=dt*(T-200)/110;if(q.burn>.4)c.smokeNow+=q.m*q.burn*.03*dt*60;}
     if(d.oil&&T>(q.k==='butter'?150:q.k==='ses'?180:235)){q.burn+=dt*(T-(q.k==='butter'?150:235))/200;if(T>235||(q.k==='butter'&&T>185))c.smokeNow+=(T-230)/40*q.m*.02*dt*60;}
     if(q.m<.03)F.splice(i,1);}
   c.oilAmt=oil;}
 function absorbFluid(c,dt){const F=c.fluid;if(!F.length)return;
   for(const q of F){const d=LQ[q.k],r=q.r||fR(q,c.T);
-    nearItems(c,q.x,q.y,r,o=>{if(q.m<=0||o.z>1)return;const spd=Math.hypot(o.vx,o.vy);let a=q.m*dt*(.2+spd*.01)*(d.oil?.04:1)*Math.min(1,o.r/r+.3);a=Math.min(a,q.m);q.m-=a;const mm=o.mass;
+    nearItems(c,q.x,q.y,r,o=>{if(q.m<=0||o.z>1)return;const spd=Math.hypot(o.vx,o.vy);if(d.sauce&&o.coat.sauce>2.5)return;let a=q.m*dt*(.2+spd*.01)*(d.oil?.04:d.sauce?.12:1)*Math.min(1,o.r/r+.3);a=Math.min(a,q.m);q.m-=a;const mm=o.mass;
       o.coat.salt+=a*d.salt/mm;if(d.dark)o.coat.dark+=a*d.dark/mm;if(d.oil)o.coat.oil+=a/mm;if(d.sauce)o.coat.sauce+=a/mm;if(d.spicy)o.coat.chili+=a*d.spicy*.5/mm;if(q.chili)o.coat.chili+=a/q.m*q.chili;
       if(q.sear>.2)o.fire+=a*q.sear*.06/mm;if(q.burn>.5)o.bitter+=a*(q.burn-.5)*.2/mm;if(d.aroma)o.aroma+=a*d.aroma;});
-    for(const n of c.noodles){let a=0;const pts=n.strands;for(let s=0;s<pts.length;s+=3){const p=pts[s].pts[6];if((p.x-q.x)**2+(p.y-q.y)**2<r*r){a+=q.m*dt*.3*(d.oil?.5:1);}}
+    for(const n of c.noodles){let a=0;const pts=n.strands;for(let s=0;s<pts.length;s+=3){const p=pts[s].pts[6];if((p.x-q.x)**2+(p.y-q.y)**2<r*r){a+=q.m*dt*.3*(d.oil?.5:d.starch?.25:1);}}
       a=Math.min(a,q.m);if(a>0){q.m-=a;n.coat.salt+=a*d.salt;if(d.dark)n.coat.dark+=a*d.dark;if(d.oil)n.coat.oil+=a;if(d.sauce){n.coat.sauce+=a;n.sauceCol=d.col;}if(d.spicy)n.coat.chili+=a*d.spicy;if(q.sear>.2)n.fire=(n.fire||0)+a*q.sear*.05;if(d.aroma)n.aroma=(n.aroma||0)+a;if(q.k==='pastaw'||q.k==='water')n.stick=Math.max(0,n.stick-a*.05);}}}}
 
 /* ---------- fried egg & scramble ---------- */
@@ -1091,8 +1091,8 @@ function stepFry(c,dt){const b=G.burners[c.burner];
     if(it.kind==='piece'){if(it.type==='kimchi')hasK=true;if(it.type==='scallion'||it.type==='jjokpa')hasSc=true;}
     if(it.z>.5){it.T+=(30-it.T)*.3*dt;continue;}
     const d=it.kind==='grain'?{cookRate:.12,brownRate:.03,hk:1}:ING[it.type],contact=oilF/(1+it.crowd*.32);
-    if(it.L){const cap=150+(1-Math.min(1,it.moist/.35))*70;steakStep(it,Math.min(c.T,cap),30+(it.baste||0),dt,2.2*contact+.4,.35);it.baste=Math.max(0,(it.baste||0)-dt*40);heatOut+=(c.T-it.L[it.down===0?0:11])*.15*it.mass*dt;
-      if(c.T>125){const mb=it.moist>.3?.2:1;it.face[it.down]+=d.brownRate*(c.T-125)/110*mb*(c.oilAmt>1||UPG.nonstick?1:1.3)*dt;}if(c.T>100)it.moist=Math.max(0,it.moist-dt*.003*(c.T-100)/100);
+    if(it.L){/* the meat surface stays near boiling while it still has juice, so resting carries the core up a few degrees, not ten */const cap=112+(1-Math.min(1,it.moist/.35))*48;steakStep(it,Math.min(c.T,cap),30+(it.baste||0),dt,2.2*contact+.4,.35);it.baste=Math.max(0,(it.baste||0)-dt*40);heatOut+=(c.T-it.L[it.down===0?0:11])*.15*it.mass*dt;
+      if(c.T>125){const mb=it.moist>.3?.2:1;/* crust builds fast on a smoking pan, slowly on medium heat, so you can sear hot then finish gently */it.face[it.down]+=d.brownRate*((c.T-125)/110)**2*mb*(c.oilAmt>1||UPG.nonstick?1:1.3)*dt;}if(c.T>100)it.moist=Math.max(0,it.moist-dt*.003*(c.T-100)/100);
       if(c.T>130&&Math.random()<dt*2)evap+=.8;if(it.face[it.down]>1.3)smoke+=(it.face[it.down]-1.3)*it.mass;it.offT=G.t;continue;}
     const k=it.kind==='grain'?.3:d.hk*clamp(22/Math.sqrt(it.area),.35,1.6);
     if(it.moist>.02&&it.T>=99.5){const q=Math.max(0,c.T-100)*k*contact,e=q*dt/LAT;it.moist=Math.max(0,it.moist-e);evap+=e*it.mass;heatOut+=q*dt*it.mass;it.T=100;}
@@ -1205,10 +1205,12 @@ function tongsInteract(c,dt){const s=G.spat;if(!s.down||s.c!==c)return;const lx=
   if(c.kind==='mix'&&spd>40&&c.water>0&&(c.flour>0||c.egg>0)){c.mixv=Math.min(1,c.mixv+dt*spd*.0009);for(const o of c.items){const r=Math.hypot(o.x,o.y)+1;o.x+=-o.y/r*spd*dt*.08;o.y+=o.x/r*spd*dt*.08;}}
   if(c.liq&&spd>40&&c.liq.T<90){/* stirring cools slightly */c.liq.T-=dt*.2;}
   c.agit=Math.min(1.5,(c.agit||0)+spd*dt*.003);}
-function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-dt*1.2);const F=c.fluid;
-  if(c.agit>.2){const oils=F.filter(q=>LQ[q.k].oil&&q.k!=='butter'),wats=F.filter(q=>q.k==='pastaw'||q.k==='water');
-    if(oils.length&&wats.length){const a=oils[(Math.random()*oils.length)|0];let b=null,bd=1e9;for(const w of wats){const d=dist(a.x,a.y,w.x,w.y);if(d<bd){bd=d;b=w;}}
-      if(b&&bd<70){const amt=Math.min(a.m,b.m,dt*c.agit*1.6*(b.k==='pastaw'?1:.35));a.m-=amt;b.m-=amt;F.push({k:'emul',m:amt*2,x:(a.x+b.x)/2,y:(a.y+b.y)/2,vx:0,vy:0,T:c.T,w:.4,burn:0,sear:0,age:0,starch:b.k==='pastaw'?1:.3});}}}
+function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-dt*.7);const F=c.fluid;
+  /* every oil drop near some pasta water turns into creamy sauce while the pan is being tossed/stirred */
+  if(c.agit>.15){const oils=F.filter(q=>LQ[q.k].oil&&q.k!=='butter'&&q.m>.05),wats=F.filter(q=>(q.k==='pastaw'||q.k==='water')&&q.m>.05);
+    if(oils.length&&wats.length)for(const a of oils){let b=null,bd=1e9;for(const w of wats){const d=dist(a.x,a.y,w.x,w.y);if(d<bd){bd=d;b=w;}}
+      if(!b||bd>110||b.m<=.05)continue;const amt=Math.min(a.m,b.m,dt*c.agit*(b.k==='pastaw'?3.2:.3));a.m-=amt;b.m-=amt;const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      const e=F.find(q=>q.k==='emul'&&dist(q.x,q.y,mx,my)<45&&q.m<6);if(e)e.m+=amt*2;else F.push({k:'emul',m:amt*2,x:mx,y:my,vx:0,vy:0,T:c.T,w:.4,burn:0,sear:0,age:0,starch:b.k==='pastaw'?1:.3});}}
   if(c.T>165){for(const q of F)if(q.k==='emul'&&q.w<.1){q.k='olive';c.flav.broken=(c.flav.broken||0)+q.m;}}}
 
 /* ---------- batter & mixing bowl ---------- */
@@ -1769,11 +1771,11 @@ const REC=[
  {id:'aglio',n:'알리오 올리오',dlc:'west',price:14000,vessel:'plate',time:220,sub:'마늘 · 올리브유 · 면수 유화',
   steps:[['마늘 얇게 편 썰기',()=>cutN('garlic',400)>=5],['냄비 물에 소금 넉넉히 (1%) 끓이기',()=>G.cw.some(c=>c.liq&&saltPct(c.liq)>.6&&c.liq.T>95)],['스파게티 삶기 (알 덴테)',()=>anyN('spaghetti',n=>n.done>.85)],
     ['팬에 올리브유 + 마늘 약불로 노릇하게',()=>panWith('garlic',o=>o.face[o.down]>.25||o.face[1-o.down]>.25)],['면 + 국자로 면수 넣고 팬 흔들어 유화',()=>G.cw.some(c=>c.fluid.some(q=>q.k==='emul'))],['접시에 담고 파슬리',()=>G.plate.noodles.length>0]],
-  spec:{knife:{garlic:['disc',.1,.5]},noodle:{type:'spaghetti',done:[.88,1.04],salted:[.6,1.6],sauce:[.08,.5],emul:1},garlic:1,garn:{parsley:.1,parm:.2,chili:.1},req:[['noodle','면이 없어요!']],w:{knife:.12,noodle:.44,garlic:.16,finish:.28}}},
+  spec:{knife:{garlic:['disc',.1,.5]},noodle:{type:'spaghetti',done:[.88,1.04],salted:[.3,1.6],sauce:[.08,.5],emul:1},garlic:1,garn:{parsley:.1,parm:.2,chili:.1},req:[['noodle','면이 없어요!']],w:{knife:.12,noodle:.44,garlic:.16,finish:.28}}},
  {id:'pomo',n:'토마토 스파게티',dlc:'west',price:15000,vessel:'plate',time:230,sub:'파마산 · 파슬리',
   steps:[['마늘 편 썰기, 양파 잘게',()=>cutN('garlic',400)>=4],['소금물에 스파게티 삶기',()=>anyN('spaghetti',n=>n.done>.85)],['팬에 올리브유 · 마늘 · 양파 볶고 토마토 소스',()=>G.cw.some(c=>c.fluid.some(q=>q.k==='tomato'))],
     ['소스가 살짝 졸면 면 넣고 버무리기',()=>G.cw.some(c=>c.noodles.some(n=>n.coat.sauce>15))],['접시에 담고 파마산·파슬리',()=>G.plate.noodles.length>0]],
-  spec:{knife:{garlic:['disc',.1,.6],onion:['dice',.1,1.5]},cook:{onion:1},noodle:{type:'spaghetti',done:[.88,1.06],salted:[.6,1.6],sauce:[.28,.9]},garlic:1,garn:{parm:.3,parsley:.1},req:[['noodle','면이 없어요!']],w:{knife:.1,cook:.1,noodle:.46,garlic:.1,finish:.24}}},
+  spec:{knife:{garlic:['disc',.1,.6],onion:['dice',.1,1.5]},cook:{onion:1},noodle:{type:'spaghetti',done:[.88,1.06],salted:[.3,1.6],sauce:[.28,.9]},garlic:1,garn:{parm:.3,parsley:.1},req:[['noodle','면이 없어요!']],w:{knife:.1,cook:.1,noodle:.46,garlic:.1,finish:.24}}},
 ];
 const RID={};for(const r of REC)RID[r.id]=r;
 
@@ -1848,24 +1850,25 @@ function evaluate(R,v,order){const sp=R.spec,D=snapDish(v),N=[],note=(t,s)=>N.pu
   if(sp.begg){const hs=D.pcs.filter(o=>o.type==='begg');let sc=0;if(!hs.length)note('meh','삶은 계란이 빠졌어요.');else{sc=100;const y=hs[0].yolk||0,[lo,hi]=sp.begg;if(y<lo){sc-=35;note('meh','계란이 너무 덜 익었어요.');}else if(y>hi){sc-=25;note('meh','노른자가 퍽퍽하게 익었어요.');}else note('good',R.id==='shoyu'?'노른자가 쫀득한 아지타마!':'계란이 알맞게 삶아졌어요.');if(hs.every(o=>o.area>o.orig*.8)){sc-=10;note('meh','계란을 반으로 잘라 올려 주세요.');}}cats.push(['계란',sc,W.egg||.14]);}
   if(sp.pegg){const e=v.eggs[0];let sc=40;if(e){sc=e.set>.5?100:60;note(e.set>.5?'good':'meh',e.set>.5?'계란이 몽글하게 익었어요.':'계란이 덜 익었어요.');}cats.push(['계란',sc,W.egg||.1]);}
   // steak
-  if(sp.steak){const b=D.pcs.filter(o=>o.type==='beef');let sc=0;if(b.length){sc=100;const core=Math.max(...b.map(o=>Math.max(o.Lm[5],o.Lm[6]))),[lo,hi]=order&&order.opt?order.opt[1]:[54,58],nm=order&&order.opt?order.opt[0]:'미디엄 레어';
+  if(sp.steak){const b=D.pcs.filter(o=>o.type==='beef');let sc=0;if(b.length){sc=100;const core=Math.round(Math.max(...b.map(o=>Math.max(o.Lm[5],o.Lm[6])))),[lo,hi]=order&&order.opt?order.opt[1]:[54,58],nm=order&&order.opt?order.opt[0]:'미디엄 레어';
       if(core<lo){sc-=Math.min(55,(lo-core)*6);note('bad',`${nm}을 원했는데 덜 익었어요 (심부 ${Math.round(core)}°C).`);}else if(core>hi){sc-=Math.min(55,(core-hi)*5);note('bad',`${nm}을 원했는데 너무 익었어요 (심부 ${Math.round(core)}°C).`);}else note('good',`주문대로 정확히 ${nm}! (심부 ${Math.round(core)}°C)`);
       const f0=Math.max(...b.map(o=>o.face[0])),f1=Math.max(...b.map(o=>o.face[1]));if(f0<.5||f1<.5){sc-=15;note('meh','크러스트가 약해요. 더 뜨거운 팬에서 구워요.');}else if(f0>1.35||f1>1.35){sc-=20;note('bad','겉이 탔어요.');}else note('good','겉면에 진한 갈색 크러스트가 생겼어요.');
       if(b.some(o=>o.juiceLost)){sc-=15;note('meh','레스팅 없이 썰어서 육즙이 빠졌어요.');}else if(b.some(o=>o.area<o.orig*.7))note('good','충분히 쉬게 한 뒤 썰어 육즙이 촉촉해요.');
       const salt=b.reduce((s,o)=>s+o.coat.salt*o.mass,0)/b.reduce((s,o)=>s+o.mass*2,0)*100;if(salt<.3){sc-=15;note('meh','간이 안 되어 밍밍해요. 굽기 전에 소금을 뿌려 주세요.');}else if(salt>3){sc-=15;note('meh','짜요.');}else note('good','소금 간이 적당해요.');
       if(b.some(o=>o.aroma>1))note('good','버터 향이 고소하게 배었어요.');}cats.push(['스테이크',clamp(sc,0,100),W.steak||.8]);}
-  if(sp.garlic){const g=[...D.pcs,...v.noodles.length?[]:[]].filter(o=>o.type==='garlic');let sc=50;if(g.length){const b=g.reduce((s,o)=>s+Math.max(o.face[0],o.face[1]),0)/g.length;sc=b>1.15?20:b>.3?100:70;note(b>1.15?'bad':b>.3?'good':'meh',b>1.15?'마늘이 타서 써요.':b>.3?'마늘이 노릇하게 향을 냈어요.':'마늘이 덜 볶아졌어요.');}else note('meh','마늘이 빠졌어요.');cats.push(['마늘',sc,W.garlic||.14]);}
+  if(sp.garlic){const g=[...D.pcs,...v.noodles.length?[]:[]].filter(o=>o.type==='garlic');let sc=50;if(g.length){const b=g.reduce((s,o)=>s+Math.max(o.face[0],o.face[1]),0)/g.length;sc=b>1.4?20:b>1.15?75:b>.3?100:70;note(b>1.4?'bad':b>1.15?'meh':b>.3?'good':'meh',b>1.4?'마늘이 타서 써요.':b>1.15?'마늘이 살짝 진하게 볶아졌어요.':b>.3?'마늘이 노릇하게 향을 냈어요.':'마늘이 덜 볶아졌어요.');}else note('meh','마늘이 빠졌어요.');cats.push(['마늘',sc,W.garlic||.14]);}
   evalDLC(R,v,sp,cats,note);
   // finish (garnish + flavor + temperature)
-  {let sc=40;const gn=v.garn||{},gp=D.garn;for(const k in sp.garn||{}){if(k==='sesoil'){if(D.sesoil>1){sc+=12;note('good','참기름 향이 고소하게 올라와요.');}continue;}
-      if(SHK[k]){if((gn[k]||0)>=sp.garn[k]){sc+=12;}continue;}if(k==='nori'){if(v.seeds.some(s=>s.type==='nori')){sc+=14;note('good','김 한 장까지 제대로!');}continue;}
-      if(ING[k]){const a=D.pcs.filter(o=>o.type===k);if(a.length){sc+=12;if(k==='scallion'&&a.some(o=>!o.cooked))note('good','송송 썬 파가 싱그러워요.');}}}
+  {let sc=0,poss=0;const gn=v.garn||{},gp=D.garn;for(const k in sp.garn||{}){if(k==='sesoil'){poss+=12;if(D.sesoil>1){sc+=12;note('good','참기름 향이 고소하게 올라와요.');}continue;}
+      if(SHK[k]){poss+=12;if((gn[k]||0)>=sp.garn[k]){sc+=12;}continue;}if(k==='nori'){poss+=14;if(v.seeds.some(s=>s.type==='nori')){sc+=14;note('good','김 한 장까지 제대로!');}continue;}
+      if(ING[k]){poss+=12;const a=D.pcs.filter(o=>o.type===k);if(a.length){sc+=12;if(k==='scallion'&&a.some(o=>!o.cooked))note('good','송송 썬 파가 싱그러워요.');}}}
     const fl=sp.fl||{},fire=D.pcs.reduce((s,o)=>s+(o.fire||0)*o.mass,0)+D.grs.reduce((s,o)=>s+o.fire*o.mass,0)+v.noodles.reduce((s,n)=>s+(n.fire||0),0)+(v.flav.fire||0);
-    if(fl.fire&&fire>.8){sc+=18;note('good','불향이 확 올라와요!');}if(fl.scal&&(v.flav.scal||0)>5){sc+=15;note('good','파기름 덕분에 향이 깊어요.');}
+    if(fl.fire){poss+=18;if(fire>.8){sc+=18;note('good','불향이 확 올라와요!');}}if(fl.scal){poss+=15;if((v.flav.scal||0)>5){sc+=15;note('good','파기름 덕분에 향이 깊어요.');}}
     const bitter=(v.flav.bitter||0)+D.pcs.reduce((s,o)=>s+(o.bitter||0)*o.mass,0);if(bitter>.4){pen+=Math.min(20,bitter*8);note('bad','쓴맛이 나요. 양념이 탔어요.');}
-    if(R.id==='bibim'||R.id==='kmari'){const sw=v.flav.sweet||0,so=v.flav.sour||0;if(sw>=1&&sw<=9&&so>=3&&so<=26){sc+=12;note('good','설탕·식초로 새콤달콤 밸런스가 딱 좋아요.');}else if(sw>=1||so>=3)sc+=5;if(sw>12){pen+=6;note('meh','너무 달아요.');}if(so>36){pen+=6;note('meh','너무 셔요.');}}
+    if(R.id==='bibim'||R.id==='kmari'){poss+=12;const sw=v.flav.sweet||0,so=v.flav.sour||0;if(sw>=1&&sw<=9&&so>=3&&so<=26){sc+=12;note('good','설탕·식초로 새콤달콤 밸런스가 딱 좋아요.');}else if(sw>=1||so>=3)sc+=5;if(sw>12){pen+=6;note('meh','너무 달아요.');}if(so>36){pen+=6;note('meh','너무 셔요.');}}
     const cold=R.id==='kmari'||R.id==='bibim';if(!cold&&R.vessel==='plate'){const ck=[...D.pcs.filter(o=>o.cooked),...D.grs],cm=ck.reduce((s,o)=>s+(o.mass||1),0),cT=cm?ck.reduce((s,o)=>s+o.T*(o.mass||1),0)/cm:null,age=G.t-(v.tHot!==undefined?v.tHot:v.t0>=0?v.t0:G.t);if(age>90&&(cT===null||cT<42)){pen+=6;note('meh','담아 둔 지 오래돼서 조금 식었어요.');}}
-    cats.push(['마무리',clamp(sc,0,100),W.finish||.2]);}
+    // finish = share of the garnish/aroma this dish asks for; a dish that asks for none is already finished
+    const fin=poss?45+55*Math.min(1,sc/poss):92;cats.push(['마무리',clamp(fin,0,100),W.finish||.2]);}
   if(G.stats.alarm)note('meh','연기 경보가 울렸어요… 환기 필수!');
   const wsum=cats.reduce((s,c)=>s+c[2],0)||1;let total=cats.reduce((s,c)=>s+c[1]*c[2],0)/wsum-pen;total=clamp(Math.round(Math.min(total,cap)),0,100);
   const ord={bad:0,meh:1,good:2};N.sort((a,b)=>ord[a.t]-ord[b.t]);return{total,cats:cats.map(c=>[c[0],c[1]]),notes:N.slice(0,9)};}
@@ -2886,7 +2889,7 @@ const TUTS={
     St('고기를 손으로 잡아 팬에','빈손으로 도마 위 고기를 잡고 큰 팬으로 끌어다 놓아요.',[{k:'board'},{k:'cw',i:2}],()=>cwHas(2,'beef'),'끌기'),
     tWait(2,'아랫면에 갈색 크러스트가 생길 때까지','',()=>G.cw[2].items.some(o=>o.type==='beef'&&o.face[o.down]>.6),'크러스트'),tTool('spatula','뒤집개로 뒤집어요.'),
     St('고기를 뒤집어요','고기를 짧게 클릭하면 뒤집혀요. 30초마다 뒤집어 주세요.',[{k:'cw',i:2}],()=>G.cw[2].items.some(o=>o.type==='beef'&&o.face[0]>.6&&o.face[1]>.3),'클릭'),
-    tTool('probe','온도계를 고기 위에 대면 속 온도가 보여요.'),St('주문 굽기보다 5°C 낮을 때까지','주문표의 굽기를 확인하세요. 레스팅하는 동안 속 온도가 몇 도 더 올라가요. 중간중간 뒤집개로 뒤집어요.',[{k:'cw',i:2},{k:'rail'}],()=>{const o=selOrder(),lo=o&&o.opt?o.opt[1][0]:54;return G.cw[2].items.some(b=>b.type==='beef'&&b.T>=lo-5);},'온도 확인'),
+    tTool('probe','온도계를 고기 위에 대면 속 온도가 보여요.'),St('주문 굽기보다 5°C 낮을 때까지','크러스트가 생겼으면 불을 중불로 줄여요. 레스팅하는 동안 속 온도가 5°C쯤 더 올라가요. 중간중간 뒤집개로 뒤집어요.',[{k:'cw',i:2},{k:'rail'}],()=>{const o=selOrder(),lo=o&&o.opt?o.opt[1][0]:54;return G.cw[2].items.some(b=>b.type==='beef'&&b.T>=lo-5);},'온도 확인'),
     tTool('chop','긴 젓가락(집게)으로 고기를 옮겨요.'),St('고기를 집어 도마로','젓가락으로 고기를 짧게 클릭해 집고 도마를 클릭해요.',[{k:'cw',i:2},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='beef'),'도마'),
     St('25초 레스팅','바로 썰면 육즙이 흘러나와요. 잠깐 기다려요.',[{k:'board'}],()=>G.board.pieces.some(p=>p.type==='beef'&&G.t-(p.offT||0)>25),'기다려요'),tKnife(),tSlice('beef','고기',4,99999,'1.5cm 간격으로 썰면 단면의 익은 정도가 보여요.'),tHand(),
     tDump([{k:'plate'}],'접시에 담아요',()=>vHas(G.plate,'beef')),tServe()],

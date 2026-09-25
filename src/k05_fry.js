@@ -48,17 +48,17 @@ function stepFluid(c,dt){const F=c.fluid;if(!F.length){c.oilAmt=0;return;}const 
   // evaporation / searing / burning
   for(let i=F.length-1;i>=0;i--){const q=F[i],d=LQ[q.k];
     if(c.kind==='counter'){q.m-=dt*.004;if(q.age>50){q.m-=dt*.05;}if(q.m<=.02){STX.fillStyle=rgba(d.col,.06);STX.beginPath();STX.arc(q.x,q.y,q.r||4,0,TAU);STX.fill();F.splice(i,1);}continue;}
-    if(q.w>0&&T>100){const e=Math.min(q.w,dt*(T-100)/(d.oil?300:90));q.w-=e;const m=e*q.m*(d.wat||1);if(q.m>0)q.m-=m;c.evapNow+=m*.9;if(T>170){q.sear=Math.min(1,q.sear+e*1.6);}}
+    if(q.w>0&&T>100){/* sauces and starchy pasta water reduce slowly (a ladleful simmers ~30s), splashes of plain water flash off */const e=Math.min(q.w,dt*(T-100)/(d.oil?300:90)/(d.sauce||d.starch?12:1));q.w-=e;const m=e*q.m*(d.wat||1);if(q.m>0)q.m-=m;c.evapNow+=m*.9;if(T>170){q.sear=Math.min(1,q.sear+e*1.6);}}
     if(q.w<=.02&&T>200&&!d.oil){q.burn+=dt*(T-200)/110;if(q.burn>.4)c.smokeNow+=q.m*q.burn*.03*dt*60;}
     if(d.oil&&T>(q.k==='butter'?150:q.k==='ses'?180:235)){q.burn+=dt*(T-(q.k==='butter'?150:235))/200;if(T>235||(q.k==='butter'&&T>185))c.smokeNow+=(T-230)/40*q.m*.02*dt*60;}
     if(q.m<.03)F.splice(i,1);}
   c.oilAmt=oil;}
 function absorbFluid(c,dt){const F=c.fluid;if(!F.length)return;
   for(const q of F){const d=LQ[q.k],r=q.r||fR(q,c.T);
-    nearItems(c,q.x,q.y,r,o=>{if(q.m<=0||o.z>1)return;const spd=Math.hypot(o.vx,o.vy);let a=q.m*dt*(.2+spd*.01)*(d.oil?.04:1)*Math.min(1,o.r/r+.3);a=Math.min(a,q.m);q.m-=a;const mm=o.mass;
+    nearItems(c,q.x,q.y,r,o=>{if(q.m<=0||o.z>1)return;const spd=Math.hypot(o.vx,o.vy);if(d.sauce&&o.coat.sauce>2.5)return;let a=q.m*dt*(.2+spd*.01)*(d.oil?.04:d.sauce?.12:1)*Math.min(1,o.r/r+.3);a=Math.min(a,q.m);q.m-=a;const mm=o.mass;
       o.coat.salt+=a*d.salt/mm;if(d.dark)o.coat.dark+=a*d.dark/mm;if(d.oil)o.coat.oil+=a/mm;if(d.sauce)o.coat.sauce+=a/mm;if(d.spicy)o.coat.chili+=a*d.spicy*.5/mm;if(q.chili)o.coat.chili+=a/q.m*q.chili;
       if(q.sear>.2)o.fire+=a*q.sear*.06/mm;if(q.burn>.5)o.bitter+=a*(q.burn-.5)*.2/mm;if(d.aroma)o.aroma+=a*d.aroma;});
-    for(const n of c.noodles){let a=0;const pts=n.strands;for(let s=0;s<pts.length;s+=3){const p=pts[s].pts[6];if((p.x-q.x)**2+(p.y-q.y)**2<r*r){a+=q.m*dt*.3*(d.oil?.5:1);}}
+    for(const n of c.noodles){let a=0;const pts=n.strands;for(let s=0;s<pts.length;s+=3){const p=pts[s].pts[6];if((p.x-q.x)**2+(p.y-q.y)**2<r*r){a+=q.m*dt*.3*(d.oil?.5:d.starch?.25:1);}}
       a=Math.min(a,q.m);if(a>0){q.m-=a;n.coat.salt+=a*d.salt;if(d.dark)n.coat.dark+=a*d.dark;if(d.oil)n.coat.oil+=a;if(d.sauce){n.coat.sauce+=a;n.sauceCol=d.col;}if(d.spicy)n.coat.chili+=a*d.spicy;if(q.sear>.2)n.fire=(n.fire||0)+a*q.sear*.05;if(d.aroma)n.aroma=(n.aroma||0)+a;if(q.k==='pastaw'||q.k==='water')n.stick=Math.max(0,n.stick-a*.05);}}}}
 
 /* ---------- fried egg & scramble ---------- */
@@ -111,8 +111,8 @@ function stepFry(c,dt){const b=G.burners[c.burner];
     if(it.kind==='piece'){if(it.type==='kimchi')hasK=true;if(it.type==='scallion'||it.type==='jjokpa')hasSc=true;}
     if(it.z>.5){it.T+=(30-it.T)*.3*dt;continue;}
     const d=it.kind==='grain'?{cookRate:.12,brownRate:.03,hk:1}:ING[it.type],contact=oilF/(1+it.crowd*.32);
-    if(it.L){const cap=150+(1-Math.min(1,it.moist/.35))*70;steakStep(it,Math.min(c.T,cap),30+(it.baste||0),dt,2.2*contact+.4,.35);it.baste=Math.max(0,(it.baste||0)-dt*40);heatOut+=(c.T-it.L[it.down===0?0:11])*.15*it.mass*dt;
-      if(c.T>125){const mb=it.moist>.3?.2:1;it.face[it.down]+=d.brownRate*(c.T-125)/110*mb*(c.oilAmt>1||UPG.nonstick?1:1.3)*dt;}if(c.T>100)it.moist=Math.max(0,it.moist-dt*.003*(c.T-100)/100);
+    if(it.L){/* the meat surface stays near boiling while it still has juice, so resting carries the core up a few degrees, not ten */const cap=112+(1-Math.min(1,it.moist/.35))*48;steakStep(it,Math.min(c.T,cap),30+(it.baste||0),dt,2.2*contact+.4,.35);it.baste=Math.max(0,(it.baste||0)-dt*40);heatOut+=(c.T-it.L[it.down===0?0:11])*.15*it.mass*dt;
+      if(c.T>125){const mb=it.moist>.3?.2:1;/* crust builds fast on a smoking pan, slowly on medium heat, so you can sear hot then finish gently */it.face[it.down]+=d.brownRate*((c.T-125)/110)**2*mb*(c.oilAmt>1||UPG.nonstick?1:1.3)*dt;}if(c.T>100)it.moist=Math.max(0,it.moist-dt*.003*(c.T-100)/100);
       if(c.T>130&&Math.random()<dt*2)evap+=.8;if(it.face[it.down]>1.3)smoke+=(it.face[it.down]-1.3)*it.mass;it.offT=G.t;continue;}
     const k=it.kind==='grain'?.3:d.hk*clamp(22/Math.sqrt(it.area),.35,1.6);
     if(it.moist>.02&&it.T>=99.5){const q=Math.max(0,c.T-100)*k*contact,e=q*dt/LAT;it.moist=Math.max(0,it.moist-e);evap+=e*it.mass;heatOut+=q*dt*it.mass;it.T=100;}

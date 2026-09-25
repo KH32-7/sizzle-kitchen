@@ -75,10 +75,12 @@ function tongsInteract(c,dt){const s=G.spat;if(!s.down||s.c!==c)return;const lx=
   if(c.kind==='mix'&&spd>40&&c.water>0&&(c.flour>0||c.egg>0)){c.mixv=Math.min(1,c.mixv+dt*spd*.0009);for(const o of c.items){const r=Math.hypot(o.x,o.y)+1;o.x+=-o.y/r*spd*dt*.08;o.y+=o.x/r*spd*dt*.08;}}
   if(c.liq&&spd>40&&c.liq.T<90){/* stirring cools slightly */c.liq.T-=dt*.2;}
   c.agit=Math.min(1.5,(c.agit||0)+spd*dt*.003);}
-function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-dt*1.2);const F=c.fluid;
-  if(c.agit>.2){const oils=F.filter(q=>LQ[q.k].oil&&q.k!=='butter'),wats=F.filter(q=>q.k==='pastaw'||q.k==='water');
-    if(oils.length&&wats.length){const a=oils[(Math.random()*oils.length)|0];let b=null,bd=1e9;for(const w of wats){const d=dist(a.x,a.y,w.x,w.y);if(d<bd){bd=d;b=w;}}
-      if(b&&bd<70){const amt=Math.min(a.m,b.m,dt*c.agit*1.6*(b.k==='pastaw'?1:.35));a.m-=amt;b.m-=amt;F.push({k:'emul',m:amt*2,x:(a.x+b.x)/2,y:(a.y+b.y)/2,vx:0,vy:0,T:c.T,w:.4,burn:0,sear:0,age:0,starch:b.k==='pastaw'?1:.3});}}}
+function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-dt*.7);const F=c.fluid;
+  /* every oil drop near some pasta water turns into creamy sauce while the pan is being tossed/stirred */
+  if(c.agit>.15){const oils=F.filter(q=>LQ[q.k].oil&&q.k!=='butter'&&q.m>.05),wats=F.filter(q=>(q.k==='pastaw'||q.k==='water')&&q.m>.05);
+    if(oils.length&&wats.length)for(const a of oils){let b=null,bd=1e9;for(const w of wats){const d=dist(a.x,a.y,w.x,w.y);if(d<bd){bd=d;b=w;}}
+      if(!b||bd>110||b.m<=.05)continue;const amt=Math.min(a.m,b.m,dt*c.agit*(b.k==='pastaw'?3.2:.3));a.m-=amt;b.m-=amt;const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      const e=F.find(q=>q.k==='emul'&&dist(q.x,q.y,mx,my)<45&&q.m<6);if(e)e.m+=amt*2;else F.push({k:'emul',m:amt*2,x:mx,y:my,vx:0,vy:0,T:c.T,w:.4,burn:0,sear:0,age:0,starch:b.k==='pastaw'?1:.3});}}
   if(c.T>165){for(const q of F)if(q.k==='emul'&&q.w<.1){q.k='olive';c.flav.broken=(c.flav.broken||0)+q.m;}}}
 
 /* ---------- batter & mixing bowl ---------- */

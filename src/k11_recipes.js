@@ -67,11 +67,11 @@ const REC=[
  {id:'aglio',n:'알리오 올리오',dlc:'west',price:14000,vessel:'plate',time:220,sub:'마늘 · 올리브유 · 면수 유화',
   steps:[['마늘 얇게 편 썰기',()=>cutN('garlic',400)>=5],['냄비 물에 소금 넉넉히 (1%) 끓이기',()=>G.cw.some(c=>c.liq&&saltPct(c.liq)>.6&&c.liq.T>95)],['스파게티 삶기 (알 덴테)',()=>anyN('spaghetti',n=>n.done>.85)],
     ['팬에 올리브유 + 마늘 약불로 노릇하게',()=>panWith('garlic',o=>o.face[o.down]>.25||o.face[1-o.down]>.25)],['면 + 국자로 면수 넣고 팬 흔들어 유화',()=>G.cw.some(c=>c.fluid.some(q=>q.k==='emul'))],['접시에 담고 파슬리',()=>G.plate.noodles.length>0]],
-  spec:{knife:{garlic:['disc',.1,.5]},noodle:{type:'spaghetti',done:[.88,1.04],salted:[.6,1.6],sauce:[.08,.5],emul:1},garlic:1,garn:{parsley:.1,parm:.2,chili:.1},req:[['noodle','면이 없어요!']],w:{knife:.12,noodle:.44,garlic:.16,finish:.28}}},
+  spec:{knife:{garlic:['disc',.1,.5]},noodle:{type:'spaghetti',done:[.88,1.04],salted:[.3,1.6],sauce:[.08,.5],emul:1},garlic:1,garn:{parsley:.1,parm:.2,chili:.1},req:[['noodle','면이 없어요!']],w:{knife:.12,noodle:.44,garlic:.16,finish:.28}}},
  {id:'pomo',n:'토마토 스파게티',dlc:'west',price:15000,vessel:'plate',time:230,sub:'파마산 · 파슬리',
   steps:[['마늘 편 썰기, 양파 잘게',()=>cutN('garlic',400)>=4],['소금물에 스파게티 삶기',()=>anyN('spaghetti',n=>n.done>.85)],['팬에 올리브유 · 마늘 · 양파 볶고 토마토 소스',()=>G.cw.some(c=>c.fluid.some(q=>q.k==='tomato'))],
     ['소스가 살짝 졸면 면 넣고 버무리기',()=>G.cw.some(c=>c.noodles.some(n=>n.coat.sauce>15))],['접시에 담고 파마산·파슬리',()=>G.plate.noodles.length>0]],
-  spec:{knife:{garlic:['disc',.1,.6],onion:['dice',.1,1.5]},cook:{onion:1},noodle:{type:'spaghetti',done:[.88,1.06],salted:[.6,1.6],sauce:[.28,.9]},garlic:1,garn:{parm:.3,parsley:.1},req:[['noodle','면이 없어요!']],w:{knife:.1,cook:.1,noodle:.46,garlic:.1,finish:.24}}},
+  spec:{knife:{garlic:['disc',.1,.6],onion:['dice',.1,1.5]},cook:{onion:1},noodle:{type:'spaghetti',done:[.88,1.06],salted:[.3,1.6],sauce:[.28,.9]},garlic:1,garn:{parm:.3,parsley:.1},req:[['noodle','면이 없어요!']],w:{knife:.1,cook:.1,noodle:.46,garlic:.1,finish:.24}}},
 ];
 const RID={};for(const r of REC)RID[r.id]=r;
 
@@ -146,24 +146,25 @@ function evaluate(R,v,order){const sp=R.spec,D=snapDish(v),N=[],note=(t,s)=>N.pu
   if(sp.begg){const hs=D.pcs.filter(o=>o.type==='begg');let sc=0;if(!hs.length)note('meh','삶은 계란이 빠졌어요.');else{sc=100;const y=hs[0].yolk||0,[lo,hi]=sp.begg;if(y<lo){sc-=35;note('meh','계란이 너무 덜 익었어요.');}else if(y>hi){sc-=25;note('meh','노른자가 퍽퍽하게 익었어요.');}else note('good',R.id==='shoyu'?'노른자가 쫀득한 아지타마!':'계란이 알맞게 삶아졌어요.');if(hs.every(o=>o.area>o.orig*.8)){sc-=10;note('meh','계란을 반으로 잘라 올려 주세요.');}}cats.push(['계란',sc,W.egg||.14]);}
   if(sp.pegg){const e=v.eggs[0];let sc=40;if(e){sc=e.set>.5?100:60;note(e.set>.5?'good':'meh',e.set>.5?'계란이 몽글하게 익었어요.':'계란이 덜 익었어요.');}cats.push(['계란',sc,W.egg||.1]);}
   // steak
-  if(sp.steak){const b=D.pcs.filter(o=>o.type==='beef');let sc=0;if(b.length){sc=100;const core=Math.max(...b.map(o=>Math.max(o.Lm[5],o.Lm[6]))),[lo,hi]=order&&order.opt?order.opt[1]:[54,58],nm=order&&order.opt?order.opt[0]:'미디엄 레어';
+  if(sp.steak){const b=D.pcs.filter(o=>o.type==='beef');let sc=0;if(b.length){sc=100;const core=Math.round(Math.max(...b.map(o=>Math.max(o.Lm[5],o.Lm[6])))),[lo,hi]=order&&order.opt?order.opt[1]:[54,58],nm=order&&order.opt?order.opt[0]:'미디엄 레어';
       if(core<lo){sc-=Math.min(55,(lo-core)*6);note('bad',`${nm}을 원했는데 덜 익었어요 (심부 ${Math.round(core)}°C).`);}else if(core>hi){sc-=Math.min(55,(core-hi)*5);note('bad',`${nm}을 원했는데 너무 익었어요 (심부 ${Math.round(core)}°C).`);}else note('good',`주문대로 정확히 ${nm}! (심부 ${Math.round(core)}°C)`);
       const f0=Math.max(...b.map(o=>o.face[0])),f1=Math.max(...b.map(o=>o.face[1]));if(f0<.5||f1<.5){sc-=15;note('meh','크러스트가 약해요. 더 뜨거운 팬에서 구워요.');}else if(f0>1.35||f1>1.35){sc-=20;note('bad','겉이 탔어요.');}else note('good','겉면에 진한 갈색 크러스트가 생겼어요.');
       if(b.some(o=>o.juiceLost)){sc-=15;note('meh','레스팅 없이 썰어서 육즙이 빠졌어요.');}else if(b.some(o=>o.area<o.orig*.7))note('good','충분히 쉬게 한 뒤 썰어 육즙이 촉촉해요.');
       const salt=b.reduce((s,o)=>s+o.coat.salt*o.mass,0)/b.reduce((s,o)=>s+o.mass*2,0)*100;if(salt<.3){sc-=15;note('meh','간이 안 되어 밍밍해요. 굽기 전에 소금을 뿌려 주세요.');}else if(salt>3){sc-=15;note('meh','짜요.');}else note('good','소금 간이 적당해요.');
       if(b.some(o=>o.aroma>1))note('good','버터 향이 고소하게 배었어요.');}cats.push(['스테이크',clamp(sc,0,100),W.steak||.8]);}
-  if(sp.garlic){const g=[...D.pcs,...v.noodles.length?[]:[]].filter(o=>o.type==='garlic');let sc=50;if(g.length){const b=g.reduce((s,o)=>s+Math.max(o.face[0],o.face[1]),0)/g.length;sc=b>1.15?20:b>.3?100:70;note(b>1.15?'bad':b>.3?'good':'meh',b>1.15?'마늘이 타서 써요.':b>.3?'마늘이 노릇하게 향을 냈어요.':'마늘이 덜 볶아졌어요.');}else note('meh','마늘이 빠졌어요.');cats.push(['마늘',sc,W.garlic||.14]);}
+  if(sp.garlic){const g=[...D.pcs,...v.noodles.length?[]:[]].filter(o=>o.type==='garlic');let sc=50;if(g.length){const b=g.reduce((s,o)=>s+Math.max(o.face[0],o.face[1]),0)/g.length;sc=b>1.4?20:b>1.15?75:b>.3?100:70;note(b>1.4?'bad':b>1.15?'meh':b>.3?'good':'meh',b>1.4?'마늘이 타서 써요.':b>1.15?'마늘이 살짝 진하게 볶아졌어요.':b>.3?'마늘이 노릇하게 향을 냈어요.':'마늘이 덜 볶아졌어요.');}else note('meh','마늘이 빠졌어요.');cats.push(['마늘',sc,W.garlic||.14]);}
   evalDLC(R,v,sp,cats,note);
   // finish (garnish + flavor + temperature)
-  {let sc=40;const gn=v.garn||{},gp=D.garn;for(const k in sp.garn||{}){if(k==='sesoil'){if(D.sesoil>1){sc+=12;note('good','참기름 향이 고소하게 올라와요.');}continue;}
-      if(SHK[k]){if((gn[k]||0)>=sp.garn[k]){sc+=12;}continue;}if(k==='nori'){if(v.seeds.some(s=>s.type==='nori')){sc+=14;note('good','김 한 장까지 제대로!');}continue;}
-      if(ING[k]){const a=D.pcs.filter(o=>o.type===k);if(a.length){sc+=12;if(k==='scallion'&&a.some(o=>!o.cooked))note('good','송송 썬 파가 싱그러워요.');}}}
+  {let sc=0,poss=0;const gn=v.garn||{},gp=D.garn;for(const k in sp.garn||{}){if(k==='sesoil'){poss+=12;if(D.sesoil>1){sc+=12;note('good','참기름 향이 고소하게 올라와요.');}continue;}
+      if(SHK[k]){poss+=12;if((gn[k]||0)>=sp.garn[k]){sc+=12;}continue;}if(k==='nori'){poss+=14;if(v.seeds.some(s=>s.type==='nori')){sc+=14;note('good','김 한 장까지 제대로!');}continue;}
+      if(ING[k]){poss+=12;const a=D.pcs.filter(o=>o.type===k);if(a.length){sc+=12;if(k==='scallion'&&a.some(o=>!o.cooked))note('good','송송 썬 파가 싱그러워요.');}}}
     const fl=sp.fl||{},fire=D.pcs.reduce((s,o)=>s+(o.fire||0)*o.mass,0)+D.grs.reduce((s,o)=>s+o.fire*o.mass,0)+v.noodles.reduce((s,n)=>s+(n.fire||0),0)+(v.flav.fire||0);
-    if(fl.fire&&fire>.8){sc+=18;note('good','불향이 확 올라와요!');}if(fl.scal&&(v.flav.scal||0)>5){sc+=15;note('good','파기름 덕분에 향이 깊어요.');}
+    if(fl.fire){poss+=18;if(fire>.8){sc+=18;note('good','불향이 확 올라와요!');}}if(fl.scal){poss+=15;if((v.flav.scal||0)>5){sc+=15;note('good','파기름 덕분에 향이 깊어요.');}}
     const bitter=(v.flav.bitter||0)+D.pcs.reduce((s,o)=>s+(o.bitter||0)*o.mass,0);if(bitter>.4){pen+=Math.min(20,bitter*8);note('bad','쓴맛이 나요. 양념이 탔어요.');}
-    if(R.id==='bibim'||R.id==='kmari'){const sw=v.flav.sweet||0,so=v.flav.sour||0;if(sw>=1&&sw<=9&&so>=3&&so<=26){sc+=12;note('good','설탕·식초로 새콤달콤 밸런스가 딱 좋아요.');}else if(sw>=1||so>=3)sc+=5;if(sw>12){pen+=6;note('meh','너무 달아요.');}if(so>36){pen+=6;note('meh','너무 셔요.');}}
+    if(R.id==='bibim'||R.id==='kmari'){poss+=12;const sw=v.flav.sweet||0,so=v.flav.sour||0;if(sw>=1&&sw<=9&&so>=3&&so<=26){sc+=12;note('good','설탕·식초로 새콤달콤 밸런스가 딱 좋아요.');}else if(sw>=1||so>=3)sc+=5;if(sw>12){pen+=6;note('meh','너무 달아요.');}if(so>36){pen+=6;note('meh','너무 셔요.');}}
     const cold=R.id==='kmari'||R.id==='bibim';if(!cold&&R.vessel==='plate'){const ck=[...D.pcs.filter(o=>o.cooked),...D.grs],cm=ck.reduce((s,o)=>s+(o.mass||1),0),cT=cm?ck.reduce((s,o)=>s+o.T*(o.mass||1),0)/cm:null,age=G.t-(v.tHot!==undefined?v.tHot:v.t0>=0?v.t0:G.t);if(age>90&&(cT===null||cT<42)){pen+=6;note('meh','담아 둔 지 오래돼서 조금 식었어요.');}}
-    cats.push(['마무리',clamp(sc,0,100),W.finish||.2]);}
+    // finish = share of the garnish/aroma this dish asks for; a dish that asks for none is already finished
+    const fin=poss?45+55*Math.min(1,sc/poss):92;cats.push(['마무리',clamp(fin,0,100),W.finish||.2]);}
   if(G.stats.alarm)note('meh','연기 경보가 울렸어요… 환기 필수!');
   const wsum=cats.reduce((s,c)=>s+c[2],0)||1;let total=cats.reduce((s,c)=>s+c[1]*c[2],0)/wsum-pen;total=clamp(Math.round(Math.min(total,cap)),0,100);
   const ord={bad:0,meh:1,good:2};N.sort((a,b)=>ord[a.t]-ord[b.t]);return{total,cats:cats.map(c=>[c[0],c[1]]),notes:N.slice(0,9)};}
