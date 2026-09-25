@@ -67,7 +67,7 @@ function showToast(P){const t=$('#served');t.innerHTML=`<div class="sv-h"><b>${P
   t.hidden=false;t.classList.remove('in');void t.offsetWidth;t.classList.add('in');$('#svMore').onclick=e=>{e.stopPropagation();t.hidden=true;showResult(P);};t.onclick=()=>{t.hidden=true;};t.title='클릭하면 닫혀요';clearTimeout(t._tm);t._tm=setTimeout(()=>{t.hidden=true;},8000);}
 function showResult(P){const s=P.res.total;$('#resImg').src=P.img;$('#resImg').classList.toggle('hero',!!P.hero);$('#scoreNum').textContent=s;$('#stamp').textContent=s>=90?'셰프의 한 접시':s>=75?'단골 예약':s>=60?'합격':s>=40?'배는 불러요':'다시 도전';
   $('#stars').innerHTML=stars(s);$('#resName').textContent=P.R.n+(P.o.opt?` · ${P.o.opt[0]}`:'');$('#quote').textContent=quoteFor(s);
-  $('#bars').innerHTML=P.res.cats.map(([k,v])=>`<span>${k}</span><div class="tr"><div class="fi" style="width:${clamp(v,0,100).toFixed(0)}%"></div></div><span class="v">${Math.round(v)}</span>`).join('');
+  $('#bars').innerHTML=P.res.cats.map(([k,v])=>`<span>${k}</span><div class="tr"><div class="fi" style="width:${clamp(v,0,100).toFixed(0)}%;background:${v>=85?'#7cc242':v>=65?'#f0ae3a':'#e8574f'}"></div></div><span class="v">${Math.round(v)}</span>`).join('');
   $('#notes').innerHTML=P.res.notes.map(n=>`<li class="${n.t}">${n.s}</li>`).join('');
   $('#resFoot').textContent=G.mode==='career'?`받은 돈 ${won(P.pay)}${P.tip?' + 팁 '+won(P.tip):''}`:`최고 기록 ${SAVE.best[P.R.id]||s}점`;
   $('#resAgain').textContent=G.mode==='practice'?'다른 요리 연습':'계속 영업';$('#result').hidden=false;G.paused=true;if(G.mode==='practice')tutStop();}
