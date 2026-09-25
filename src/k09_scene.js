@@ -111,10 +111,9 @@ function drawMix(g,c,x,y){g.save();g.translate(x,y);const R=c.r;const vol=batter
     else{const col=mix([248,244,232],batterColor(c,c.items),.35+c.mixv*.65);const ratio=c.flour?c.water/c.flour:9;g.fillStyle=rgba(ratio>2?mix(col,[220,220,210],.3):col,1);g.beginPath();g.arc(0,0,fr,0,TAU);g.fill();
       for(const o of c.items)drawPiece(g,o,o.x,o.y,.9,true);g.fillStyle=rgba(col,.45*c.mixv+.1);g.beginPath();g.arc(0,0,fr,0,TAU);g.fill();
       const lump=c.flour>0?1-c.mixv:0;if(lump>.15&&c.flour>5){g.fillStyle='rgba(255,255,250,.9)';const R2=mulberry(7);for(let i=0;i<lump*40;i++){g.beginPath();g.arc((R2()-.5)*fr*1.5,(R2()-.5)*fr*1.5,R2()*3+1,0,TAU);g.fill();}}
-      if(c.egg>=1&&c.mixv<.3){g.fillStyle='#f5a21b';for(let i=0;i<Math.round(c.egg);i++){g.beginPath();g.arc(-10+i*18,-6,9,0,TAU);g.fill();}}
       g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=2;g.beginPath();g.arc(0,0,fr*.7,3.6,4.4);g.stroke();}}
   if(!(c.water>=5))for(const o of c.items)drawPiece(g,o,o.x,o.y,.9);
-  if(vol>0){g.fillStyle='rgba(40,30,20,.75)';g.font='11px "Jua", sans-serif';g.textAlign='center';g.fillText(`가루 ${Math.round(c.flour)}g · 물 ${Math.round(c.water)}ml`,0,R+34);}
+  if(vol>0){g.fillStyle='rgba(40,30,20,.75)';g.font='11px "Jua", sans-serif';g.textAlign='center';g.fillText(`가루 ${Math.round(c.flour)}g · 물 ${Math.round(c.water)}ml${c.egg>=1?` · 계란 ${Math.round(c.egg)}`:""}`,0,R+52);}
   g.restore();}
 function drawContents(g,c){ // vessel-like drawing at local origin
   const gr=[],pc=[],gn=[];for(const o of c.items){let x=o.x,y=o.y;if(o.anim){const a=o.anim,t=clamp((a.t-a.delay)/a.dur,0,1),e=ease(t);x=lerp(a.fx,o.x,e);y=lerp(a.fy,o.y,e)-Math.sin(t*PI)*40;}o.dx=x;o.dy=y;if(o.kind==='grain')gr.push(o);else if(o.cooked||c.kind==='strainer'||c.kind==='prep')pc.push(o);else gn.push(o);}
