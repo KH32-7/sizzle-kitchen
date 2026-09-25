@@ -1489,7 +1489,7 @@ function tongsInteract(c,dt){const s=G.spat;if(!s.down||s.c!==c)return;const lx=
   for(const b of c.beggs){if(dist(b.x,b.y,lx,ly)<24){b.vx+=s.vx*.02;b.vy+=s.vy*.02;}}
   for(const e of c.eggs){if(e.poach&&!e.ribbon&&e.set<.6&&dist(e.x,e.y,lx,ly)<avgRad(e)&&spd>80){e.ribbon=true;floatText('계란을 풀었어요',c.x+e.x,c.y+e.y-30,'#ffe9a0',20);}}
   for(const q of c.fluid){if(dist(q.x,q.y,lx,ly)<40){q.vx+=(s.vx-q.vx)*.25;q.vy+=(s.vy-q.vy)*.25;if(c.noodles.length&&spd>60){const n=c.noodles[0],a=Math.min(q.m,dt*spd*.004);q.m-=a;const d=LQ[q.k];n.coat.salt+=a*d.salt;if(d.sauce){n.coat.sauce+=a;n.sauceCol=d.col;}if(d.spicy)n.coat.chili+=a*d.spicy;if(d.oil)n.coat.oil+=a;if(d.aroma)n.aroma=(n.aroma||0)+a;}}}
-  if(c.kind==='mix'&&spd>40&&c.water>0&&(c.flour>0||c.egg>0)){c.mixv=Math.min(1,c.mixv+dt*spd*.0009);for(const o of c.items){const r=Math.hypot(o.x,o.y)+1;o.x+=-o.y/r*spd*dt*.08;o.y+=o.x/r*spd*dt*.08;}}
+  if(c.kind==='mix'&&spd>40&&(c.water>0||c.egg>0)&&(c.flour>0||c.egg>0)){c.mixv=Math.min(1,c.mixv+dt*spd*(c.flour>0?.0009:.0003));for(const o of c.items){const r=Math.hypot(o.x,o.y)+1;o.x+=-o.y/r*spd*dt*.08;o.y+=o.x/r*spd*dt*.08;}}
   if(c.liq&&spd>40&&c.liq.T<90){/* stirring cools slightly */c.liq.T-=dt*.2;}
   c.agit=Math.min(1.5,(c.agit||0)+spd*dt*.003);}
 function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-dt*.7);const F=c.fluid;
@@ -1996,7 +1996,7 @@ function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
   if(G.smoke>1){g.fillStyle=`rgba(125,120,115,${Math.min(UPG.fan?.18:.32,(G.smoke-1)*(UPG.fan?.018:.035))})`;g.fillRect(0,0,W,H);}
   drawTutHL(g);
   if(G.drag&&G.drag.kind==='handful'){for(const p of G.drag.pieces)pieceShadow(g,p,M.x+p.ox*.8,M.y+p.oy*.8,12,.22);for(const p of G.drag.pieces)drawPiece(g,p,M.x+p.ox*.8,M.y+p.oy*.8);}
-  if(!G.hideCursor&&G.started){drawHeld();if(G.held||G.ladle){const h=G.held,nm=!h?'국자에 담음':h.kind==='ing'?ING[h.piece.type].n:h.kind==='bottle'?BOT[h.id].label:h.kind==='shaker'?SHK[h.id].n:h.kind==='powder'?'부침가루':h.kind==='noodle'?NT[h.nt].n:h.kind==='noodleObj'?'면':({rice:'찬밥',egg:'계란',begg:'삶은 계란',packet:'라면 스프',ice:'얼음',nori:'김',butter:'버터'})[h.kind]||'';const t2=`${nm} · 우클릭=${h&&h.kind!=='packet'?'제자리':'내려놓기'}`;g.font='13px "Jua", sans-serif';const w=g.measureText(t2).width+16;uiPill(g,M.x-w/2,M.y+38,w,23);g.fillStyle='#5a2e22';g.textAlign='center';g.fillText(t2,M.x,M.y+54);}
+  if(!G.hideCursor&&G.started){drawHeld();if(G.held||G.ladle){const h=G.held,nm=!h?'국자에 담음':h.kind==='ing'?ING[h.piece.type].n:h.kind==='bottle'?BOT[h.id].label:h.kind==='shaker'?SHK[h.id].n:h.kind==='powder'?'부침가루':h.kind==='noodle'?NT[h.nt].n:h.kind==='noodleObj'?'면':({rice:'찬밥',egg:'계란',begg:'삶은 계란',packet:'라면 스프',ice:'얼음',nori:'김',butter:'버터',custard:'계란찜',steamerItem:'찜기'})[h.kind]||'';const t2=`${nm} · 우클릭=${h&&h.kind!=='packet'?'제자리':'내려놓기'}`;g.font='13px "Jua", sans-serif';const w=g.measureText(t2).width+16;uiPill(g,M.x-w/2,M.y+38,w,23);g.fillStyle='#5a2e22';g.textAlign='center';g.fillText(t2,M.x,M.y+54);}
     const overUI=knobAt(M.x,M.y)||shelfAt(M.x,M.y)||rackAt(M.x,M.y)||handleAt(M.x,M.y)||inFridge(M.x,M.y);
     if(!G.held&&!(G.drag&&G.drag.kind!=='spat')&&!overUI&&M.inside){const s=G.spat;
       if(G.tool==='knife'){if(inBoard(M.x,M.y)&&G.knife.down<.2){g.save();g.translate(M.x,M.y);g.rotate(G.knife.ang);g.strokeStyle='rgba(255,255,255,.45)';g.setLineDash([4,6]);g.lineWidth=1;g.beginPath();g.moveTo(0,-KN_UP-40);g.lineTo(0,KN_DN+10);g.stroke();g.setLineDash([]);g.restore();}drawKnifeTop(g,M.x,M.y,G.knife.ang,G.knife.down);
@@ -3280,13 +3280,13 @@ Object.assign(TUTS,{
     ...tBatter(false),...tOil(0,170,400),tDump([{k:'mix'}],'썬 재료를 반죽 볼에 넣어요',()=>G.mix.items.length>=4),...tFryIn(0,4),...tFryOut(0,4,'plate'),tServe()],
   squidfry:()=>[tFridge('squid','오징어'),tBoard('squid','오징어'),tKnife(),tSlice('squid','오징어',5,2000,'몸통을 1cm 폭 링으로 썰어요.'),tHand(),
     ...tBatter(false),...tOil(0,175,400),tDump([{k:'mix'}],'오징어를 반죽 볼에 넣어요',()=>G.mix.items.length>=5),...tFryIn(0,5),...tFryOut(0,5,'plate'),tServe()],
-  katsu:()=>[tFridge('loin','돈카츠용 등심'),...tBatter(true),
-    St('등심을 반죽 볼에 넣어요','도마에 올리지 말고 냉장고에서 꺼낸 채로 반죽 볼을 클릭해요.',[{k:'mix'}],()=>G.mix.items.some(o=>o.type==='loin')||allItems().some(o=>o.type==='loin'&&o.bat),'반죽 볼'),
-    tTool('chop','젓가락으로 등심을 집어요 — 튀김옷이 입혀져요.'),St('튀김옷 입은 등심을 도마에','반죽 볼 속 등심을 짧게 클릭해 집고 도마를 클릭해요.',[{k:'mix'},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='loin'&&p.bat),'도마'),tHand(),
+  katsu:()=>[...tBatter(true),tFridge('loin','돈카츠용 등심'),
+    St('등심을 반죽 볼에 넣어요','냉장고에서 꺼낸 등심을 든 채로 반죽 볼을 클릭해요.',[{k:'mix'}],()=>G.mix.items.some(o=>o.type==='loin')||allItems().some(o=>o.type==='loin'&&o.bat),'반죽 볼'),
+    tTool('chop','젓가락으로 등심을 집어요 — 튀김옷이 입혀져요.'),St('튀김옷 입은 등심을 도마에','반죽 볼 속 등심을 젓가락으로 집어 도마로 옮겨요 (클릭해서 집고 도마 클릭, 또는 끌어서 놓기).',[{k:'mix'},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='loin'&&p.bat),'도마'),tHand(),
     tShake('panko',[{k:'board'}],'빵가루를 앞뒤로 듬뿍',()=>allItems().some(o=>o.type==='loin'&&o.bat&&o.bat.panko>.5)),
     ...tOil(0,160,500),St('등심을 기름에 넣어요','빈손으로 도마 위 등심을 끌어다 냄비에 놓아요.',[{k:'board'},{k:'cw',i:0}],()=>G.cw[0].items.some(o=>o.type==='loin'&&o.bat),'튀기기'),
     tWait(0,'속까지 익을 때까지 천천히','두꺼워서 오래 걸려요(약 1분). 160~170°C를 유지해요 — 너무 뜨거우면 겉만 타요.',()=>G.cw[0].items.some(o=>o.type==='loin'&&o.cook>.95&&o.bat.fry>.55),'속까지'),
-    tTool('chop','젓가락으로 돈카츠를 건져요.'),St('돈카츠를 도마에','냄비 속 돈카츠를 짧게 클릭해 집고 도마를 클릭해요.',[{k:'cw',i:0},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='loin'),'건지기'),
+    tTool('chop','젓가락으로 돈카츠를 건져요.'),St('돈카츠를 도마에','냄비 속 돈카츠를 젓가락으로 집어 도마로 옮겨요 (클릭 후 도마 클릭, 또는 끌어서 놓기).',[{k:'cw',i:0},{k:'board'}],()=>G.board.pieces.some(p=>p.type==='loin'),'건지기'),
     tKnife(),tSlice('loin','돈카츠',4,8000,'2cm 폭으로 썰어요.'),tHand(),tDump([{k:'plate'}],'썬 돈카츠를 접시에',()=>G.plate.items.filter(o=>o.type==='loin').length>=3),
     tFridge('cabbage','양배추'),tBoard('cabbage','양배추'),tKnife(),St('양배추를 곱게 채 썰어요','도마를 돌려 가며 가늘게 여러 번.',[{k:'board'}],()=>cutN('cabbage',1200)>=6,'채썰기'),tHand(),tDump([{k:'plate'}],'양배추채를 접시 한쪽에',()=>vHas(G.plate,'cabbage')),
     tPour('katsu',[{k:'plate'}],'돈카츠 소스를 뿌려요',()=>G.plate.fluid.some(q=>q.k==='katsu')),tServe()],
@@ -4054,6 +4054,45 @@ const TITLE_PANELS=['#achPanel','#shopPanel','#dlcPanel','#practice','#rbook','#
 const closeTitlePanels=()=>{for(const s of TITLE_PANELS){const e=$(s);if(e)e.hidden=true;}};
 startCareer=(orig=>function(){closeTitlePanels();orig();})(startCareer);
 startPractice=(orig=>function(...a){closeTitlePanels();return orig(...a);})(startPractice);
+
+/* ---------- 2.1.3 egg bowl you can see: cracked eggs sit as yolks in their whites, water pools around them,
+   stirring breaks the yolks into swirls until the whole bowl turns one smooth pale yellow ---------- */
+function drawEggWater(g,c){const R=c.r,m=clamp(c.mixv||0,0,1),eggs=Math.round(c.egg),vol=c.water+c.egg*50,fr=Math.min(R-6,20+Math.sqrt(vol)*2.1);
+  c._sw=(c._sw||0)+Math.max(0,m-(c._pm||0))*18;c._pm=m;const sw=c._sw;
+  // the liquid: clear-ish water that turns custard yellow as the eggs are beaten in
+  if(c.water>0||m>.05){const base=mix([232,236,228],[247,211,110],Math.min(1,m*1.05+(eggs&&c.water<30?.35:0)));
+    const gr=g.createRadialGradient(-fr*.3,-fr*.35,4,0,0,fr);gr.addColorStop(0,rgba(mix(base,[255,252,236],.35),.95));gr.addColorStop(1,rgba(mix(base,[200,170,90],.12),.95));
+    g.fillStyle=gr;g.beginPath();g.arc(0,0,fr,0,TAU);g.fill();g.strokeStyle=`rgba(255,255,255,${.35+.2*(1-m)})`;g.lineWidth=2;g.beginPath();g.arc(0,0,fr-3,PI*1.1,PI*1.55);g.stroke();}
+  // whole eggs: glossy whites with a yolk each, drifting round as you stir
+  const R2=mulberry(31);for(let i=0;i<eggs;i++){const a0=R2()*TAU,r0=(.15+R2()*.45)*fr,a=a0+sw*(.6+i*.07),x=Math.cos(a)*r0*(1-m*.4),y=Math.sin(a)*r0*(1-m*.4);
+    const wa=Math.max(0,.85-m*1.3);if(wa>0){g.fillStyle=`rgba(252,250,238,${wa})`;g.beginPath();for(let k=0;k<=18;k++){const t=k/18*TAU,rr2=22*(1+.18*Math.sin(t*3+i*1.7))*(1+m*.6);g.lineTo(x+Math.cos(t)*rr2,y+Math.sin(t)*rr2*.9);}g.closePath();g.fill();}
+    const ya=Math.max(0,1-m*1.6),yr=11*(1-m*.5);if(ya>0){g.globalAlpha=ya;const yg=g.createRadialGradient(x-3,y-3,1,x,y,yr);yg.addColorStop(0,'#ffd257');yg.addColorStop(1,'#ef9a12');g.fillStyle=yg;g.beginPath();g.arc(x,y,yr,0,TAU);g.fill();
+      g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.ellipse(x-yr*.35,y-yr*.4,yr*.32,yr*.2,-.6,0,TAU);g.fill();g.globalAlpha=1;}
+    // broken yolk trails curling after the whisk
+    if(m>.12&&m<.9){const ta=Math.sin((m-.12)/.78*PI)*.85;g.strokeStyle=`rgba(242,166,30,${ta})`;g.lineCap='round';for(let k=0;k<3;k++){g.lineWidth=5-k*1.3;const rr3=r0*(.4+k*.25);g.beginPath();g.arc(0,0,Math.max(6,rr3),a+k*.9,a+k*.9+1.3+m);g.stroke();}}}
+  // a beaten bowl gets a fine froth on top
+  if(m>.45&&eggs){const R3=mulberry(77),n=Math.round((m-.45)*70);for(let i=0;i<n;i++){const a=R3()*TAU+sw*.2,r=(.55+R3()*.42)*fr;g.fillStyle=`rgba(255,253,240,${.5+R3()*.4})`;g.beginPath();g.arc(Math.cos(a)*r,Math.sin(a)*r,1+R3()*2.4,0,TAU);g.fill();}}
+  if(c.salt>0){const R4=mulberry(5);g.fillStyle='rgba(255,255,255,.8)';for(let i=0;i<Math.min(25,c.salt*20);i++){const a=R4()*TAU,r=R4()*fr*.8;g.fillRect(Math.cos(a)*r,Math.sin(a)*r,1.5,1.5);}}}
+drawMix=(orig=>function(g,c,x,y){if(!(c.egg>0&&!(c.flour>0)))return orig(g,c,x,y);g.save();g.translate(x,y);drawEggWater(g,c);
+  g.fillStyle='rgba(40,30,20,.75)';g.font='11px "Jua", sans-serif';g.textAlign='center';g.fillText(`계란 ${Math.round(c.egg)}개${c.water>0?` · 물 ${Math.round(c.water)}ml`:''}${c.mixv>.6?' · 잘 풀림':c.mixv>.15?' · 푸는 중':''}`,0,c.r+52);g.restore();})(drawMix);
+/* things you carry that had no picture under the cursor */
+drawHeld=(orig=>function(){orig();const h=G.held;if(!h)return;const g=ctx,x=M.x,y=M.y;
+  if(h.kind==='custard'){g.save();g.translate(x,y);drawCustard(g,h.cu,34,true);g.restore();}
+  else if(h.kind==='begg'){g.fillStyle='rgba(0,0,0,.22)';g.beginPath();g.ellipse(x+8,y+12,14,11,0,0,TAU);g.fill();drawBegg(g,h.egg,x,y);}
+  else if(h.kind==='steamerItem'){g.save();g.translate(x,y);g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(8,12,50,0,TAU);g.fill();g.fillStyle='#c9995a';g.beginPath();g.arc(0,0,50,0,TAU);g.fill();
+    g.strokeStyle='#8a5a28';g.lineWidth=3;g.beginPath();g.arc(0,0,44,0,TAU);g.stroke();g.strokeStyle='rgba(120,80,30,.45)';g.lineWidth=1.5;for(let i=-3;i<=3;i++){g.beginPath();g.moveTo(i*11,-40);g.lineTo(i*11,40);g.stroke();g.beginPath();g.moveTo(-40,i*11);g.lineTo(40,i*11);g.stroke();}g.restore();}})(drawHeld);
+/* chopsticks: press on a piece in the batter bowl / frying pot and drag it out — it comes with you (quick click still works) */
+let CHD=null;
+cv.addEventListener('pointerdown',()=>{CHD=G&&G.started&&G.tool==='chop'&&!G.held?{x:M.x,y:M.y,pick:false}:null;},true);
+addEventListener('pointermove',()=>{if(!CHD||CHD.pick||!G||G.held||G.tool!=='chop'||!G.drag||G.drag.kind!=='spat')return;const c=G.spat.c;if(!c||!(c.kind==='mix'||c.cook))return;
+  if(Math.hypot(M.x-c.x,M.y-c.y)<c.r*1.05)return;const lx=CHD.x-c.x,ly=CHD.y-c.y;let best=null,bd=1e9;for(const o of c.items){if(o.kind!=='piece')continue;const d=Math.hypot(o.x-lx,o.y-ly);if(d<Math.max(32,o.r)&&d<bd){bd=d;best=o;}}
+  if(!best)return;c.items.splice(c.items.indexOf(best),1);if(c.kind==='mix')coatBatter(c,best);best.x=M.x;best.y=M.y;best.flipT=0;if(best.L)best.offT=G.t;
+  G.held={kind:'ing',id:best.type,piece:best,src:null,tongs:1};G.spat.down=false;G.drag=null;CHD.pick=true;AU.pick();});
+addEventListener('pointerup',()=>{if(CHD&&CHD.pick&&G&&G.held){const x=M.x,y=M.y;setTimeout(()=>{if(G.held&&G.held.tongs)useHeld(x,y);},0);}CHD=null;});
+/* panko only sticks to something already dipped in batter — say so instead of silently missing */
+let PANKO_T=-99;
+pankoLand=(orig=>function(f){const r=orig(f);if(r||!G||G.t-PANKO_T<2.5)return r;const bp=inBoard(f.x,f.y)?boardPieceAt(f.x,f.y):null;
+  if(bp&&!bp.bat&&ING[bp.type]){PANKO_T=G.t;floatText('튀김옷(반죽)을 먼저 입혀야 빵가루가 붙어요',f.x,f.y-40,'#ffd0b0',20);}return r;})(pankoLand);
 
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;
