@@ -2022,7 +2022,7 @@ const DLC={base:{n:'기본 메뉴',d:'한식 밥 요리',price:0},noodle:{n:'면
 const REC=[
  {id:'kfr',n:'김치볶음밥',dlc:'base',price:9000,vessel:'plate',time:210,sub:'+ 반숙 계란후라이',
   steps:[['김치·양파·햄 한입 크기로 썰기',()=>cutN('kimchi',1300)>=8],['큰 팬 달구고 식용유 두르기 (160°C↑)',hotPanOil],['파 → 햄·양파 → 김치 순으로 볶기',()=>panWith('kimchi',o=>o.cook>.7)],
-    ['간장을 뜨거운 팬 바닥에 눌리기',()=>G.cw.some(c=>c.items.some(o=>o.fire>.01))],['찬밥 넣고 뒤집개로 풀어가며 볶기',()=>G.cw.some(c=>{const g=c.items.filter(o=>o.kind==='grain');return g.length>100&&g.reduce((s,o)=>s+o.stick,0)/g.length<.35;})],
+    ['간장을 뜨거운 팬 바닥에 눌리기',()=>G.cw.some(c=>c.items.some(o=>o.fire>.01))||(G.soyHotT!==undefined&&G.t-G.soyHotT<90)],['찬밥 넣고 뒤집개로 풀어가며 볶기',()=>G.cw.some(c=>{const g=c.items.filter(o=>o.kind==='grain');return g.length>100&&g.reduce((s,o)=>s+o.stick,0)/g.length<.35;})],
     ['작은 팬에 반숙 계란후라이',()=>ALLC().some(c=>c.eggs.some(e=>e.set>.95&&!e.poach))],['접시에 담고 참기름·깨·파로 마무리',()=>G.plate.items.some(o=>o.kind==='grain')&&G.plate.eggs.length>0]],
   spec:{knife:{kimchi:['dice',.5,5],onion:['dice',.35,3.6],ham:['dice',.35,3.6],scallion:['disc',.15,.9]},cook:{kimchi:.8,onion:1,ham:.7},brown:{ham:[.3,1.05]},rice:1,salt:[.8,1.5],mixRice:1,egg:'fried',garn:{sesame:.3,scallion:1,sesoil:1},fl:{fire:1,scal:1},
    req:[['rice','밥이 없는 김치볶음밥이라니요…'],['kimchi','김치가 안 들어갔어요!']],w:{knife:.12,cook:.24,season:.16,mix:.14,egg:.16,finish:.18}}},
@@ -2050,11 +2050,11 @@ const REC=[
     ['팬에 기름 넉넉히, 달궈지면 반죽 붓기',()=>G.cw.some(c=>c.jeons.length)],['바닥이 노릇해지면 뒤집기',()=>G.cw.some(c=>c.jeons.some(j=>j.down===1))],['기름 한 번 더, 양면 바삭하게 → 접시',()=>G.plate.jeons.length>0]],
   spec:{jeon:{main:'kimchi',mainSpec:['dice',.4,4],mainMin:.15},knife:{kimchi:['dice',.4,4],onion:['dice',.2,3]},garn:{},req:[['jeon','전이 없어요!']],w:{knife:.15,jeon:.7,finish:.15}}},
  {id:'pajeon',n:'파전',dlc:'jeon',price:14000,vessel:'plate',time:220,sub:'쪽파 가득, 오징어 약간',
-  steps:[['쪽파를 6~10cm 길이로 썰기',()=>cutN('jjokpa',2000)>=8],['(선택) 오징어 썰기',()=>true],['부침가루 + 물 반죽, 쪽파 넣고 섞기',()=>G.mix.items.some(o=>o.type==='jjokpa')||G.cw.some(c=>c.jeons.some(j=>j.comp.jjokpa))],
+  steps:[['쪽파를 6~10cm 길이로 썰기',()=>cutN('jjokpa',2000)>=4],['(선택) 오징어 썰기',()=>true],['부침가루 + 물 반죽, 쪽파 넣고 섞기',()=>G.mix.items.some(o=>o.type==='jjokpa')||G.cw.some(c=>c.jeons.some(j=>j.comp.jjokpa))],
     ['기름 두른 팬에 넓게 붓기',()=>G.cw.some(c=>c.jeons.length)],['뒤집개로 꾹꾹 눌러 얇게, 뒤집기',()=>G.cw.some(c=>c.jeons.some(j=>j.down===1))],['접시에 담기',()=>G.plate.jeons.length>0]],
   spec:{jeon:{main:'jjokpa',mainSpec:['len',5,11],mainMin:.12},knife:{jjokpa:['len',5,11],squid:['dice',.4,4]},garn:{},req:[['jeon','전이 없어요!']],w:{knife:.18,jeon:.7,finish:.12}}},
  {id:'buchu',n:'부추전',dlc:'jeon',price:12000,vessel:'plate',time:200,sub:'얇고 바삭하게',
-  steps:[['부추를 4~7cm로 썰기',()=>cutN('buchu',2000)>=6],['반죽에 부추(와 양파·당근) 넣고 섞기',()=>G.mix.items.some(o=>o.type==='buchu')||G.cw.some(c=>c.jeons.some(j=>j.comp.buchu))],['기름 넉넉히 두른 팬에 얇게 펴기',()=>G.cw.some(c=>c.jeons.length)],['노릇하게 뒤집어 양면 굽기',()=>G.cw.some(c=>c.jeons.some(j=>j.down===1))],['접시에 담기',()=>G.plate.jeons.length>0]],
+  steps:[['부추를 4~7cm로 썰기',()=>cutN('buchu',2400)>=4],['반죽에 부추(와 양파·당근) 넣고 섞기',()=>G.mix.items.some(o=>o.type==='buchu')||G.cw.some(c=>c.jeons.some(j=>j.comp.buchu))],['기름 넉넉히 두른 팬에 얇게 펴기',()=>G.cw.some(c=>c.jeons.length)],['노릇하게 뒤집어 양면 굽기',()=>G.cw.some(c=>c.jeons.some(j=>j.down===1))],['접시에 담기',()=>G.plate.jeons.length>0]],
   spec:{jeon:{main:'buchu',mainSpec:['len',3.5,7.5],mainMin:.12},knife:{buchu:['len',3.5,7.5],onion:['jul',.5,2,6],carrot:['jul',.5,2,6]},garn:{},req:[['jeon','전이 없어요!']],w:{knife:.18,jeon:.7,finish:.12}}},
  {id:'udon',n:'우동',dlc:'jp',price:9000,vessel:'bowl',bowl:'udon',plating:'udon',time:180,sub:'가쓰오 다시 · 쯔유',
   steps:[['대파 송송, 어묵 얇게 썰기',()=>cutN('scallion',460)>=5&&cutN('naruto',400)>=3],['편수냄비에 다시 + 쯔유 데우기',()=>liqWith(q=>q.umami>80&&q.salt>2&&q.T>75)],['냄비에 물 끓여 냉동 우동 삶기 (젓가락으로 풀기)',()=>anyN('udon',n=>n.done>.9)],
@@ -2873,7 +2873,7 @@ const heartStr=n=>'♥'.repeat(n)+'♡'.repeat(5-n);
 
 /* shop level */
 const SHOPLV=[[0,'포장마차'],[60,'골목 식당'],[160,'동네 맛집'],[320,'입소문 맛집'],[520,'줄 서는 집'],[780,'방송 탄 집'],[1100,'미식가의 단골집'],[1500,'셰프의 식당'],[2000,'전설의 주방'],[2600,'지글지글 본점']];
-const LVUP={2:'인테리어 추가',3:'좌석 3개 · 미식 평론가 방문 시작 · 인테리어 추가',4:'인테리어 추가',5:'인테리어 추가',6:'좌석 4개(손님 속도 “바쁘게”일 때) · 인테리어 추가'};
+const LVUP={2:'정리 알바 · 인테리어 추가',3:'좌석 3개 · 메뉴판 4칸 · 평론가 방문 · 분식천국 테마',4:'주방 보조 · 창가 자리 증축',5:'메뉴판 5칸 · 이자카야 테마',6:'좌석 4개 · 비스트로 테마',7:'메뉴판 6칸 · 안쪽 자리 증축'};
 function shopInit(){if(!SAVE)return;if(!SAVE.shop)SAVE.shop={xp:Math.min(900,(SAVE.served||0)*6),own:{},eq:{}};}
 function shopLv(){shopInit();let l=1;SHOPLV.forEach((s,i)=>{if(SAVE.shop.xp>=s[0])l=i+1;});return l;}
 const PACE={relax:{n:'여유롭게',mul:1.4,cap:3},normal:{n:'보통',mul:1.1,cap:3},busy:{n:'바쁘게',mul:.85,cap:4}};
@@ -3932,7 +3932,7 @@ const chDone=i=>CH[i].goals.every(([,f])=>{const [v,t]=f();return v>=t;});
 endDay=(orig=>function(){if(!G||G.mode!=='career')return orig();const D=G.day,gas=Math.round(G.gas/10)*10,rentD=D.n<=3?12000:RENT,wage=typeof staffWage==='function'?staffWage():0;
   const avg=D.scores.length?Math.round(D.scores.reduce((a,b)=>a+b,0)/D.scores.length):0,sales={};for(const k in (D.sales||{}))sales[k]=D.sales[k].n;
   SAVE.hist=(SAVE.hist||[]).concat([{d:D.n,rev:D.rev+D.tips,profit:D.rev+D.tips-D.spend-rentD-SEASON-gas-wage,served:D.served,fail:D.fail,avg,sales}]).slice(-28);
-  orig();const st=storySt();if(D.n%7===0)st.week=D.n/7;if(!st.ended&&st.clear===null&&st.ch<CH.length&&chDone(st.ch))st.clear=st.ch;writeSave();
+  orig();const st=storySt();if(D.n%7===0)st.week=D.n/7;if(!st.ended&&st.clear===null&&st.ch<CH.length&&chDone(st.ch)){let k=st.ch;while(k+1<CH.length&&chDone(k+1))k++;st.clearFrom=st.ch;st.clear=k;}writeSave();
   if(st.clear!==null)$('#settleBody').insertAdjacentHTML('afterbegin',`<div class="st-ch">🎉 ${CH[st.clear].n} 목표 달성! 다음 날로 넘어가면 이야기가 이어져요.</div>`);})(endDay);
 /* between days: weekly report → chapter card → (ending) → next shift */
 function storyEl(){let d=$('#story');if(!d){d=document.createElement('div');d.id='story';d.hidden=true;$('#stage').appendChild(d);}return d;}
@@ -3950,11 +3950,11 @@ function weekHtml(w){const H=(SAVE.hist||[]).filter(h=>h.d>(w-1)*7&&h.d<=w*7),mx
     ${top.length?`<div class="wk-top"><b>이번 주 인기 메뉴</b>${top.map(([id,n],i)=>`<span>${['🥇','🥈','🥉'][i]} ${RID[id]?RID[id].n:id} ${n}그릇</span>`).join('')}</div>`:''}
     <p class="wk-note">${note}</p>${st.ended?'':`<div class="wk-ch"><b>${ch.n}</b>${chGoals(ch)}</div>`}`;}
 function chGoals(ch){return`<ul class="ch-goals">${ch.goals.map(([t,f])=>{const [v,g]=f(),ok=v>=g,p=clamp(v/g,0,1);return`<li class="${ok?'ok':''}"><span>${ok?'✔':'○'} ${t}</span><i><s style="width:${p*100}%"></s></i><em>${g>=10000?`${Math.floor(Math.min(v,g)/10000)}만 / ${g/10000}만원`:`${Math.min(v,g)} / ${g}`}</em></li>`;}).join('')}</ul>`;}
-function chapterHtml(i){const c=CH[i],n=CH[i+1];return`<small class="sy-k">CHAPTER CLEAR</small><h2>${c.n} — 완료!</h2><p class="ch-sub">${c.sub}</p><div class="ch-rew">🎁 축하금 <b>+${won(c.reward)}</b></div>
+function chapterHtml(i,i0,rw){i0=i0===undefined?i:i0;const c=CH[i],n=CH[i+1],many=i>i0;return`<small class="sy-k">CHAPTER CLEAR</small><h2>${many?CH.slice(i0,i+1).map(x=>x.n.split(' · ')[0]).join(' · ')+' — 모두 완료!':c.n+' — 완료!'}</h2><p class="ch-sub">${many?'그동안 쌓아 온 가게 이야기를 한꺼번에 정리했어요.':c.sub}</p><div class="ch-rew">🎁 축하금 <b>+${won(rw||c.reward)}</b></div>
   ${n?`<div class="ch-next"><small>다음 이야기</small><b>${n.n}</b><p>${n.sub}</p>${chGoals(n)}</div>`:'<div class="ch-next"><b>마지막 이야기가 기다리고 있어요…</b></div>'}`;}
 startCareer=(orig=>function(){const st=storySt();if(SAVE.mid&&SAVE.mid.day===SAVE.day)return orig();
   const steps=[];if(st.week){const w=st.week;steps.push(nx=>{st.week=0;writeSave();storyShow(weekHtml(w),'새로운 한 주 시작 ▸',nx);});}
-  if(st.clear!==null){const i=st.clear;steps.push(nx=>{st.clear=null;st.ch=i+1;SAVE.money+=CH[i].reward;writeSave();AU.cash&&AU.cash();storyShow(chapterHtml(i),i+1<CH.length?'다음 이야기로 ▸':'엔딩 보기 ▸',nx);});
+  if(st.clear!==null){const i=st.clear,i0=st.clearFrom!==undefined?Math.min(st.clearFrom,i):i;steps.push(nx=>{st.clear=null;st.clearFrom=undefined;st.ch=i+1;let rw=0;for(let k=i0;k<=i;k++)rw+=CH[k].reward;SAVE.money+=rw;writeSave();AU.cash&&AU.cash();storyShow(chapterHtml(i,i0,rw),i+1<CH.length?'다음 이야기로 ▸':'엔딩 보기 ▸',nx);});
     if(i+1>=CH.length)steps.push(nx=>{st.ended=true;writeSave();hideAll();$('#title').hidden=true;playOpening(()=>storyShow(`<small class="sy-k">THE END · 그리고</small><h2>고마워요, 사장님!</h2><p class="ch-sub">지글지글 키친의 이야기는 여기까지지만, 가게는 내일도 문을 열어요.<br>이제부터는 자유 영업! 좋아하는 메뉴로, 좋아하는 속도로.</p>`,'내일도 영업하기 ▸',nx),endScenes());});}
   if(!steps.length)return orig();hideAll();$('#title').hidden=true;let k=0;const run=()=>k<steps.length?steps[k++](run):orig();run();})(startCareer);
 /* prep tab: where the story is at */
@@ -4036,6 +4036,24 @@ function fsToggle(){try{if(document.fullscreenElement)document.exitFullscreen();
 /* every on-screen button answers with a soft wooden "tok" */
 AU.ui=function(){this.tone({f:560,f2:390,d:.06,v:.12});this.nz({f:1900,q:1,d:.018,v:.045});};
 let uiTokT=0;addEventListener('pointerdown',e=>{const b=e.target&&e.target.closest&&e.target.closest('button');if(!b||b.disabled||!AU.on)return;const n=performance.now();if(n-uiTokT<45)return;uiTokT=n;try{AU.ui();}catch(err){}},true);
+
+/* ---------- 2.1.2 fixes: no debt spiral · soy step · panels left open from the title ---------- */
+/* a healing game never puts you in the red: whatever the till can't cover at closing, the landlady lets slide */
+let GRACE=0;
+endDay=(orig=>function(){GRACE=0;if(G&&G.mode==='career'&&G.day){const D=G.day,gas=Math.round(G.gas/10)*10,rentD=D.n<=3?12000:RENT,wage=typeof staffWage==='function'?staffWage():0,need=rentD+SEASON+gas+wage;
+    if(SAVE.money<need){GRACE=need-SAVE.money;SAVE.money+=GRACE;G._profit=D.rev+D.tips-D.spend-need;}}
+  orig();if(GRACE>0){const b=$('#settleBody');if(b)b.insertAdjacentHTML('afterbegin',`<div class="st-ch">🏠 오늘은 벌이가 적어서, 건물주 할머니가 <b>${won(GRACE)}</b>은 안 받겠대요. “장사가 다 그렇지. 내일 또 힘내!”</div>`);
+    const tot=b&&b.querySelector('.st-row.tot');if(tot){tot.insertAdjacentHTML('beforebegin',`<div class="st-row"><span>🏠 건물주 할머니 인심</span><b style="color:#3f8a2a">+${won(GRACE)}</b></div>`);const p=G._profit+GRACE;tot.classList.toggle('neg',p<0);tot.querySelector('b').textContent=(p<0?'−':'')+won(Math.abs(p));}
+    const m=b&&b.querySelector('.st-meta');if(m)m.innerHTML=m.innerHTML.replace(/잔고 [^<]*/,'잔고 '+won(SAVE.money));writeSave();}})(endDay);
+/* saves from before this fix may already be below zero */
+startCareer=(orig=>function(){if(SAVE&&SAVE.money<0){SAVE.money=0;writeSave();setTimeout(()=>toast('🏠','밀린 외상을 정리했어요','건물주 할머니가 지난 빚은 없던 걸로 해 주셨어요.','long'),1200);}orig();})(startCareer);
+/* "press the soy onto the hot pan": pouring soy onto a pan that is properly hot counts, even before it scorches */
+addFluid=(orig=>function(c,key,ml,wx,wy,vx,vy,T){orig(c,key,ml,wx,wy,vx,vy,T);if(G&&c&&c.kind==='pan'&&(key==='soy'||key==='dsoy')&&c.T>=150)G.soyHotT=G.t;})(addFluid);
+/* panels opened from the title stay behind the game otherwise */
+const TITLE_PANELS=['#achPanel','#shopPanel','#dlcPanel','#practice','#rbook','#setPanel'];
+const closeTitlePanels=()=>{for(const s of TITLE_PANELS){const e=$(s);if(e)e.hidden=true;}};
+startCareer=(orig=>function(){closeTitlePanels();orig();})(startCareer);
+startPractice=(orig=>function(...a){closeTitlePanels();return orig(...a);})(startPractice);
 
 /* ---------- tools & held ---------- */
 function setTool(t){if(G.held&&t!==G.tool&&t!=='hand')returnHeld();if(t===G.tool)return;const prev=G.tool;if(prev!=='hand')G.lastTool=prev;G.tool=t;G.spat.down=false;if(t!=='ladle')G.ladle=null;

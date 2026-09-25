@@ -18,7 +18,7 @@ const chDone=i=>CH[i].goals.every(([,f])=>{const [v,t]=f();return v>=t;});
 endDay=(orig=>function(){if(!G||G.mode!=='career')return orig();const D=G.day,gas=Math.round(G.gas/10)*10,rentD=D.n<=3?12000:RENT,wage=typeof staffWage==='function'?staffWage():0;
   const avg=D.scores.length?Math.round(D.scores.reduce((a,b)=>a+b,0)/D.scores.length):0,sales={};for(const k in (D.sales||{}))sales[k]=D.sales[k].n;
   SAVE.hist=(SAVE.hist||[]).concat([{d:D.n,rev:D.rev+D.tips,profit:D.rev+D.tips-D.spend-rentD-SEASON-gas-wage,served:D.served,fail:D.fail,avg,sales}]).slice(-28);
-  orig();const st=storySt();if(D.n%7===0)st.week=D.n/7;if(!st.ended&&st.clear===null&&st.ch<CH.length&&chDone(st.ch))st.clear=st.ch;writeSave();
+  orig();const st=storySt();if(D.n%7===0)st.week=D.n/7;if(!st.ended&&st.clear===null&&st.ch<CH.length&&chDone(st.ch)){let k=st.ch;while(k+1<CH.length&&chDone(k+1))k++;st.clearFrom=st.ch;st.clear=k;}writeSave();
   if(st.clear!==null)$('#settleBody').insertAdjacentHTML('afterbegin',`<div class="st-ch">🎉 ${CH[st.clear].n} 목표 달성! 다음 날로 넘어가면 이야기가 이어져요.</div>`);})(endDay);
 /* between days: weekly report → chapter card → (ending) → next shift */
 function storyEl(){let d=$('#story');if(!d){d=document.createElement('div');d.id='story';d.hidden=true;$('#stage').appendChild(d);}return d;}
@@ -36,11 +36,11 @@ function weekHtml(w){const H=(SAVE.hist||[]).filter(h=>h.d>(w-1)*7&&h.d<=w*7),mx
     ${top.length?`<div class="wk-top"><b>이번 주 인기 메뉴</b>${top.map(([id,n],i)=>`<span>${['🥇','🥈','🥉'][i]} ${RID[id]?RID[id].n:id} ${n}그릇</span>`).join('')}</div>`:''}
     <p class="wk-note">${note}</p>${st.ended?'':`<div class="wk-ch"><b>${ch.n}</b>${chGoals(ch)}</div>`}`;}
 function chGoals(ch){return`<ul class="ch-goals">${ch.goals.map(([t,f])=>{const [v,g]=f(),ok=v>=g,p=clamp(v/g,0,1);return`<li class="${ok?'ok':''}"><span>${ok?'✔':'○'} ${t}</span><i><s style="width:${p*100}%"></s></i><em>${g>=10000?`${Math.floor(Math.min(v,g)/10000)}만 / ${g/10000}만원`:`${Math.min(v,g)} / ${g}`}</em></li>`;}).join('')}</ul>`;}
-function chapterHtml(i){const c=CH[i],n=CH[i+1];return`<small class="sy-k">CHAPTER CLEAR</small><h2>${c.n} — 완료!</h2><p class="ch-sub">${c.sub}</p><div class="ch-rew">🎁 축하금 <b>+${won(c.reward)}</b></div>
+function chapterHtml(i,i0,rw){i0=i0===undefined?i:i0;const c=CH[i],n=CH[i+1],many=i>i0;return`<small class="sy-k">CHAPTER CLEAR</small><h2>${many?CH.slice(i0,i+1).map(x=>x.n.split(' · ')[0]).join(' · ')+' — 모두 완료!':c.n+' — 완료!'}</h2><p class="ch-sub">${many?'그동안 쌓아 온 가게 이야기를 한꺼번에 정리했어요.':c.sub}</p><div class="ch-rew">🎁 축하금 <b>+${won(rw||c.reward)}</b></div>
   ${n?`<div class="ch-next"><small>다음 이야기</small><b>${n.n}</b><p>${n.sub}</p>${chGoals(n)}</div>`:'<div class="ch-next"><b>마지막 이야기가 기다리고 있어요…</b></div>'}`;}
 startCareer=(orig=>function(){const st=storySt();if(SAVE.mid&&SAVE.mid.day===SAVE.day)return orig();
   const steps=[];if(st.week){const w=st.week;steps.push(nx=>{st.week=0;writeSave();storyShow(weekHtml(w),'새로운 한 주 시작 ▸',nx);});}
-  if(st.clear!==null){const i=st.clear;steps.push(nx=>{st.clear=null;st.ch=i+1;SAVE.money+=CH[i].reward;writeSave();AU.cash&&AU.cash();storyShow(chapterHtml(i),i+1<CH.length?'다음 이야기로 ▸':'엔딩 보기 ▸',nx);});
+  if(st.clear!==null){const i=st.clear,i0=st.clearFrom!==undefined?Math.min(st.clearFrom,i):i;steps.push(nx=>{st.clear=null;st.clearFrom=undefined;st.ch=i+1;let rw=0;for(let k=i0;k<=i;k++)rw+=CH[k].reward;SAVE.money+=rw;writeSave();AU.cash&&AU.cash();storyShow(chapterHtml(i,i0,rw),i+1<CH.length?'다음 이야기로 ▸':'엔딩 보기 ▸',nx);});
     if(i+1>=CH.length)steps.push(nx=>{st.ended=true;writeSave();hideAll();$('#title').hidden=true;playOpening(()=>storyShow(`<small class="sy-k">THE END · 그리고</small><h2>고마워요, 사장님!</h2><p class="ch-sub">지글지글 키친의 이야기는 여기까지지만, 가게는 내일도 문을 열어요.<br>이제부터는 자유 영업! 좋아하는 메뉴로, 좋아하는 속도로.</p>`,'내일도 영업하기 ▸',nx),endScenes());});}
   if(!steps.length)return orig();hideAll();$('#title').hidden=true;let k=0;const run=()=>k<steps.length?steps[k++](run):orig();run();})(startCareer);
 /* prep tab: where the story is at */

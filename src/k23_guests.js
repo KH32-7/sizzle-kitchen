@@ -37,7 +37,7 @@ const heartStr=n=>'♥'.repeat(n)+'♡'.repeat(5-n);
 
 /* shop level */
 const SHOPLV=[[0,'포장마차'],[60,'골목 식당'],[160,'동네 맛집'],[320,'입소문 맛집'],[520,'줄 서는 집'],[780,'방송 탄 집'],[1100,'미식가의 단골집'],[1500,'셰프의 식당'],[2000,'전설의 주방'],[2600,'지글지글 본점']];
-const LVUP={2:'인테리어 추가',3:'좌석 3개 · 미식 평론가 방문 시작 · 인테리어 추가',4:'인테리어 추가',5:'인테리어 추가',6:'좌석 4개(손님 속도 “바쁘게”일 때) · 인테리어 추가'};
+const LVUP={2:'정리 알바 · 인테리어 추가',3:'좌석 3개 · 메뉴판 4칸 · 평론가 방문 · 분식천국 테마',4:'주방 보조 · 창가 자리 증축',5:'메뉴판 5칸 · 이자카야 테마',6:'좌석 4개 · 비스트로 테마',7:'메뉴판 6칸 · 안쪽 자리 증축'};
 function shopInit(){if(!SAVE)return;if(!SAVE.shop)SAVE.shop={xp:Math.min(900,(SAVE.served||0)*6),own:{},eq:{}};}
 function shopLv(){shopInit();let l=1;SHOPLV.forEach((s,i)=>{if(SAVE.shop.xp>=s[0])l=i+1;});return l;}
 const PACE={relax:{n:'여유롭게',mul:1.4,cap:3},normal:{n:'보통',mul:1.1,cap:3},busy:{n:'바쁘게',mul:.85,cap:4}};
