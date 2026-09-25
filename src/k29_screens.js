@@ -4,9 +4,8 @@ ICO.pot='<path d="M4 10h16v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M2 10h20M
 const SCR={cur:'kitchen',list:{}};
 function screenEl(id,cls){let d=$('#scr-'+id);if(!d){d=document.createElement('div');d.id='scr-'+id;d.className='screen '+(cls||'');d.hidden=true;$('#stage').insertBefore(d,$('#top'));}SCR.list[id]=d;return d;}
 function setScreen(s){if(s!=='kitchen'&&(!G||!G.started))return;if(s==='hall'&&G.mode!=='career')return;const prev=SCR.cur;SCR.cur=s;
-  for(const k in SCR.list)SCR.list[k].hidden=k!==s;$('#stage').classList.toggle('off-kitchen',s!=='kitchen');
-  if(s!=='kitchen'&&prev==='kitchen'){$('#recipePop').dataset.wasOpen=$('#recipePop').hidden?'':'1';}
-  const fn=SCR['show_'+s];if(fn)fn();navSync();if(prev!==s&&AU.pick)AU.pick();}
+  const fn=SCR['show_'+s];if(fn)fn();
+  for(const k in SCR.list)SCR.list[k].hidden=k!==s;$('#stage').classList.toggle('off-kitchen',s!=='kitchen');navSync();if(prev!==s&&AU.pick)AU.pick();}
 function navSync(){const n=$('#scrNav');if(!n)return;const car=G&&G.started&&G.mode==='career';n.hidden=!car;n.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===SCR.cur));}
 (function(){if($('#scrNav'))return;const n=document.createElement('div');n.id='scrNav';n.hidden=true;
   n.innerHTML=`<button type="button" data-s="kitchen" title="주방 (H)">${svgI('pot')}주방</button><button type="button" data-s="hall" title="홀 (H)">${svgI('table')}홀<i class="nb" hidden></i></button>`;
