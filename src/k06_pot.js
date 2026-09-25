@@ -72,7 +72,7 @@ function tongsInteract(c,dt){const s=G.spat;if(!s.down||s.c!==c)return;const lx=
   for(const b of c.beggs){if(dist(b.x,b.y,lx,ly)<24){b.vx+=s.vx*.02;b.vy+=s.vy*.02;}}
   for(const e of c.eggs){if(e.poach&&!e.ribbon&&e.set<.6&&dist(e.x,e.y,lx,ly)<avgRad(e)&&spd>80){e.ribbon=true;floatText('계란을 풀었어요',c.x+e.x,c.y+e.y-30,'#ffe9a0',20);}}
   for(const q of c.fluid){if(dist(q.x,q.y,lx,ly)<40){q.vx+=(s.vx-q.vx)*.25;q.vy+=(s.vy-q.vy)*.25;if(c.noodles.length&&spd>60){const n=c.noodles[0],a=Math.min(q.m,dt*spd*.004);q.m-=a;const d=LQ[q.k];n.coat.salt+=a*d.salt;if(d.sauce){n.coat.sauce+=a;n.sauceCol=d.col;}if(d.spicy)n.coat.chili+=a*d.spicy;if(d.oil)n.coat.oil+=a;if(d.aroma)n.aroma=(n.aroma||0)+a;}}}
-  if(c.kind==='mix'&&spd>40&&c.water>0&&(c.flour>0||c.egg>0)){c.mixv=Math.min(1,c.mixv+dt*spd*.0009);for(const o of c.items){const r=Math.hypot(o.x,o.y)+1;o.x+=-o.y/r*spd*dt*.08;o.y+=o.x/r*spd*dt*.08;}}
+  if(c.kind==='mix'&&spd>40&&(c.water>0||c.egg>0)&&(c.flour>0||c.egg>0)){c.mixv=Math.min(1,c.mixv+dt*spd*(c.flour>0?.0009:.0003));for(const o of c.items){const r=Math.hypot(o.x,o.y)+1;o.x+=-o.y/r*spd*dt*.08;o.y+=o.x/r*spd*dt*.08;}}
   if(c.liq&&spd>40&&c.liq.T<90){/* stirring cools slightly */c.liq.T-=dt*.2;}
   c.agit=Math.min(1.5,(c.agit||0)+spd*dt*.003);}
 function emulsify(c,dt){if(!c.fluid.length)return;c.agit=Math.max(0,(c.agit||0)-dt*.7);const F=c.fluid;
