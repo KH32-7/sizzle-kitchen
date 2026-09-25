@@ -84,6 +84,6 @@ function endScenes(){const days=SAVE.day||1,guests=SAVE.served||0,S=[
  {d:5.6,cap:'',draw:lt=>{const g=OPN.g;put(piece('titlebg',1640,1040,L=>L(Pp.rect(0,0,1640,1040),'#f1e4ca',0)),800,500,{d:0});
    for(let i=0;i<14;i++){const R=mulberry(i+200),x=R()*1600,y=((R()*1000+lt*(40+R()*50))%1100)-50;put(piece('conf'+(i%5),22,14,L=>L(Pp.rect(0,0,22,14),['#e0412a','#f0ae3a','#4f8a4a','#35578f','#fff3dc'][i%5],1),0),x,y,{rot:lt*(R()*4-2),a:.7,d:1});}
    if(lt>.2){const s=1+(1-back((lt-.2)/.45))*.9;put(sticker('ethx','고마워요, 사장님!',120,'#ffcf5a','#7a2410'),800,430,{rot:-.04,sx:s,d:6});cue('st1',()=>AU.chop&&AU.chop('kimchi',700));}
-   if(lt>1){const s=back((lt-1)/.4);put(sticker('eend','THE END',44,'#ffffff','#c23a1b','"IBM Plex Mono"'),800,600,{rot:-.03,sx:s,d:3});}
+   if(lt>1){const s=back((lt-1)/.4);put(sticker('eend','THE END',44,'#ffffff','#c23a1b','"Jua"'),800,600,{rot:-.03,sx:s,d:3});}
    if(lt>1.6){g.save();g.globalAlpha=clamp((lt-1.6)*2,0,1);g.font='40px "Jua", "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle=PAL.ink;g.fillText('…그리고 영업은 계속됩니다',800,760);g.restore();}}}];
   S.glyphs='오늘도 줄 서는 집 미식 가이드 올해 새로 별을 받은 집 “소박하지만 정성이 가득한 한 그릇” “다시 찾고 싶은 골목 식당” 일째 영업 중 · 골목 끝 고마워요, 사장님! THE END …그리고 영업은 계속됩니다';return S;}

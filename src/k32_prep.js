@@ -65,7 +65,7 @@ serve=(orig=>function(){const o=selOrder(),n0=G.orders.length;orig();if(!G||G.mo
 midSave=(orig=>function(){orig();if(SAVE.mid&&G&&G.day)SAVE.mid.sales=G.day.sales||{};})(midSave);
 startCareer=(orig=>function(){const m=SAVE.mid&&SAVE.mid.day===SAVE.day?SAVE.mid:null;orig();if(m&&G&&G.day)G.day.sales=m.sales||{};})(startCareer);
 endDay=(orig=>function(){const S=G&&G.day&&G.day.sales;orig();if(!S||!Object.keys(S).length)return;const rows=Object.entries(S).sort((a,b)=>b[1].rev-a[1].rev);
-  $('#settleBody').insertAdjacentHTML('beforeend',`<div class="st-sales"><b>메뉴별 판매</b><table>${rows.map(([id,e])=>`<tr><td>${RID[id].n} <span class="pr">${Math.round(priceRatio(id)*100)}%</span></td><td>${e.n}그릇</td><td>${won(e.rev)}</td><td>평균 ${Math.round(e.sc/e.n)}점</td></tr>`).join('')}</table></div>`);})(endDay);
+  $('#settleBody').insertAdjacentHTML('beforeend',`<div class="st-sales"><b>메뉴별 판매</b><table>${rows.map(([id,e])=>`<tr><td>${RID[id].n} <span class="st-pr">${Math.round(priceRatio(id)*100)}%</span></td><td>${e.n}그릇</td><td>${won(e.rev)}</td><td>평균 ${Math.round(e.sc/e.n)}점</td></tr>`).join('')}</table></div>`);})(endDay);
 /* what is worth doing before the doors open, per dish on today's board */
 const CUTN={dice:'한입 크기로 깍둑',disc:'송송 · 동글게',jul:'가늘게 채',len:'길쭉하게'};
 function renderMise(body,items){const cards=items.map(id=>{const R=RID[id],sp=R.spec||{},cuts=Object.entries(sp.knife||{}).filter(([k])=>ING[k]).map(([k,v])=>`<li><img alt="" src="${itemIcon(k)}">${ING[k].n} <small>${CUTN[v[0]]||'썰기'}</small></li>`);

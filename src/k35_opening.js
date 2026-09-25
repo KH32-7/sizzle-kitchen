@@ -117,7 +117,7 @@ const OSC=[
    for(let i=0;i<14;i++){const R=mulberry(i+200),x=R()*1600,y=((R()*1000+lt*(40+R()*50))%1100)-50;put(piece('conf'+(i%5),22,14,L=>L(Pp.rect(0,0,22,14),['#e0412a','#f0ae3a','#4f8a4a','#35578f','#fff3dc'][i%5],1),0),x,y,{rot:lt*(R()*4-2),a:.7,d:1});}
    if(lt>.2){const s=1+(1-back((lt-.2)/.45))*.9;put(sticker('logo1','지글지글',170,'#ffcf5a','#7a2410'),760,400,{rot:-.05,sx:s,d:6});cue('stamp1',()=>AU.chop&&AU.chop('kimchi',600));}
    if(lt>.6){const s=1+(1-back((lt-.6)/.45))*.9;put(sticker('logo2','키친',170,'#fff3dc','#7a2410'),880,590,{rot:-.05,sx:s,d:6});cue('stamp2',()=>AU.chop&&AU.chop('kimchi',1000));}
-   if(lt>1.1){const s=back((lt-1.1)/.4);put(sticker('season','2nd SEASON',40,'#ffffff','#c23a1b','"IBM Plex Mono"'),960,720,{rot:-.05,sx:s,d:3});}
+   if(lt>1.1){const s=back((lt-1.1)/.4);put(sticker('season','2nd SEASON',40,'#ffffff','#c23a1b','"Jua"'),960,720,{rot:-.05,sx:s,d:3});}
    if(lt>1.6){g.save();g.globalAlpha=clamp((lt-1.6)*2,0,1);g.font='42px "Jua", "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle=PAL.ink;g.fillText('사장님, 영업 준비되셨나요?',800,860);g.restore();}}},
 ];
 const OTOT=OSC.reduce((s,c)=>s+c.d,0);

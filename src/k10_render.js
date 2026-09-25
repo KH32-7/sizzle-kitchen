@@ -14,7 +14,7 @@ function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
   for(const p of PANTRY){const lk=!ingOpen(p.id);g.save();if(sh===p&&!lk)g.translate(0,-4);if(lk)g.globalAlpha=sh===p?.4:.1;drawPantryItem(g,p,p.row===1?140:214);g.restore();
     if(lk){if(sh===p){g.font='12px sans-serif';g.textAlign='center';g.fillStyle='rgba(255,240,220,.85)';g.fillText('🔒',p.x,p.row===1?112:192);}continue;}
     g.font='600 11px "Gowun Dodum", sans-serif';g.textAlign='center';g.fillStyle='rgba(246,234,214,.9)';g.fillText(p.n,p.x,p.row===1?150:224);
-    if(p.kind==='noodle'&&G.mode!=='practice'){const n=G.stock[p.id]||0;g.font='600 10px "IBM Plex Mono", monospace';g.fillStyle=n?'rgba(240,174,58,.95)':'rgba(220,120,100,.9)';g.fillText(n?'×'+n:'품절',p.x+26,p.row===1?92:170);}}
+    if(p.kind==='noodle'&&G.mode!=='practice'){const n=G.stock[p.id]||0;g.font='11px "Jua", sans-serif';g.fillStyle=n?'rgba(240,174,58,.95)':'rgba(220,120,100,.9)';g.fillText(n?'×'+n:'품절',p.x+26,p.row===1?92:170);}}
   if(canHover&&inFridge(M.x,M.y)){g.strokeStyle='rgba(255,220,150,.8)';g.lineWidth=3;rr(g,L.fridge.x-2,L.fridge.y-2,L.fridge.w+4,L.fridge.h+4,12);g.stroke();}
   const bd=G.drag&&G.drag.kind==='board';if(!bd)drawBoard(0,0,false);
   drawRackTools();
@@ -39,11 +39,11 @@ function render(){const g=ctx;g.setTransform(PX,0,0,PX,0,0);FC||0;
   if(G.smoke>1){g.fillStyle=`rgba(125,120,115,${Math.min(UPG.fan?.18:.32,(G.smoke-1)*(UPG.fan?.018:.035))})`;g.fillRect(0,0,W,H);}
   drawTutHL(g);
   if(G.drag&&G.drag.kind==='handful'){for(const p of G.drag.pieces)pieceShadow(g,p,M.x+p.ox*.8,M.y+p.oy*.8,12,.22);for(const p of G.drag.pieces)drawPiece(g,p,M.x+p.ox*.8,M.y+p.oy*.8);}
-  if(!G.hideCursor&&G.started){drawHeld();if(G.held||G.ladle){const h=G.held,nm=!h?'국자에 담음':h.kind==='ing'?ING[h.piece.type].n:h.kind==='bottle'?BOT[h.id].label:h.kind==='shaker'?SHK[h.id].n:h.kind==='powder'?'부침가루':h.kind==='noodle'?NT[h.nt].n:h.kind==='noodleObj'?'면':({rice:'찬밥',egg:'계란',begg:'삶은 계란',packet:'라면 스프',ice:'얼음',nori:'김',butter:'버터'})[h.kind]||'';const t2=`${nm} · 우클릭=${h&&h.kind!=='packet'?'제자리':'내려놓기'}`;g.font='600 12px "Gowun Dodum", sans-serif';const w=g.measureText(t2).width+14;g.fillStyle='rgba(20,14,10,.72)';rr(g,M.x-w/2,M.y+40,w,20,9);g.fill();g.fillStyle='#fff1d6';g.textAlign='center';g.fillText(t2,M.x,M.y+54);}
+  if(!G.hideCursor&&G.started){drawHeld();if(G.held||G.ladle){const h=G.held,nm=!h?'국자에 담음':h.kind==='ing'?ING[h.piece.type].n:h.kind==='bottle'?BOT[h.id].label:h.kind==='shaker'?SHK[h.id].n:h.kind==='powder'?'부침가루':h.kind==='noodle'?NT[h.nt].n:h.kind==='noodleObj'?'면':({rice:'찬밥',egg:'계란',begg:'삶은 계란',packet:'라면 스프',ice:'얼음',nori:'김',butter:'버터'})[h.kind]||'';const t2=`${nm} · 우클릭=${h&&h.kind!=='packet'?'제자리':'내려놓기'}`;g.font='13px "Jua", sans-serif';const w=g.measureText(t2).width+16;uiPill(g,M.x-w/2,M.y+38,w,23);g.fillStyle='#5a2e22';g.textAlign='center';g.fillText(t2,M.x,M.y+54);}
     const overUI=knobAt(M.x,M.y)||shelfAt(M.x,M.y)||rackAt(M.x,M.y)||handleAt(M.x,M.y)||inFridge(M.x,M.y);
     if(!G.held&&!(G.drag&&G.drag.kind!=='spat')&&!overUI&&M.inside){const s=G.spat;
       if(G.tool==='knife'){if(inBoard(M.x,M.y)&&G.knife.down<.2){g.save();g.translate(M.x,M.y);g.rotate(G.knife.ang);g.strokeStyle='rgba(255,255,255,.45)';g.setLineDash([4,6]);g.lineWidth=1;g.beginPath();g.moveTo(0,-KN_UP-40);g.lineTo(0,KN_DN+10);g.stroke();g.setLineDash([]);g.restore();}drawKnifeTop(g,M.x,M.y,G.knife.ang,G.knife.down);
-        if(Math.abs(G.knife.ang)>.03){g.fillStyle='rgba(20,14,10,.7)';g.font='600 11px "IBM Plex Mono", monospace';g.textAlign='left';g.fillText(Math.round(G.knife.ang*180/PI)+'°',M.x+14,M.y+KN_DN+26);}}
+        if(Math.abs(G.knife.ang)>.03){g.fillStyle='rgba(20,14,10,.7)';g.font='12px "Jua", sans-serif';g.textAlign='left';g.fillText(Math.round(G.knife.ang*180/PI)+'°',M.x+14,M.y+KN_DN+26);}}
       else if(G.tool==='spatula')drawSpatula(g,s.x,s.y,s.ang,s.down);
       else if(G.tool==='chop')drawChop(g,M.x,M.y,s.down,-.45);
       else if(G.tool==='ladle')drawLadle(g,M.x,M.y,s.down,G.ladle);
