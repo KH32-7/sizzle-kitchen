@@ -155,15 +155,32 @@ function drawSeed(g,q,x,y){switch(q.type){
   case'butterpat':g.fillStyle='#f6de8a';rr(g,x-9,y-6,18,12,3);g.fill();break;}}
 /* fluid particle layer */
 let FLC=null,FLX=null;
+let FLT=null,FLTX=null,OILFX=null;
+/* svg filter for liquid oil: blur+threshold merges droplets, specular light on the blurred edge gives the glossy rim */
+function oilFx(){if(OILFX!==null)return OILFX;try{const mkF=(id,col,op)=>`<filter id="${id}" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="b"/><feColorMatrix in="b" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 26 -11" result="shape"/>
+  <feGaussianBlur in="shape" stdDeviation="3" result="sb"/><feSpecularLighting in="sb" surfaceScale="5" specularConstant="1.3" specularExponent="45" lighting-color="#fff4d6" result="spec"><feDistantLight azimuth="225" elevation="40"/></feSpecularLighting>
+  <feComposite in="spec" in2="shape" operator="in" result="specIn"/><feFlood flood-color="${col}" flood-opacity="${op}"/><feComposite in2="shape" operator="in" result="body"/>
+  <feMorphology in="shape" operator="erode" radius="2" result="inner"/><feComposite in="shape" in2="inner" operator="out" result="rim"/><feFlood flood-color="#fff2c8" flood-opacity=".5"/><feComposite in2="rim" operator="in" result="rimC"/>
+  <feMerge><feMergeNode in="body"/><feMergeNode in="specIn"/><feMergeNode in="rimC"/></feMerge></filter>`;
+  const d=document.createElement('div');d.style.cssText='position:absolute;width:0;height:0;overflow:hidden';d.innerHTML=`<svg width="0" height="0">${mkF('oilgoo','#d9a93c',.13)}${mkF('oilgooD','#9a5a1c',.5)}</svg>`;document.body.appendChild(d);OILFX=true;}catch(e){OILFX=false;}return OILFX;}
 function drawFluid(g,c,ox,oy){const F=c.fluid;if(!F.length)return;
   if(c.kind==='counter'){for(const q of F){const d=LQ[q.k];g.fillStyle=rgba(d.col,d.a*.9);g.beginPath();g.arc(q.x,q.y,(q.r||fR(q,22))*.9,0,TAU);g.fill();}return;}
   const R=c.r+30,size=Math.ceil(R*2*PX);if(!FLC||FLC.width<size){FLC=mk(size,size);FLX=FLC.getContext('2d');}
   const groups={};for(const q of F){const key=q.k+(q.chili>1?'c':'')+(q.burn>.6?'b':'');(groups[key]=groups[key]||[]).push(q);}
+  /* nothing poured into a pan is drawn past its floor */
+  g.save();if(c.r){g.beginPath();g.arc(ox,oy,c.r-1,0,TAU);g.clip();}
   for(const key in groups){const arr=groups[key],q0=arr[0],d=LQ[q0.k];let col=d.col;if(q0.chili>1)col=mix(col,[210,50,20],.7);if(q0.burn>.6)col=mix(col,[40,24,12],.7);if(q0.k==='butter'&&c.T>140)col=mix(col,[200,130,50],clamp((c.T-140)/60,0,1));
     FLX.setTransform(1,0,0,1,0,0);FLX.clearRect(0,0,size,size);FLX.setTransform(PX,0,0,PX,R*PX,R*PX);
-    FLX.fillStyle=rgba(d.oil?mix(col,[255,255,240],.4):mix(col,[0,0,0],.18),1);for(const q of arr){const r=(q.r||fR(q,c.T))*1.1;FLX.beginPath();FLX.arc(q.x,q.y,r+1.2,0,TAU);FLX.fill();}
-    FLX.fillStyle=rgba(col,1);for(const q of arr){const r=(q.r||fR(q,c.T))*1.1;FLX.beginPath();FLX.arc(q.x,q.y,r,0,TAU);FLX.fill();}
-    g.save();g.globalAlpha=d.a;g.drawImage(FLC,0,0,size,size,ox-R,oy-R,R*2,R*2);g.restore();
-    g.fillStyle=`rgba(255,255,255,${d.oil?.4:.22})`;for(const q of arr){const r=q.r||8;if(r<5)continue;g.beginPath();g.ellipse(ox+q.x-r*.3,oy+q.y-r*.35,r*.28,r*.12,-.6,0,TAU);g.fill();}
+    const rr=q=>(q.r||fR(q,c.T))*1.1,blob=grow=>{FLX.beginPath();for(const q of arr){const r=rr(q)+grow;FLX.moveTo(q.x+r,q.y);FLX.arc(q.x,q.y,r,0,TAU);}};
+    if(d.oil&&q0.burn<=.6&&oilFx()){/* oil: the droplets melt into one clear puddle (svg goo filter); you see it by its glossy meniscus and glare */
+      if(!FLT||FLT.width!==FLC.width){FLT=mk(FLC.width,FLC.height);FLTX=FLT.getContext('2d');}FLTX.setTransform(1,0,0,1,0,0);FLTX.clearRect(0,0,FLT.width,FLT.height);FLTX.setTransform(PX,0,0,PX,R*PX,R*PX);
+      FLTX.fillStyle='#000';FLTX.beginPath();for(const q of arr){const r=rr(q)*1.08+3;FLTX.moveTo(q.x+r,q.y);FLTX.arc(q.x,q.y,r,0,TAU);}FLTX.fill();
+      FLX.setTransform(1,0,0,1,0,0);FLX.filter=q0.k==='ses'?'url(#oilgooD)':'url(#oilgoo)';FLX.drawImage(FLT,0,0);FLX.filter='none';
+      g.drawImage(FLC,0,0,size,size,ox-R,oy-R,R*2,R*2);}
+    else{FLX.fillStyle=rgba(mix(col,[0,0,0],.18),1);blob(1.2);FLX.fill();FLX.fillStyle=rgba(col,1);blob(0);FLX.fill();
+      g.save();g.globalAlpha=d.a;g.drawImage(FLC,0,0,size,size,ox-R,oy-R,R*2,R*2);g.restore();
+      g.fillStyle='rgba(255,255,255,.22)';for(const q of arr){const r=q.r||8;if(r<5)continue;g.beginPath();g.ellipse(ox+q.x-r*.3,oy+q.y-r*.35,r*.28,r*.12,-.6,0,TAU);g.fill();}}
     if(q0.k==='butter'&&c.T>105){g.fillStyle='rgba(255,250,230,.7)';for(const q of arr){if(Math.random()<.5){g.beginPath();g.arc(ox+q.x+rand(-q.r,q.r)*.6,oy+q.y+rand(-q.r,q.r)*.6,rand(1,2.6),0,TAU);g.fill();}}}
-    if(d.oil&&c.T>140){const A=Math.min(1,(Math.min(c.T,260)-140)/120);g.lineWidth=1;for(let i=0;i<arr.length;i+=3){const q=arr[i],r=q.r||8,an=G.t*(1+i*.07)+i;g.strokeStyle=`rgba(255,246,215,${A*.28*(.5+.5*Math.sin(G.t*9+i*2))})`;g.beginPath();g.arc(ox+q.x,oy+q.y,r*.6,an,an+.6);g.stroke();}}}}
+    if(d.oil&&c.T>140){/* hot oil shimmers: faint ripples, more of them as it nears smoking */const A=Math.min(1,(Math.min(c.T,260)-140)/120);g.lineWidth=1.2;for(let i=0;i<arr.length;i+=2){const q=arr[i],r=q.r||8,an=G.t*(1+i*.07)+i;g.strokeStyle=`rgba(255,246,215,${A*.32*(.5+.5*Math.sin(G.t*9+i*2))})`;g.beginPath();g.arc(ox+q.x,oy+q.y,r*.55,an,an+.9);g.stroke();}}}
+  g.restore();}

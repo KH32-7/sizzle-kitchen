@@ -39,7 +39,7 @@ function stepFluid(c,dt){const F=c.fluid;if(!F.length){c.oilAmt=0;return;}const 
   const ax=c.ax||0,ay=c.ay||0,wall=c.kind!=='counter';
   for(const q of F){const d=LQ[q.k];q.age+=dt;q.r=fR(q,T);if(d.oil)oil+=q.m;
     const dm=Math.exp(-(c.kind==='counter'?7:d.vis*(1-clamp((T-20)/400,0,.5)))*dt);q.vx=(q.vx-ax*dt*.8)*dm;q.vy=(q.vy-ay*dt*.8)*dm;q.x+=q.vx*dt;q.y+=q.vy*dt;
-    if(wall){const lim=Math.max(2,c.r-q.r*.35),dd=Math.hypot(q.x,q.y);if(dd>lim){q.x*=lim/dd;q.y*=lim/dd;q.vx*=-.3;q.vy*=-.3;}}
+    if(wall){/* the whole puddle stays on the pan floor, not just its centre */const lim=Math.max(2,c.r-4-q.r*(d.oil?1.1:.6)),dd=Math.hypot(q.x,q.y);if(dd>lim){q.x*=lim/dd;q.y*=lim/dd;q.vx*=-.3;q.vy*=-.3;}}
     q.T+=(T-q.T)*Math.min(1,dt*3);}
   for(let i=0;i<F.length;i++){const a=F[i];for(let j=i+1;j<F.length;j++){const b=F[j],dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy,rs=a.r+b.r;if(d2>rs*rs*3.2||d2<1e-6)continue;
     const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,rest=rs*.62,wa=b.m/(a.m+b.m),wb=1-wa;
