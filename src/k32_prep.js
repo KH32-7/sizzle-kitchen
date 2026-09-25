@@ -37,13 +37,13 @@ setScreen=(orig=>function(s){if(s==='prep'&&!(G&&G.preOpen))return;if(s==='hall'
 const PREP={tab:'menu',sel:null};
 SCR.show_prep=()=>renderPrep();
 function renderPrep(){const d=screenEl('prep','prep');const items=menuItems(),slots=menuSlots(),all=unlockedRecs();PREP.sel=PREP.sel&&RID[PREP.sel]?PREP.sel:items[0];
-  const tabs=[['menu','메뉴판'],['market','장보기'],['shop','우리 가게'],...(typeof PREP_TABS!=='undefined'?PREP_TABS:[])];
+  const tabs=[['menu','메뉴판'],['mise','밑준비 추천'],['market','장보기'],['shop','우리 가게'],...(typeof PREP_TABS!=='undefined'?PREP_TABS:[])];
   d.innerHTML=`<div class="pp-head"><div><small>DAY ${SAVE.day} · 오픈 전</small><h2>오늘 장사 준비</h2></div><nav class="pp-tabs">${tabs.map(([k,n])=>`<button type="button" data-t="${k}" class="${PREP.tab===k?'on':''}">${n}</button>`).join('')}</nav></div>
     <div class="pp-body" id="ppBody"></div>
     <div class="pp-foot"><span class="pp-hint">문을 열기 전에는 시간이 흐르지 않아요. 주방에서 채소를 미리 썰어 두거나 육수를 끓여 두면 영업이 편해요.</span><button type="button" class="btn2" id="ppKitchen">주방에서 밑준비 →</button><button type="button" class="big-btn" id="ppOpen">🔔 영업 시작</button></div>`;
   d.querySelectorAll('.pp-tabs button').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t==='market'){openMarket();return;}if(t==='shop'){openShop();return;}PREP.tab=t;renderPrep();});
   $('#ppKitchen').onclick=()=>setScreen('kitchen');$('#ppOpen').onclick=openDoors;
-  const body=$('#ppBody');if(PREP.tab==='menu')renderMenuBoard(body,items,slots,all);else if(typeof PREP_RENDER!=='undefined'&&PREP_RENDER[PREP.tab])PREP_RENDER[PREP.tab](body);}
+  const body=$('#ppBody');if(PREP.tab==='menu')renderMenuBoard(body,items,slots,all);else if(PREP.tab==='mise')renderMise(body,items);else if(typeof PREP_RENDER!=='undefined'&&PREP_RENDER[PREP.tab])PREP_RENDER[PREP.tab](body);}
 function renderMenuBoard(body,items,slots,all){const M=menuState();
   const line=id=>{const R=RID[id],r=priceRatio(id),p=Math.round(R.price*r/100)*100,c=costOf(id),rate=Math.round(c/p*100),w=demandW(id);
     return`<li class="${PREP.sel===id?'sel':''}" data-id="${id}"><span class="mb-n">${R.n}${G.day.special===id?'<em>특선</em>':''}</span><span class="mb-dots"></span><span class="mb-p">${won(p)}</span>
@@ -66,3 +66,9 @@ midSave=(orig=>function(){orig();if(SAVE.mid&&G&&G.day)SAVE.mid.sales=G.day.sale
 startCareer=(orig=>function(){const m=SAVE.mid&&SAVE.mid.day===SAVE.day?SAVE.mid:null;orig();if(m&&G&&G.day)G.day.sales=m.sales||{};})(startCareer);
 endDay=(orig=>function(){const S=G&&G.day&&G.day.sales;orig();if(!S||!Object.keys(S).length)return;const rows=Object.entries(S).sort((a,b)=>b[1].rev-a[1].rev);
   $('#settleBody').insertAdjacentHTML('beforeend',`<div class="st-sales"><b>메뉴별 판매</b><table>${rows.map(([id,e])=>`<tr><td>${RID[id].n} <span class="pr">${Math.round(priceRatio(id)*100)}%</span></td><td>${e.n}그릇</td><td>${won(e.rev)}</td><td>평균 ${Math.round(e.sc/e.n)}점</td></tr>`).join('')}</table></div>`);})(endDay);
+/* what is worth doing before the doors open, per dish on today's board */
+const CUTN={dice:'한입 크기로 깍둑',disc:'송송 · 동글게',jul:'가늘게 채',len:'길쭉하게'};
+function renderMise(body,items){const cards=items.map(id=>{const R=RID[id],sp=R.spec||{},cuts=Object.entries(sp.knife||{}).filter(([k])=>ING[k]).map(([k,v])=>`<li><img alt="" src="${itemIcon(k)}">${ING[k].n} <small>${CUTN[v[0]]||'썰기'}</small></li>`);
+    const extra=[];if(sp.broth)extra.push(sp.broth.T==='cold'?'<li>🧊 육수를 미리 차갑게 (얼음)</li>':'<li>🍲 육수·국물을 미리 데워 두기</li>');if(sp.noodle&&!sp.noodle.cold)extra.push('<li>♨️ 면 삶을 물을 미리 끓여 두기</li>');if(sp.rice)extra.push('<li>🍚 찬밥 꺼내 두기</li>');
+    return`<div class="mz-card"><div class="mz-h">${RIMG[id]?`<img alt="" src="${RIMG[id]}">`:''}<b>${R.n}</b></div><ul>${cuts.join('')}${extra.join('')||''}${!cuts.length&&!extra.length?'<li class="mz-none">따로 준비할 게 없어요. 주문이 오면 바로!</li>':''}</ul></div>`;});
+  body.innerHTML=`<div class="mz"><p class="mz-lead">주방 조리대의 <b>작은 그릇 두 개</b>와 반죽 볼에 썰어 둔 재료를 담아 두면, 영업 중엔 꺼내 쓰기만 하면 돼요. 문을 열기 전에는 시간이 멈춰 있어요.</p><div class="mz-grid">${cards.join('')}</div></div>`;}
